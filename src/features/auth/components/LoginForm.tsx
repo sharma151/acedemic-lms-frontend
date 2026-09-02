@@ -26,9 +26,11 @@ import { Loader2 } from "lucide-react";
 import { setAuthToken } from "@/lib/auth";
 import { loginWithEmail } from "../api/login";
 import { useCustomMutation } from "@/hooks/use-custom-mutation";
+import { useAuthStore } from "../store/useAuthStore";
 
 export function LoginForm() {
   const formRef = useRef<UseFormReturn<LoginFormData>>(null);
+  const setUser = useAuthStore((state) => state.setUser);
 
   const { mutate: login, isPending: isLoading } = useCustomMutation({
     service: loginWithEmail,
@@ -38,6 +40,7 @@ export function LoginForm() {
     onSuccess: (data: any) => {
       if (data?.accessToken) {
         setAuthToken(data.accessToken);
+        setUser(data.user);
       }
     },
   });

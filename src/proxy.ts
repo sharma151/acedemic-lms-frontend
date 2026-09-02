@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
+import { parseJwt } from "@/lib/jwt";
+import { Role } from "@/lib/roles";
 
 export function proxy(request: NextRequest) {
   const url = request.nextUrl;
@@ -29,10 +31,11 @@ export function proxy(request: NextRequest) {
     url.pathname.startsWith("/register") ||
     url.pathname.startsWith("/forgot-password");
 
-  // Pass through API, static files, next static files
+  // Pass through API, static files, next static files, and unauthorized fallback
   if (
     url.pathname.startsWith("/api") ||
     url.pathname.startsWith("/_next") ||
+    url.pathname.startsWith("/unauthorized") ||
     url.pathname.includes(".")
   ) {
     return NextResponse.next();
@@ -56,10 +59,23 @@ export function proxy(request: NextRequest) {
     return NextResponse.redirect(new URL("/login", request.url));
   }
 
+  const payload = parseJwt(token);
+  if (!payload) {
+    // Invalid token, force re-login
+    const response = NextResponse.redirect(new URL("/login", request.url));
+    response.cookies.delete("lms_access_token");
+    return response;
+  }
+
   // Rewrite logic
   let rewriteUrl = new URL(url.pathname, request.url);
 
   if (isRootOrAdmin) {
+    // Enforce Super Admin only for the root/admin platform
+    if (payload.role !== Role.SUPER_ADMIN) {
+      return NextResponse.redirect(new URL("/unauthorized", request.url));
+    }
+
     // Route to super-admin or root pages
     rewriteUrl.pathname = url.pathname === "/" ? "/tenants" : url.pathname;
   } else {
