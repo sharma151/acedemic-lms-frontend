@@ -61,10 +61,10 @@ export function proxy(request: NextRequest) {
 
   if (isRootOrAdmin) {
     // Route to super-admin or root pages
-    rewriteUrl.pathname = `/super-admin${url.pathname === "/" ? "/tenants" : url.pathname}`;
+    rewriteUrl.pathname = url.pathname === "/" ? "/tenants" : url.pathname;
   } else {
     // Route to tenant-portal pages
-    rewriteUrl.pathname = `/tenant-portal${url.pathname === "/" ? "/dashboard" : url.pathname}`;
+    rewriteUrl.pathname = url.pathname === "/" ? "/dashboard" : url.pathname;
   }
 
   // Inject tenant context into headers for downstream use

@@ -7,6 +7,10 @@ import { useNotifications } from "@/components/ui/notifications";
 import { MutationResponse, SuccessResponseInterface } from "@/types/api";
 import { syncFormErrors } from "@/utils/sync-form-errors";
 
+/**
+ * Backend returns ApiResponse<T> (status, statusCode, message, data).
+ * Unwrap so onSuccess receives the entity from data.
+ */
 function resolveMutationPayload<T>(data: unknown): T {
   if (
     data &&
@@ -19,12 +23,12 @@ function resolveMutationPayload<T>(data: unknown): T {
   return data as T;
 }
 
-type CustomMutationProps<T, X = unknown> = {
-  queryKey?: string[] | string[][];
+type props<T, X = unknown> = {
+  queryKey?: string[] | string[][]; // Made optional to support LoginForm which has no queryKey to invalidate
   service: (
     data: T,
   ) => Promise<X | SuccessResponseInterface<X> | MutationResponse<X>>;
-  form?: UseFormReturn;
+  form?: UseFormReturn | React.RefObject<UseFormReturn | null>;
   navigateTo?: string;
   onSuccess?: (data: X) => void;
   onError?: (err: AxiosError) => void;
@@ -43,7 +47,7 @@ export const useCustomMutation = <T, X>({
   successMessage,
   successTitle = "Success",
   showSuccessNotification = true,
-}: CustomMutationProps<T, X>) => {
+}: props<T, X>) => {
   const queryClient = useQueryClient();
   const { addNotification } = useNotifications();
   const router = useRouter();
@@ -68,38 +72,21 @@ export const useCustomMutation = <T, X>({
           type: "success",
           title: successTitle,
           message:
-            successMessage ??
-            responseMessage ??
-            "Action completed successfully!",
+            successMessage ?? responseMessage ?? "Data created successfully!",
         });
       }
 
-      if (form) form.reset();
-      if (navigateTo) router.push(navigateTo);
+      const actualForm = form && "current" in form ? form.current : form;
+      if (actualForm) actualForm.reset();
+
+      if (navigateTo) router.replace(navigateTo);
+
       if (onSuccess) onSuccess(resolveMutationPayload<X>(data));
     },
     onError: (err: AxiosError) => {
-      if (form) syncFormErrors(form, err);
+      const actualForm = form && "current" in form ? form.current : form;
+      if (actualForm) syncFormErrors(actualForm, err);
       if (onError) onError(err);
-
-      // Always show an error toast for non-422 errors (like 401 Unauthorized, 500 Server Error, Network Error)
-      if (err.response?.status !== 422) {
-        const errMessage = (err.response?.data as any)?.message || err.message;
-        addNotification({
-          type: "error",
-          title: "Error",
-          message: errMessage || "Something went wrong",
-        });
-      } else if (!form) {
-        // If it's a 422 but we don't have a form to show field errors on, show a toast
-        const errMessage =
-          (err.response?.data as any)?.message || "Validation failed";
-        addNotification({
-          type: "error",
-          title: "Validation Error",
-          message: errMessage,
-        });
-      }
     },
   });
 };

@@ -1,11 +1,18 @@
 "use client";
 
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { useRef } from "react";
+import { UseFormReturn } from "react-hook-form";
 import { loginSchema, LoginFormData } from "../schemas/authSchemas";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 import {
   Card,
   CardContent,
@@ -21,21 +28,14 @@ import { loginWithEmail } from "../api/login";
 import { useCustomMutation } from "@/hooks/use-custom-mutation";
 
 export function LoginForm() {
-  const form = useForm<LoginFormData>({
-    resolver: zodResolver(loginSchema),
-  });
-
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = form;
+  const formRef = useRef<UseFormReturn<LoginFormData>>(null);
 
   const { mutate: login, isPending: isLoading } = useCustomMutation({
     service: loginWithEmail,
+    form: formRef,
     successMessage: "Successfully logged in!",
     navigateTo: "/",
-    onSuccess: (data) => {
+    onSuccess: (data: any) => {
       if (data?.accessToken) {
         setAuthToken(data.accessToken);
       }
@@ -60,89 +60,110 @@ export function LoginForm() {
         </CardHeader>
         <CardContent>
           <div className="grid gap-6">
-            <form onSubmit={handleSubmit(onSubmit)}>
-              <div className="grid gap-4">
-                <div className="grid gap-2">
-                  <Label
-                    htmlFor="email"
-                    className="text-slate-700 dark:text-slate-300"
-                  >
-                    Email Address
-                  </Label>
-                  <Input
-                    id="email"
-                    type="email"
-                    placeholder="name@example.com"
-                    autoCapitalize="none"
-                    autoComplete="email"
-                    autoCorrect="off"
-                    disabled={isLoading}
-                    className="focus-visible:ring-blue-600"
-                    {...register("email")}
+            <Form
+              ref={formRef}
+              schema={loginSchema}
+              onSubmit={onSubmit}
+              options={{
+                defaultValues: {
+                  email: "",
+                  password: "",
+                  rememberMe: false,
+                },
+              }}
+            >
+              {(form) => (
+                <div className="grid gap-4">
+                  <FormField
+                    control={form.control}
+                    name="email"
+                    render={({ field }) => (
+                      <FormItem className="grid gap-2 space-y-0">
+                        <FormLabel className="text-slate-700 dark:text-slate-300">
+                          Email Address
+                        </FormLabel>
+                        <FormControl>
+                          <Input
+                            type="email"
+                            placeholder="name@example.com"
+                            autoCapitalize="none"
+                            autoComplete="email"
+                            autoCorrect="off"
+                            disabled={isLoading}
+                            className="focus-visible:ring-blue-600"
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
                   />
-                  {errors.email && (
-                    <p className="text-sm text-red-500 font-medium">
-                      {errors.email.message}
-                    </p>
-                  )}
-                </div>
-                <div className="grid gap-2">
-                  <div className="flex items-center justify-between">
-                    <Label
-                      htmlFor="password"
-                      className="text-slate-700 dark:text-slate-300"
-                    >
-                      Password
-                    </Label>
-                    <Link
-                      href="/forgot-password"
-                      className="text-sm font-medium text-blue-600 hover:text-blue-500 dark:text-blue-400"
-                    >
-                      Forgot Password?
-                    </Link>
-                  </div>
-                  <Input
-                    id="password"
-                    type="password"
-                    autoComplete="current-password"
-                    disabled={isLoading}
-                    className="focus-visible:ring-blue-600"
-                    {...register("password")}
+                  <FormField
+                    control={form.control}
+                    name="password"
+                    render={({ field }) => (
+                      <FormItem className="grid gap-2 space-y-0">
+                        <div className="flex items-center justify-between">
+                          <FormLabel className="text-slate-700 dark:text-slate-300">
+                            Password
+                          </FormLabel>
+                          <Link
+                            href="/forgot-password"
+                            className="text-sm font-medium text-blue-600 hover:text-blue-500 dark:text-blue-400"
+                          >
+                            Forgot Password?
+                          </Link>
+                        </div>
+                        <FormControl>
+                          <Input
+                            type="password"
+                            autoComplete="current-password"
+                            disabled={isLoading}
+                            className="focus-visible:ring-blue-600"
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
                   />
-                  {errors.password && (
-                    <p className="text-sm text-red-500 font-medium">
-                      {errors.password.message}
-                    </p>
-                  )}
-                </div>
 
-                {/* <div className="flex items-center space-x-2 pb-1">
-                  <input
-                    type="checkbox"
-                    id="rememberMe"
-                    className="h-4 w-4 rounded border-slate-300 text-blue-600 focus:ring-blue-600"
-                    {...register("rememberMe")}
-                  />
-                  <Label
-                    htmlFor="rememberMe"
-                    className="font-normal text-sm text-slate-700 dark:text-slate-300"
-                  >
-                    Keep me signed in
-                  </Label>
-                </div> */}
+                  {/* 
+                  <FormField
+                    control={form.control}
+                    name="rememberMe"
+                    render={({ field }) => (
+                      <FormItem className="flex items-center space-x-2 pb-1 space-y-0">
+                        <FormControl>
+                          <input
+                            type="checkbox"
+                            className="h-4 w-4 rounded border-slate-300 text-blue-600 focus:ring-blue-600"
+                            checked={field.value}
+                            onChange={field.onChange}
+                            disabled={isLoading}
+                          />
+                        </FormControl>
+                        <FormLabel className="font-normal text-sm text-slate-700 dark:text-slate-300">
+                          Keep me signed in
+                        </FormLabel>
+                      </FormItem>
+                    )}
+                  /> 
+                  */}
 
-                <Button
-                  type="submit"
-                  disabled={isLoading}
-                  className="mt-2 w-full bg-blue-600 hover:bg-blue-700 text-white"
-                >
-                  {isLoading && (
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  )}
-                  Sign In
-                </Button>
-              </div>
-            </form>
+                  <Button
+                    type="submit"
+                    disabled={isLoading}
+                    className="mt-2 w-full bg-blue-600 hover:bg-blue-700 text-white"
+                  >
+                    {isLoading && (
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    )}
+                    Sign In
+                  </Button>
+                </div>
+              )}
+            </Form>
 
             <div className="relative">
               <div className="absolute inset-0 flex items-center">
