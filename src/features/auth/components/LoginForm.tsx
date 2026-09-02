@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef } from "react";
+import { useRef, useState, type RefObject } from "react";
 import { UseFormReturn } from "react-hook-form";
 import { loginSchema, LoginFormData } from "../schemas/authSchemas";
 import { Button } from "@/components/ui/button";
@@ -22,7 +22,7 @@ import {
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import Link from "next/link";
-import { Loader2 } from "lucide-react";
+import { Loader2, Eye, EyeOff } from "lucide-react";
 import { setAuthToken } from "@/lib/auth";
 import { loginWithEmail } from "../api/login";
 import { useCustomMutation } from "@/hooks/use-custom-mutation";
@@ -30,11 +30,12 @@ import { useAuthStore } from "../store/useAuthStore";
 
 export function LoginForm() {
   const formRef = useRef<UseFormReturn<LoginFormData>>(null);
+  const [showPassword, setShowPassword] = useState(false);
   const setUser = useAuthStore((state) => state.setUser);
 
   const { mutate: login, isPending: isLoading } = useCustomMutation({
     service: loginWithEmail,
-    form: formRef,
+    form: formRef as unknown as RefObject<UseFormReturn | null>,
     successMessage: "Successfully logged in!",
     navigateTo: "/",
     onSuccess: (data: any) => {
@@ -71,7 +72,6 @@ export function LoginForm() {
                 defaultValues: {
                   email: "",
                   password: "",
-                  rememberMe: false,
                 },
               }}
             >
@@ -90,7 +90,7 @@ export function LoginForm() {
                             type="email"
                             placeholder="name@example.com"
                             autoCapitalize="none"
-                            autoComplete="email"
+                            autoComplete="username"
                             autoCorrect="off"
                             disabled={isLoading}
                             className="focus-visible:ring-blue-600"
@@ -118,13 +118,32 @@ export function LoginForm() {
                           </Link>
                         </div>
                         <FormControl>
-                          <Input
-                            type="password"
-                            autoComplete="current-password"
-                            disabled={isLoading}
-                            className="focus-visible:ring-blue-600"
-                            {...field}
-                          />
+                          <div className="relative">
+                            <Input
+                              type={showPassword ? "text" : "password"}
+                              autoComplete="current-password"
+                              disabled={isLoading}
+                              className="focus-visible:ring-blue-600 pr-10"
+                              {...field}
+                            />
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="sm"
+                              className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                              onClick={() => setShowPassword(!showPassword)}
+                              disabled={isLoading}
+                            >
+                              {showPassword ? (
+                                <EyeOff className="h-4 w-4 text-slate-500" />
+                              ) : (
+                                <Eye className="h-4 w-4 text-slate-500" />
+                              )}
+                              <span className="sr-only">
+                                {showPassword ? "Hide password" : "Show password"}
+                              </span>
+                            </Button>
+                          </div>
                         </FormControl>
                         <FormMessage />
                       </FormItem>

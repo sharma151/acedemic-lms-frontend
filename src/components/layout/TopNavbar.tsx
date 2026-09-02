@@ -16,6 +16,7 @@ import { useRouter } from "next/navigation";
 import Cookies from "js-cookie";
 import { useAuthStore } from "@/features/auth/store/useAuthStore";
 import { logoutApi } from "@/features/auth/api/logout";
+import { useCustomMutation } from "@/hooks/use-custom-mutation";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -35,19 +36,19 @@ export function TopNavbar({
 }: TopNavbarProps) {
   const router = useRouter();
   const { user, logout: logoutStore } = useAuthStore();
-  const [isLoggingOut, setIsLoggingOut] = useState(false);
 
-  const handleLogout = async () => {
-    setIsLoggingOut(true);
-    try {
-      await logoutApi();
-    } catch (e) {
-      console.error("Logout API failed", e);
-    } finally {
+  const { mutate: logout, isPending: isLoggingOut } = useCustomMutation({
+    service: logoutApi,
+    successMessage: "Successfully logged out",
+    onSuccess: () => {
       Cookies.remove("lms_access_token");
       logoutStore();
       router.push("/login");
-    }
+    },
+  });
+
+  const handleLogout = () => {
+    logout(undefined);
   };
 
   const displayName = user?.firstName
