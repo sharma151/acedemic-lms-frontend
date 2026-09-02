@@ -1,0 +1,41 @@
+import {
+  LayoutDashboard,
+  Users,
+  ShieldAlert,
+  Settings,
+  Building2,
+} from "lucide-react";
+import { SidebarNavItem } from "./Sidebar";
+
+export const tenantNavigation: SidebarNavItem[] = [
+  {
+    title: "Dashboard",
+    href: "/dashboard",
+    icon: LayoutDashboard,
+    section: "Overview",
+  },
+  { title: "Users", href: "/users", icon: Users, section: "Management" },
+  { title: "Roles", href: "/roles", icon: ShieldAlert, section: "Management" },
+  {
+    title: "Settings",
+    href: "/settings",
+    icon: Settings,
+    section: "Configuration",
+  },
+];
+
+export const adminNavigation: SidebarNavItem[] = [
+  {
+    title: "Tenants",
+    href: "/tenants",
+    icon: Building2,
+    section: "Platform Management",
+  },
+  { title: "Users", href: "/users", icon: Users, section: "Management" },
+  {
+    title: "Global Settings",
+    href: "/super-admin/settings",
+    icon: Settings,
+    section: "Configuration",
+  },
+];
