@@ -27,9 +27,9 @@ export const tenantNavigation: SidebarNavItem[] = [
 
 export const adminNavigation: SidebarNavItem[] = [
   {
-    title: "Tenants",
-    href: "/tenants",
-    icon: Building2,
+    title: "Dashboard",
+    href: "/super-admin/dashboard",
+    icon: LayoutDashboard,
     section: "Platform Management",
   },
   { title: "Users", href: "/super-admin/users", icon: Users, section: "Management" },

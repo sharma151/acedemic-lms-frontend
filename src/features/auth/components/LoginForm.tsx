@@ -22,6 +22,7 @@ import {
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { Loader2, Eye, EyeOff } from "lucide-react";
 import { setAuthToken } from "@/lib/auth";
 import { loginWithEmail } from "../api/auth";
@@ -33,15 +34,24 @@ export function LoginForm() {
   const [showPassword, setShowPassword] = useState(false);
   const setUser = useAuthStore((state) => state.setUser);
 
+  const router = useRouter();
+
   const { mutate: login, isPending: isLoading } = useCustomMutation({
     service: loginWithEmail,
     form: formRef as unknown as RefObject<UseFormReturn | null>,
     successMessage: "Successfully logged in!",
-    navigateTo: "/",
     onSuccess: (data: any) => {
       if (data?.accessToken) {
         setAuthToken(data.accessToken);
         setUser(data.user);
+        
+        // Dynamically route based on the role returned from the login response
+        const role = data.user?.role;
+        if (role === "Super Admin") {
+          router.replace("/super-admin/dashboard");
+        } else {
+          router.replace("/dashboard");
+        }
       }
     },
   });

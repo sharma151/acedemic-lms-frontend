@@ -3,13 +3,13 @@ import { DashboardTemplate } from "@/features/dashboard/components/DashboardTemp
 
 export const metadata: Metadata = {
   title: "Dashboard | Academic LMS",
-  description: "Overview of your institution activity and metrics.",
+  description: "Overview of your platform activity and metrics.",
 };
 
-export default function TenantDashboardPage() {
+export default function SuperAdminDashboardPage() {
   return (
     <div className="w-full">
-      <DashboardTemplate role="tenant" />
+      <DashboardTemplate role="super-admin" />
     </div>
   );
 }

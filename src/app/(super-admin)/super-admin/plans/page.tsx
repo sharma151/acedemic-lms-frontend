@@ -6,6 +6,12 @@ export const metadata: Metadata = {
   description: "Manage subscription plans and pricing for the platform.",
 };
 
+import { Suspense } from "react";
+
 export default function PlansPage() {
-  return <PlansPageTemplate />;
+  return (
+    <Suspense fallback={<div className="flex-1 flex items-center justify-center p-8">Loading plans...</div>}>
+      <PlansPageTemplate />
+    </Suspense>
+  );
 }

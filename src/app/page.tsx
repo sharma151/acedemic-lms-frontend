@@ -1,5 +1,41 @@
-import { redirect } from 'next/navigation';
+"use client";
+
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { Loader2 } from "lucide-react";
+import { getAuthMe } from "@/features/auth/api/auth";
 
 export default function Home() {
-  redirect('/login');
+  const router = useRouter();
+
+  useEffect(() => {
+    const checkAuthAndRoute = async () => {
+      try {
+        const response = await getAuthMe();
+        
+        if (response?.success && response?.data) {
+          const role = response.data.role;
+          
+          if (role === "Super Admin") {
+            router.replace("/super-admin/dashboard");
+          } else {
+            router.replace("/dashboard");
+          }
+        } else {
+          router.replace("/login");
+        }
+      } catch (error) {
+        // If API fails (e.g. 401 Unauthorized), redirect to login
+        router.replace("/login");
+      }
+    };
+
+    checkAuthAndRoute();
+  }, [router]);
+
+  return (
+    <div className="min-h-screen flex items-center justify-center">
+      <Loader2 className="h-8 w-8 animate-spin text-primary" />
+    </div>
+  );
 }

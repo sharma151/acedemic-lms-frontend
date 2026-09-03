@@ -21,3 +21,8 @@ export const loginWithEmail = async (
 export const logoutApi = async (data?: unknown): Promise<void> => {
   await apiClient.post("/auth/logout", data);
 };
+
+export const getAuthMe = async (): Promise<any> => {
+  const response = await apiClient.get("/auth/me");
+  return response.data;
+};
