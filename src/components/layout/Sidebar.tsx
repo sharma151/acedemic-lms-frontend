@@ -1,8 +1,8 @@
 import React from "react";
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
-import { LucideIcon, Mountain } from "lucide-react";
+import { LucideIcon, Mountain, ChevronLeft, ChevronRight } from "lucide-react";
 import {
   Sidebar as ShadcnSidebar,
   SidebarContent,
@@ -13,6 +13,7 @@ import {
   SidebarGroup,
   SidebarGroupLabel,
   SidebarGroupContent,
+  useSidebar,
 } from "@/components/ui/sidebar";
 
 export interface SidebarNavItem {
@@ -24,14 +25,13 @@ export interface SidebarNavItem {
 
 interface SidebarProps {
   items: SidebarNavItem[];
-  // Optional props for backward compatibility before layout refactor
   isOpen?: boolean;
   setIsOpen?: (isOpen: boolean) => void;
 }
 
 export function Sidebar({ items }: SidebarProps) {
   const pathname = usePathname();
-  const router = useRouter();
+  const { state, toggleSidebar } = useSidebar();
 
   // Group items by section
   const sections = items.reduce(
@@ -46,6 +46,16 @@ export function Sidebar({ items }: SidebarProps) {
 
   return (
     <ShadcnSidebar collapsible="icon">
+      <button
+        onClick={toggleSidebar}
+        className="absolute -right-4 top-18 z-50 hidden h-8 w-8 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-500 shadow-sm hover:text-slate-900 md:flex dark:border-slate-800 dark:bg-slate-950 dark:text-slate-400 dark:hover:text-slate-50"
+      >
+        {state === "expanded" ? (
+          <ChevronLeft className="h-4 w-4" />
+        ) : (
+          <ChevronRight className="h-4 w-4" />
+        )}
+      </button>
       <SidebarHeader className="flex h-16 shrink-0 items-center justify-center px-4 border-b border-slate-200 dark:border-slate-800">
         <Link
           href="/"
@@ -71,21 +81,22 @@ export function Sidebar({ items }: SidebarProps) {
                   return (
                     <SidebarMenuItem key={item.href}>
                       <SidebarMenuButton
+                        render={
+                          <Link
+                            href={item.href}
+                            className="flex items-center gap-3 w-full"
+                          />
+                        }
                         isActive={isActive}
                         tooltip={item.title}
                         className={cn(
-                          "transition-colors",
+                          "transition-colors h-auto py-2 px-3",
                           isActive &&
                             "bg-slate-200 dark:bg-slate-800 text-slate-900 dark:text-slate-50",
                         )}
                       >
-                        <Link
-                          href={item.href}
-                          className="flex items-center gap-3"
-                        >
-                          <item.icon className="h-4 w-4 shrink-0" />
-                          <span>{item.title}</span>
-                        </Link>
+                        <item.icon className="h-4 w-4 shrink-0" />
+                        <span>{item.title}</span>
                       </SidebarMenuButton>
                     </SidebarMenuItem>
                   );

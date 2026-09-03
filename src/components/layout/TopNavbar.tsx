@@ -53,7 +53,7 @@ export function TopNavbar({ title = "Academic LMS" }: TopNavbarProps) {
   return (
     <header className="sticky top-0 z-30 flex h-16 w-full items-center justify-between border-b bg-white dark:bg-slate-950 px-4 sm:px-6 shadow-sm">
       <div className="flex items-center gap-4">
-        <SidebarTrigger className="-ml-1" />
+        <SidebarTrigger className="-ml-1 md:hidden" />
         <h1 className="text-lg font-semibold text-slate-900 dark:text-white hidden sm:block">
           {title}
         </h1>
