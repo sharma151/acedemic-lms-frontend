@@ -1,9 +1,10 @@
 "use client";
 
-import React, { useState } from "react";
+import React from "react";
 import { Sidebar } from "./Sidebar";
 import { TopNavbar } from "./TopNavbar";
 import { tenantNavigation, adminNavigation } from "./navigation";
+import { SidebarProvider } from "@/components/ui/sidebar";
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
@@ -16,22 +17,19 @@ export function DashboardLayout({
   role = "tenant",
   title,
 }: DashboardLayoutProps) {
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const navigation = role === "superadmin" ? adminNavigation : tenantNavigation;
 
   return (
-    <div className="flex h-screen overflow-hidden bg-slate-50 dark:bg-black">
-      <Sidebar
-        items={navigation}
-        isOpen={isSidebarOpen}
-        setIsOpen={setIsSidebarOpen}
-      />
-      <div className="flex flex-col flex-1 min-w-0 overflow-hidden">
-        <TopNavbar onMenuClick={() => setIsSidebarOpen(true)} title={title} />
-        <main className="flex-1 overflow-y-auto p-4 md:p-6 lg:p-8">
-          <div className="mx-auto max-w-7xl w-full">{children}</div>
-        </main>
+    <SidebarProvider>
+      <div className="flex h-screen overflow-hidden bg-slate-50 dark:bg-black w-full">
+        <Sidebar items={navigation} />
+        <div className="flex flex-col flex-1 min-w-0 overflow-hidden">
+          <TopNavbar title={title} />
+          <main className="flex-1 overflow-y-auto p-4 md:p-6 lg:p-8">
+            <div className="mx-auto max-w-7xl w-full">{children}</div>
+          </main>
+        </div>
       </div>
-    </div>
+    </SidebarProvider>
   );
 }

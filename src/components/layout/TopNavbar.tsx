@@ -23,14 +23,13 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { SidebarTrigger } from "@/components/ui/sidebar";
 
 interface TopNavbarProps {
-  onMenuClick: () => void;
   title?: string;
 }
 
 export function TopNavbar({
-  onMenuClick,
   title = "Academic LMS",
 }: TopNavbarProps) {
   const router = useRouter();
@@ -57,15 +56,7 @@ export function TopNavbar({
   return (
     <header className="sticky top-0 z-30 flex h-16 w-full items-center justify-between border-b bg-white dark:bg-slate-950 px-4 sm:px-6 shadow-sm">
       <div className="flex items-center gap-4">
-        <Button
-          variant="ghost"
-          size="icon"
-          className="lg:hidden"
-          onClick={onMenuClick}
-        >
-          <Menu className="h-5 w-5" />
-          <span className="sr-only">Toggle Sidebar</span>
-        </Button>
+        <SidebarTrigger className="-ml-1" />
         <h1 className="text-lg font-semibold text-slate-900 dark:text-white hidden sm:block">
           {title}
         </h1>
