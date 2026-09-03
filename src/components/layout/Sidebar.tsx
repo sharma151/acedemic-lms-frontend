@@ -79,7 +79,7 @@ export function Sidebar({ items }: SidebarProps) {
                 {sectionItems.map((item) => {
                   const isActive = pathname.startsWith(item.href);
                   return (
-                    <SidebarMenuItem key={item.href}>
+                    <SidebarMenuItem key={item.href} className="mb-1">
                       <SidebarMenuButton
                         render={
                           <Link
@@ -90,12 +90,12 @@ export function Sidebar({ items }: SidebarProps) {
                         isActive={isActive}
                         tooltip={item.title}
                         className={cn(
-                          "transition-colors h-auto py-2 px-3 hover:bg-secondary/80",
+                          "transition-all h-auto py-2.5 px-4 rounded-md text-[15px] text-slate-600 dark:text-slate-400 hover:bg-blue-50 dark:hover:bg-blue-900/30 hover:text-blue-600 dark:hover:text-blue-400",
                           isActive &&
-                            "bg-secondary text-secondary-foreground font-medium",
+                            "bg-blue-50 dark:bg-blue-900/40 text-blue-700 dark:text-blue-400 font-semibold shadow-sm",
                         )}
                       >
-                        <item.icon className="h-4 w-4 shrink-0" />
+                        <item.icon className={cn("shrink-0 transition-transform", isActive ? "h-5 w-5" : "h-[18px] w-[18px]")} />
                         <span>{item.title}</span>
                       </SidebarMenuButton>
                     </SidebarMenuItem>
