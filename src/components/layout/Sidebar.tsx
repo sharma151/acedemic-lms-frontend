@@ -48,7 +48,7 @@ export function Sidebar({ items }: SidebarProps) {
     <ShadcnSidebar collapsible="icon">
       <button
         onClick={toggleSidebar}
-        className="absolute -right-4 top-18 z-50 hidden h-8 w-8 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-500 shadow-sm hover:text-slate-900 md:flex dark:border-slate-800 dark:bg-slate-950 dark:text-slate-400 dark:hover:text-slate-50"
+        className="absolute -right-4 top-18 z-50 hidden h-8 w-8 items-center justify-center rounded-full border border-border bg-background text-muted-foreground shadow-sm hover:text-foreground md:flex"
       >
         {state === "expanded" ? (
           <ChevronLeft className="h-4 w-4" />
@@ -56,10 +56,10 @@ export function Sidebar({ items }: SidebarProps) {
           <ChevronRight className="h-4 w-4" />
         )}
       </button>
-      <SidebarHeader className="flex h-16 shrink-0 items-center justify-center px-4 border-b border-slate-200 dark:border-slate-800">
+      <SidebarHeader className="flex h-16 shrink-0 items-center justify-center px-4 border-b border-border">
         <Link
           href="/"
-          className="flex items-center gap-2 font-bold text-xl text-blue-600 dark:text-blue-400 overflow-hidden"
+          className="flex items-center gap-2 font-bold text-xl text-primary overflow-hidden"
         >
           <Mountain className="w-6 h-6 shrink-0" />
           <span className="truncate group-data-[collapsible=icon]:hidden">
@@ -90,9 +90,9 @@ export function Sidebar({ items }: SidebarProps) {
                         isActive={isActive}
                         tooltip={item.title}
                         className={cn(
-                          "transition-colors h-auto py-2 px-3",
+                          "transition-colors h-auto py-2 px-3 hover:bg-secondary/80",
                           isActive &&
-                            "bg-slate-200 dark:bg-slate-800 text-slate-900 dark:text-slate-50",
+                            "bg-secondary text-secondary-foreground font-medium",
                         )}
                       >
                         <item.icon className="h-4 w-4 shrink-0" />

@@ -53,14 +53,14 @@ export function PlanCard({
       className={cn(
         "relative flex flex-col transition-all duration-300 cursor-pointer overflow-hidden group hover:-translate-y-1 hover:shadow-xl",
         isEnterprise
-          ? "border-blue-500 shadow-lg dark:border-blue-500/50"
-          : "border-slate-200 dark:border-slate-800",
+          ? "border-primary shadow-lg dark:border-primary/50"
+          : "border-border dark:border-border",
         isSelected &&
-          "ring-2 ring-blue-500 ring-offset-2 dark:ring-offset-slate-950 border-blue-500 bg-slate-50 dark:bg-slate-900/50"
+          "ring-2 ring-primary ring-offset-2 dark:ring-offset-background border-primary bg-secondary/50 dark:bg-secondary/20"
       )}
     >
       {isEnterprise && (
-        <div className="absolute top-0 right-0 left-0 bg-blue-500 text-white text-xs font-bold text-center py-1 uppercase tracking-wider">
+        <div className="absolute top-0 right-0 left-0 bg-primary text-primary-foreground text-xs font-bold text-center py-1 uppercase tracking-wider">
           Most Popular
         </div>
       )}
@@ -69,22 +69,22 @@ export function PlanCard({
         <div className="flex justify-between items-start">
           <CardTitle className="text-2xl font-bold">{plan.name}</CardTitle>
           {isSelected && (
-            <Badge variant="default" className="bg-blue-500">
+            <Badge variant="default" className="bg-primary text-primary-foreground">
               Selected
             </Badge>
           )}
         </div>
-        <CardDescription className="min-h-[40px] text-sm mt-2">
+        <CardDescription className="min-h-[40px] text-sm mt-2 text-muted-foreground">
           {plan.description}
         </CardDescription>
       </CardHeader>
 
       <CardContent className="flex-1 pb-6">
-        <div className="mb-6 flex items-baseline text-slate-900 dark:text-white">
+        <div className="mb-6 flex items-baseline text-foreground">
           <span className="text-4xl font-extrabold tracking-tight">
             ${price}
           </span>
-          <span className="ml-1 text-sm font-medium text-slate-500 dark:text-slate-400">
+          <span className="ml-1 text-sm font-medium text-muted-foreground">
             /{billingCycle === "monthly" ? "month" : "year"}
           </span>
         </div>
@@ -97,15 +97,15 @@ export function PlanCard({
                   <Check className="h-3 w-3 text-green-600 dark:text-green-400" />
                 </div>
               ) : (
-                <div className="mr-3 flex h-5 w-5 items-center justify-center rounded-full bg-slate-100 dark:bg-slate-800">
-                  <X className="h-3 w-3 text-slate-400 dark:text-slate-500" />
+                <div className="mr-3 flex h-5 w-5 items-center justify-center rounded-full bg-muted dark:bg-muted/50">
+                  <X className="h-3 w-3 text-muted-foreground" />
                 </div>
               )}
               <span
                 className={
                   value
-                    ? "text-slate-700 dark:text-slate-300"
-                    : "text-slate-400 dark:text-slate-500 line-through"
+                    ? "text-foreground"
+                    : "text-muted-foreground line-through"
                 }
               >
                 {featureLabels[key as keyof SubscriptionPlan["features"]]}
@@ -116,7 +116,7 @@ export function PlanCard({
             <div className="mr-3 flex h-5 w-5 items-center justify-center rounded-full bg-green-100 dark:bg-green-900/30">
               <Check className="h-3 w-3 text-green-600 dark:text-green-400" />
             </div>
-            <span className="text-slate-700 dark:text-slate-300 font-medium">
+            <span className="text-foreground font-medium">
               {plan.maxStudents ? `Up to ${plan.maxStudents} Students` : "Unlimited Students"}
             </span>
           </li>
@@ -124,7 +124,7 @@ export function PlanCard({
             <div className="mr-3 flex h-5 w-5 items-center justify-center rounded-full bg-green-100 dark:bg-green-900/30">
               <Check className="h-3 w-3 text-green-600 dark:text-green-400" />
             </div>
-            <span className="text-slate-700 dark:text-slate-300 font-medium">
+            <span className="text-foreground font-medium">
               {plan.maxTeachers ? `Up to ${plan.maxTeachers} Teachers` : "Unlimited Teachers"}
             </span>
           </li>
@@ -136,10 +136,10 @@ export function PlanCard({
           className={cn(
             "w-full transition-all font-semibold",
             isEnterprise
-              ? "bg-blue-600 hover:bg-blue-700 text-white shadow-md"
-              : "bg-slate-900 hover:bg-slate-800 text-white dark:bg-white dark:text-slate-900 dark:hover:bg-slate-200"
+              ? "bg-primary hover:bg-primary/90 text-primary-foreground shadow-md"
+              : "bg-secondary hover:bg-secondary/80 text-secondary-foreground"
           )}
-          variant="default"
+          variant={isEnterprise ? "default" : "secondary"}
         >
           {isSelected ? "Current Plan" : "Select Plan"}
         </Button>
