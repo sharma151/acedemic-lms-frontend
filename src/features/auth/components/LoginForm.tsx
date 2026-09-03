@@ -28,11 +28,13 @@ import { setAuthToken } from "@/lib/auth";
 import { loginWithEmail } from "../api/auth";
 import { useCustomMutation } from "@/hooks/use-custom-mutation";
 import { useAuthStore } from "../store/useAuthStore";
+import { useQueryClient } from "@tanstack/react-query";
 
 export function LoginForm() {
   const formRef = useRef<UseFormReturn<LoginFormData>>(null);
   const [showPassword, setShowPassword] = useState(false);
   const setUser = useAuthStore((state) => state.setUser);
+  const queryClient = useQueryClient();
 
   const router = useRouter();
 
@@ -44,6 +46,9 @@ export function LoginForm() {
       if (data?.accessToken) {
         setAuthToken(data.accessToken);
         setUser(data.user);
+        
+        // Force React Query to drop any stale profile data from a previous session
+        queryClient.invalidateQueries({ queryKey: ["auth-profile"] });
         
         // Dynamically route based on the role returned from the login response
         const role = data.user?.role;

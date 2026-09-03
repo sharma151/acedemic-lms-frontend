@@ -28,9 +28,12 @@ interface TopNavbarProps {
   title?: string;
 }
 
+import { useQueryClient } from "@tanstack/react-query";
+
 export function TopNavbar({ title = "Academic LMS" }: TopNavbarProps) {
   const router = useRouter();
   const { user, logout: logoutStore } = useAuthStore();
+  const queryClient = useQueryClient();
 
   const { mutate: logout, isPending: isLoggingOut } = useCustomMutation({
     service: logoutApi,
@@ -38,6 +41,7 @@ export function TopNavbar({ title = "Academic LMS" }: TopNavbarProps) {
     onSuccess: () => {
       Cookies.remove("lms_access_token");
       logoutStore();
+      queryClient.clear(); // Clear the entire query cache (including the profile data)
       router.push("/login");
     },
   });
@@ -115,7 +119,13 @@ export function TopNavbar({ title = "Academic LMS" }: TopNavbarProps) {
                   Change Password
                 </span>
               </DropdownMenuItem>
-              <DropdownMenuItem className="cursor-pointer py-2 px-3 gap-3">
+              <DropdownMenuItem 
+                className="cursor-pointer py-2 px-3 gap-3"
+                onClick={() => {
+                  const isSuperAdmin = user?.role === "Super Admin" || user?.role === "super-admin";
+                  router.push(isSuperAdmin ? "/super-admin/profile" : "/profile");
+                }}
+              >
                 <UserIcon className="h-4 w-4 text-slate-500" />
                 <span className="text-sm text-slate-700 dark:text-slate-300">
                   Personal Profile
