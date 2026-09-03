@@ -1,6 +1,5 @@
 "use client";
 
-import React, { useState } from "react";
 import {
   Menu,
   Bell,
@@ -15,7 +14,7 @@ import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import Cookies from "js-cookie";
 import { useAuthStore } from "@/features/auth/store/useAuthStore";
-import { logoutApi } from "@/features/auth/api/logout";
+import { logoutApi } from "@/features/auth/api/auth";
 import { useCustomMutation } from "@/hooks/use-custom-mutation";
 import {
   DropdownMenu,

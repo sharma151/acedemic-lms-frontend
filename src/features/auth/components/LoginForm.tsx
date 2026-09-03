@@ -24,7 +24,7 @@ import { Separator } from "@/components/ui/separator";
 import Link from "next/link";
 import { Loader2, Eye, EyeOff } from "lucide-react";
 import { setAuthToken } from "@/lib/auth";
-import { loginWithEmail } from "../api/login";
+import { loginWithEmail } from "../api/auth";
 import { useCustomMutation } from "@/hooks/use-custom-mutation";
 import { useAuthStore } from "../store/useAuthStore";
 
