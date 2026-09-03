@@ -1,7 +1,6 @@
 "use client";
 
 import {
-  Menu,
   Bell,
   Mail,
   User,
@@ -29,9 +28,7 @@ interface TopNavbarProps {
   title?: string;
 }
 
-export function TopNavbar({
-  title = "Academic LMS",
-}: TopNavbarProps) {
+export function TopNavbar({ title = "Academic LMS" }: TopNavbarProps) {
   const router = useRouter();
   const { user, logout: logoutStore } = useAuthStore();
 
@@ -73,10 +70,10 @@ export function TopNavbar({
         <div className="h-6 w-px bg-slate-200 dark:bg-slate-800 mx-1"></div>
 
         <DropdownMenu>
-          <DropdownMenuTrigger asChild>
+          <DropdownMenuTrigger>
             <Button
               variant="ghost"
-              className="flex items-center gap-3 hover:bg-slate-100 dark:hover:bg-slate-900 px-2"
+              className="flex items-center gap-3 hover:bg-slate-100 dark:hover:bg-slate-900 px-3 py-2 h-auto"
             >
               <div className="h-8 w-8 rounded-full bg-blue-100 dark:bg-blue-900 flex items-center justify-center text-blue-700 dark:text-blue-300 font-bold overflow-hidden border border-blue-200 dark:border-blue-800">
                 <User className="h-4 w-4" />
