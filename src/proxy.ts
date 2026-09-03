@@ -68,16 +68,21 @@ export function proxy(request: NextRequest) {
   }
 
   // Rewrite logic
-  let rewriteUrl = new URL(url.pathname, request.url);
+  const rewriteUrl = new URL(url.pathname, request.url);
 
   if (isRootOrAdmin) {
-    // Enforce Super Admin only for the root/admin platform
     if (payload.role !== Role.SUPER_ADMIN) {
-      return NextResponse.redirect(new URL("/unauthorized", request.url));
-    }
+      // Prevent non-super admins from accessing super-admin specific routes
+      if (url.pathname.startsWith("/tenants")) {
+        return NextResponse.redirect(new URL("/unauthorized", request.url));
+      }
 
-    // Route to super-admin or root pages
-    rewriteUrl.pathname = url.pathname === "/" ? "/tenants" : url.pathname;
+      // For root access or other paths, assume they want the tenant portal
+      rewriteUrl.pathname = url.pathname === "/" ? "/dashboard" : url.pathname;
+    } else {
+      // Route to super-admin pages
+      rewriteUrl.pathname = url.pathname === "/" ? "/tenants" : url.pathname;
+    }
   } else {
     // Route to tenant-portal pages
     rewriteUrl.pathname = url.pathname === "/" ? "/dashboard" : url.pathname;
