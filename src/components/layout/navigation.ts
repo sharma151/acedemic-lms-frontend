@@ -4,6 +4,7 @@ import {
   ShieldAlert,
   Settings,
   Building2,
+  CreditCard,
 } from "lucide-react";
 import { SidebarNavItem } from "./Sidebar";
 
@@ -37,5 +38,11 @@ export const adminNavigation: SidebarNavItem[] = [
     href: "/super-admin/settings",
     icon: Settings,
     section: "Configuration",
+  },
+  {
+    title: "Subscription Plans",
+    href: "/super-admin/plans",
+    icon: CreditCard,
+    section: "Platform Management",
   },
 ];
