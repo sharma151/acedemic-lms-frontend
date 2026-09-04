@@ -123,7 +123,7 @@ export function TenantsPageTemplate({
           <SelectContent>
             {Object.entries(TENANT_STATUS).map(([key, value]) => (
               <SelectItem key={key} value={value}>
-                {key === "ALL" ? "--" : value}
+                {key === "ALL" ? "All" : value}
               </SelectItem>
             ))}
           </SelectContent>
