@@ -8,3 +8,14 @@ export const DATE_FORMATS = {
 } as const;
 
 export type DateFormat = keyof typeof DATE_FORMATS;
+
+export const Role = {
+  SUPER_ADMIN: 'Super Admin',
+  INSTITUTION_ADMIN: 'Institution Admin',
+  TEACHER: 'Teacher',
+  STUDENT: 'Student',
+  PARENT: 'Parent',
+  ACCOUNTANT: 'Accountant',
+} as const;
+
+export type RoleType = typeof Role[keyof typeof Role];

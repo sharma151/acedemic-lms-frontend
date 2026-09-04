@@ -1,4 +1,5 @@
 import React from "react";
+import { Role } from "@/configs/constants";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { UserPlus, Building, ShieldCheck, FileDown } from "lucide-react";
 
@@ -16,7 +17,7 @@ export function QuickActions({ role }: { role: string }) {
       icon: Building,
       color: "text-orange-600 dark:text-orange-500",
       bg: "bg-orange-100 dark:bg-orange-900/30",
-      visible: role === "super-admin",
+      visible: role === Role.SUPER_ADMIN,
     },
     {
       title: "Manage roles",

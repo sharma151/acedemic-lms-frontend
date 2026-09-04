@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Loader2 } from "lucide-react";
 import { getAuthMe } from "@/features/auth/api/auth";
+import { Role } from "@/configs/constants";
 
 export default function Home() {
   const router = useRouter();
@@ -16,7 +17,7 @@ export default function Home() {
         if (response?.success && response?.data) {
           const role = response.data.role;
           
-          if (role === "Super Admin") {
+          if (role === Role.SUPER_ADMIN) {
             router.replace("/super-admin/dashboard");
           } else {
             router.replace("/dashboard");

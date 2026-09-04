@@ -1,4 +1,5 @@
 "use client";
+import { Role } from "@/configs/constants";
 
 import {
   Bell,
@@ -100,7 +101,7 @@ export function TopNavbar({ title = "Academic LMS" }: TopNavbarProps) {
                   {displayName}
                 </span>
                 <span className="text-xs text-slate-500 dark:text-slate-400 truncate">
-                  {user?.role || "Super Admin"}
+                  {user?.role || Role.SUPER_ADMIN}
                 </span>
                 {user?.email && (
                   <span className="text-xs text-slate-400 truncate">
@@ -122,7 +123,7 @@ export function TopNavbar({ title = "Academic LMS" }: TopNavbarProps) {
               <DropdownMenuItem 
                 className="cursor-pointer py-2 px-3 gap-3"
                 onClick={() => {
-                  const isSuperAdmin = user?.role === "Super Admin" || user?.role === "super-admin";
+                  const isSuperAdmin = user?.role === Role.SUPER_ADMIN || user?.role === "super-admin";
                   router.push(isSuperAdmin ? "/super-admin/profile" : "/profile");
                 }}
               >

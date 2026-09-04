@@ -3,6 +3,7 @@
 import { useRef, useState, type RefObject } from "react";
 import { UseFormReturn } from "react-hook-form";
 import { loginSchema, LoginFormData } from "../schemas/authSchemas";
+import { Role } from "@/configs/constants";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -52,7 +53,7 @@ export function LoginForm() {
         
         // Dynamically route based on the role returned from the login response
         const role = data.user?.role;
-        if (role === "Super Admin") {
+        if (role === Role.SUPER_ADMIN) {
           router.replace("/super-admin/dashboard");
         } else {
           router.replace("/dashboard");

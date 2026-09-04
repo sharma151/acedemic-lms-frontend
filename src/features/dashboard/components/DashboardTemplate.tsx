@@ -1,4 +1,5 @@
 import React from "react";
+import { Role } from "@/configs/constants";
 import { Button } from "@/components/ui/button";
 import { StatCards } from "./StatCards";
 import { EnrollmentChart } from "./EnrollmentChart";
@@ -9,7 +10,7 @@ import { Plus } from "lucide-react";
 
 import { useFormatDate } from "@/hooks/use-format-date";
 
-export function DashboardTemplate({ role = "super-admin" }: { role?: string }) {
+export function DashboardTemplate({ role = Role.SUPER_ADMIN }: { role?: string }) {
   // Normally this data comes from an API or auth context
   const userName = "Saurav";
   const { formatDate } = useFormatDate();
@@ -24,10 +25,10 @@ export function DashboardTemplate({ role = "super-admin" }: { role?: string }) {
             Good morning, {userName}
           </h1>
           <p className="text-muted-foreground mt-1">
-            Here&apos;s what&apos;s happening across your {role === "super-admin" ? "institutions" : "platform"} today — {currentDate}
+            Here&apos;s what&apos;s happening across your {role === Role.SUPER_ADMIN ? "institutions" : "platform"} today — {currentDate}
           </p>
         </div>
-        {role === "super-admin" && (
+        {role === Role.SUPER_ADMIN && (
           <Button className="bg-primary text-primary-foreground hover:bg-primary/90 shadow-sm font-semibold">
             <Plus className="mr-2 h-4 w-4" /> Add Institution
           </Button>
@@ -45,7 +46,7 @@ export function DashboardTemplate({ role = "super-admin" }: { role?: string }) {
 
       {/* Bottom row: Table and Quick Actions */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {role === "super-admin" && <PendingApprovals />}
+        {role === Role.SUPER_ADMIN && <PendingApprovals />}
         <QuickActions role={role} />
       </div>
     </div>

@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { parseJwt } from "@/lib/jwt";
-import { Role } from "@/lib/roles";
+import { Role } from "@/configs/constants";
 
 export function proxy(request: NextRequest) {
   const url = request.nextUrl;

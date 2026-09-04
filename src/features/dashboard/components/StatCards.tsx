@@ -1,4 +1,5 @@
 import React from "react";
+import { Role } from "@/configs/constants";
 import { Card, CardContent } from "@/components/ui/card";
 import { Building2, Users, GraduationCap, Clock, ArrowUp, ArrowDown } from "lucide-react";
 
@@ -11,7 +12,7 @@ export function StatCards({ role }: { role: string }) {
       trend: "12 this month",
       trendUp: true,
       icon: Building2,
-      visible: role === "super-admin",
+      visible: role === Role.SUPER_ADMIN,
     },
     {
       title: "Total Students",
@@ -35,7 +36,7 @@ export function StatCards({ role }: { role: string }) {
       trend: "needs review",
       trendUp: false,
       icon: Clock,
-      visible: role === "super-admin",
+      visible: role === Role.SUPER_ADMIN,
     },
   ];
 
