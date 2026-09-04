@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { useGetProfile } from "../api/get-profile";
+import { useFormatDate } from "@/hooks/use-format-date";
 import {
   Card,
   CardContent,
@@ -16,11 +17,13 @@ import {
   Calendar,
   Clock,
   ShieldCheck,
+  School,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 export function ProfileTemplate() {
   const { data: profileResponse, isLoading, isError } = useGetProfile();
+  const { formatDate } = useFormatDate();
 
   if (isLoading) {
     return (
@@ -45,19 +48,8 @@ export function ProfileTemplate() {
 
   const profile = profileResponse.data;
   const fullName =
-    `${profile.firstName || ""} ${profile.lastName || ""}`.trim() ||
-    profile.email;
-
-  const formatDate = (dateString: string | null) => {
-    if (!dateString) return "N/A";
-    return new Date(dateString).toLocaleDateString("en-US", {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-    });
-  };
+    `${profile?.firstName || ""} ${profile?.lastName || ""}`.trim() ||
+    profile?.email;
 
   return (
     <div className="flex flex-col flex-1 space-y-6   max-w-5xl mx-auto w-full">
@@ -88,7 +80,7 @@ export function ProfileTemplate() {
             <h3 className="text-xl font-bold text-foreground">{fullName}</h3>
             <div className="flex items-center gap-1.5 mt-1 text-sm text-primary font-medium bg-primary/10 px-2.5 py-0.5 rounded-full">
               <ShieldCheck className="h-3.5 w-3.5" />
-              {profile.role}
+              {profile?.role}
             </div>
 
             <div className="w-full mt-6 space-y-3">
@@ -118,7 +110,7 @@ export function ProfileTemplate() {
                   First Name
                 </div>
                 <p className="font-semibold text-foreground">
-                  {profile.firstName || "N/A"}
+                  {profile?.firstName || "N/A"}
                 </p>
               </div>
 
@@ -128,7 +120,7 @@ export function ProfileTemplate() {
                   Last Name
                 </div>
                 <p className="font-semibold text-foreground">
-                  {profile.lastName || "N/A"}
+                  {profile?.lastName || "N/A"}
                 </p>
               </div>
 
@@ -137,7 +129,9 @@ export function ProfileTemplate() {
                   <Mail className="h-4 w-4" />
                   Email Address
                 </div>
-                <p className="font-semibold text-foreground">{profile.email}</p>
+                <p className="font-semibold text-foreground">
+                  {profile?.email}
+                </p>
               </div>
 
               <div className="space-y-1">
@@ -147,12 +141,23 @@ export function ProfileTemplate() {
                 </div>
                 <div className="flex items-center">
                   <span
-                    className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold ${profile.isActive ? "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400" : "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400"}`}
+                    className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold ${profile?.isActive ? "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400" : "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400"}`}
                   >
-                    {profile.isActive ? "Active" : "Inactive"}
+                    {profile?.isActive ? "Active" : "Inactive"}
                   </span>
                 </div>
               </div>
+              {profile.role !== "Super Admin" && (
+                <div className="space-y-1">
+                  <div className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
+                    <School className="h-4 w-4" />
+                    Tenant Name
+                  </div>
+                  <p className="font-semibold text-foreground">
+                    {profile.tenant?.name || "N/A"}
+                  </p>
+                </div>
+              )}
 
               <div className="space-y-1 sm:col-span-2 pt-4 border-t border-border/50">
                 <div className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
@@ -160,7 +165,7 @@ export function ProfileTemplate() {
                   Member Since
                 </div>
                 <p className="text-sm font-medium text-foreground">
-                  {formatDate(profile.createdAt)}
+                  {formatDate(profile?.createdAt, "WITH_TIME")}
                 </p>
               </div>
 
@@ -170,7 +175,7 @@ export function ProfileTemplate() {
                   Last Login
                 </div>
                 <p className="text-sm font-medium text-foreground">
-                  {formatDate(profile.lastLoginAt)}
+                  {formatDate(profile?.lastLoginAt, "WITH_TIME")}
                 </p>
               </div>
             </div>
