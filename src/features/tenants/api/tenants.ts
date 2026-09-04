@@ -32,7 +32,7 @@ export interface CreateTenantPayload {
 export interface GetTenantsFilters {
   page?: number;
   limit?: number;
-  slug?: string;
+  name?: string;
   status?: string;
 }
 
@@ -48,27 +48,25 @@ export const createTenantApi = async (
 export const getTenants = async (
   filters: GetTenantsFilters = {},
 ): Promise<SuccessResponseInterface<TenantData[]>> => {
-  const { page = 1, limit = 10, slug, status } = filters;
+  const { page = 1, limit = 10, name, status } = filters;
 
   // Construct the payload body for filters
   const dataPayload: {
     page: number;
     limit: number;
-    slug?: string;
+    name?: string;
     status?: string;
   } = { page, limit };
 
-  if (slug && slug.trim() !== "") {
-    dataPayload.slug = slug;
+  if (name && name.trim() !== "") {
+    dataPayload.name = name;
   }
 
-  if (status && status !== TENANT_STATUS.ALL) {
+  if (status && status !== TENANT_STATUS.ALL && status !== "all") {
     dataPayload.status = status;
-  } else if (status === TENANT_STATUS.ALL) {
-    dataPayload.status = "";
   }
 
-  // Pass filters in the `data` config for the GET request as requested
-  const response = await apiClient.get("/tenants", { data: dataPayload });
+  // Pass filters in the `params` config for the GET request
+  const response = await apiClient.get("/tenants", { params: dataPayload });
   return response.data;
 };

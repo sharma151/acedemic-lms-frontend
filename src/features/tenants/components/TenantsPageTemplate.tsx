@@ -1,6 +1,8 @@
 "use client";
 
-import React, { useState } from "react";
+import React from "react";
+import { useSearchParams } from "next/navigation";
+import { useQueryParam } from "@/hooks/use-query-params";
 import { DataTable, ColumnDef } from "@/components/ui/data-table";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -17,6 +19,7 @@ import {
 import { useQuery } from "@tanstack/react-query";
 import { getTenants, TenantData, PaginationMetadata } from "../api/tenants";
 import { TENANT_STATUS } from "@/configs/constants";
+import { QUERY_KEYS } from "@/configs/querykey";
 import { AddTenantDialog } from "./AddTenantDialog";
 
 interface TenantsPageTemplateProps {
@@ -28,16 +31,25 @@ export function TenantsPageTemplate({
   title,
   description,
 }: TenantsPageTemplateProps) {
-  const [currentPage, setCurrentPage] = useState(1);
-  const [pageSize, setPageSize] = useState(10);
-  const [slug, setSlug] = useState("");
-  const [status, setStatus] = useState<string>(TENANT_STATUS.ALL);
+  const searchParams = useSearchParams();
+  const { setQueryParams } = useQueryParam("");
+
+  const currentPage = Number(searchParams.get("page")) || 1;
+  const pageSize = Number(searchParams.get("limit")) || 10;
+  const name = searchParams.get("name") || "";
+  const status = searchParams.get("status") || "all";
+
   const { formatDate } = useFormatDate();
 
   const { data: response, isLoading } = useQuery({
-    queryKey: ["tenants", currentPage, pageSize, slug, status],
+    queryKey: [QUERY_KEYS.TENANTS, currentPage, pageSize, name, status],
     queryFn: () =>
-      getTenants({ page: currentPage, limit: pageSize, slug, status }),
+      getTenants({
+        page: currentPage,
+        limit: pageSize,
+        name,
+        status: status === "all" ? undefined : status,
+      }),
   });
   const tenants = response?.data || [];
   const metadata = response?.metadata as PaginationMetadata | undefined;
@@ -102,30 +114,35 @@ export function TenantsPageTemplate({
 
       <div className="flex flex-col md:flex-row items-center gap-4 py-2">
         <Input
-          placeholder="Filter by slug..."
-          value={slug}
+          placeholder="Filter by name..."
+          value={name}
           onChange={(e) => {
-            setSlug(e.target.value);
-            setCurrentPage(1);
+            setQueryParams({ name: e.target.value || null, page: "1" });
           }}
           className="max-w-sm"
         />
         <Select
           value={status}
-          onValueChange={(value) => {
-            setStatus(value);
-            setCurrentPage(1);
+          onValueChange={(val) => {
+            setQueryParams({
+              status: val === "All" ? "--" : val,
+              page: "1",
+            });
           }}
         >
           <SelectTrigger className="w-45">
             <SelectValue placeholder="Filter by status" />
           </SelectTrigger>
           <SelectContent>
-            {Object.entries(TENANT_STATUS).map(([key, value]) => (
-              <SelectItem key={key} value={value}>
-                {key === "ALL" ? "All" : value}
-              </SelectItem>
-            ))}
+            {Object.entries(TENANT_STATUS).map(([key, val]) => {
+              const itemValue = key === "ALL" ? "all" : val;
+              const itemLabel = key === "ALL" ? "All" : key;
+              return (
+                <SelectItem key={key} value={itemValue}>
+                  {itemLabel}
+                </SelectItem>
+              );
+            })}
           </SelectContent>
         </Select>
       </div>
@@ -140,11 +157,10 @@ export function TenantsPageTemplate({
         totalPages={metadata?.totalPage || 1}
         totalItems={metadata?.totalData || 0}
         pageSize={metadata?.perPage || pageSize}
-        onPageChange={setCurrentPage}
-        onPageSizeChange={(size) => {
-          setPageSize(size);
-          setCurrentPage(1);
-        }}
+        onPageChange={(page) => setQueryParams({ page: page.toString() })}
+        onPageSizeChange={(size) =>
+          setQueryParams({ limit: size.toString(), page: "1" })
+        }
       />
     </div>
   );
