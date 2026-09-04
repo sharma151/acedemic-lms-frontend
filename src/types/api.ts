@@ -3,6 +3,7 @@ export interface SuccessResponseInterface<T> {
   statusCode: number;
   message: string;
   data: T;
+  metadata?: unknown;
 }
 
 export interface MutationResponse<T> {

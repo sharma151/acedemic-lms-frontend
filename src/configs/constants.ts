@@ -19,3 +19,10 @@ export const Role = {
 } as const;
 
 export type RoleType = typeof Role[keyof typeof Role];
+
+export const TENANT_STATUS = {
+  ALL: '--',
+  ACTIVE: 'active',
+  SUSPENDED: 'suspended',
+  PENDING: 'pending',
+} as const;

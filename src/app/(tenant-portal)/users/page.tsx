@@ -1,12 +1,12 @@
 "use client";
 
-import { UsersPageTemplate } from "@/features/users/components/UsersPageTemplate";
+import { TenantsPageTemplate } from "@/features/tenants/components/TenantsPageTemplate";
 
 export default function UsersPage() {
   return (
-    <UsersPageTemplate
-      title="Institution Users"
-      description="Manage your institution's teachers, students, and staff members.s"
+    <TenantsPageTemplate
+      title="Institution Users (Tenants)"
+      description="Manage your institution's users/sub-tenants."
     />
   );
 }

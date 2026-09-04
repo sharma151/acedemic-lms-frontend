@@ -32,7 +32,7 @@ export const adminNavigation: SidebarNavItem[] = [
     icon: LayoutDashboard,
     section: "Platform Management",
   },
-  { title: "Users", href: "/super-admin/users", icon: Users, section: "Management" },
+  { title: "Tenants", href: "/super-admin/tenants", icon: Building2, section: "Management" },
   {
     title: "Global Settings",
     href: "/super-admin/settings",
