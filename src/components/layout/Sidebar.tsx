@@ -81,12 +81,7 @@ export function Sidebar({ items }: SidebarProps) {
                   return (
                     <SidebarMenuItem key={item.href} className="mb-1">
                       <SidebarMenuButton
-                        render={
-                          <Link
-                            href={item.href}
-                            className="flex items-center gap-3 w-full"
-                          />
-                        }
+                        asChild
                         isActive={isActive}
                         tooltip={item.title}
                         className={cn(
@@ -95,8 +90,13 @@ export function Sidebar({ items }: SidebarProps) {
                             "bg-blue-50 dark:bg-blue-900/40 text-blue-700 dark:text-blue-400 font-semibold shadow-sm",
                         )}
                       >
-                        <item.icon className={cn("shrink-0 transition-transform", isActive ? "h-5 w-5" : "h-[18px] w-[18px]")} />
-                        <span>{item.title}</span>
+                        <Link
+                          href={item.href}
+                          className="flex items-center gap-3 w-full"
+                        >
+                          <item.icon className={cn("shrink-0 transition-transform", isActive ? "h-5 w-5" : "h-[18px] w-[18px]")} />
+                          <span>{item.title}</span>
+                        </Link>
                       </SidebarMenuButton>
                     </SidebarMenuItem>
                   );

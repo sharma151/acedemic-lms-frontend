@@ -25,7 +25,7 @@ export function DashboardTemplate({ role = "super-admin" }: { role?: string }) {
             Good morning, {userName}
           </h1>
           <p className="text-muted-foreground mt-1">
-            Here's what's happening across your {role === "super-admin" ? "institutions" : "platform"} today — {currentDate}
+            Here&apos;s what&apos;s happening across your {role === "super-admin" ? "institutions" : "platform"} today — {currentDate}
           </p>
         </div>
         {role === "super-admin" && (
