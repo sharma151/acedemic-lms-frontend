@@ -1,6 +1,6 @@
 import axios from "axios";
-import { redirect } from "next/navigation";
 import { getAuthToken, setAuthToken, removeAuthToken } from "./auth";
+import { useAuthStore } from "@/features/auth/store/useAuthStore";
 
 const API_BASE_URL =
   process.env.NEXT_PUBLIC_API_URL || "http://localhost:8888/api/v1";
@@ -23,17 +23,9 @@ apiClient.interceptors.request.use(
     // Attempt to get Tenant ID from somewhere (e.g. store or cookies, but typically from Zustand or window/document context)
     // For client-side, we can rely on Zustand store, but since this is outside React, we might read from localStorage or a cookie.
     if (typeof window !== "undefined") {
-      try {
-        const authStorageStr = localStorage.getItem("auth-storage");
-        if (authStorageStr) {
-          const authStorage = JSON.parse(authStorageStr);
-          const userId = authStorage?.state?.user?.id;
-          if (userId) {
-            config.headers["X-Tenant-ID"] = userId;
-          }
-        }
-      } catch (error) {
-        console.error("Failed to parse auth-storage for tenant ID", error);
+      const tenantId = useAuthStore.getState().user?.tenantId;
+      if (tenantId) {
+        config.headers["X-Tenant-ID"] = tenantId;
       }
     }
 
@@ -81,7 +73,7 @@ apiClient.interceptors.response.use(
         // Refresh failed, logout user
         removeAuthToken();
         if (typeof window !== "undefined") {
-          redirect("/login");
+          window.location.href = "/login";
         }
         return Promise.reject(refreshError);
       }

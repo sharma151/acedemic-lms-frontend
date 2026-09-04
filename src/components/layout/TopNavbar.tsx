@@ -43,7 +43,7 @@ export function TopNavbar({ title = "Academic LMS" }: TopNavbarProps) {
       Cookies.remove("lms_access_token");
       logoutStore();
       queryClient.clear(); // Clear the entire query cache (including the profile data)
-      router.push("/login");
+      window.location.href = "/login";
     },
   });
 
