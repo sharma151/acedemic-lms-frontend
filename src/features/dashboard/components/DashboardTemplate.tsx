@@ -7,14 +7,13 @@ import { PendingApprovals } from "./PendingApprovals";
 import { QuickActions } from "./QuickActions";
 import { Plus } from "lucide-react";
 
+import { useFormatDate } from "@/hooks/use-format-date";
+
 export function DashboardTemplate({ role = "super-admin" }: { role?: string }) {
   // Normally this data comes from an API or auth context
   const userName = "Saurav";
-  const currentDate = new Date().toLocaleDateString("en-US", {
-    month: "short",
-    day: "numeric",
-    year: "numeric",
-  });
+  const { formatDate } = useFormatDate();
+  const currentDate = formatDate(new Date(), 'DEFAULT');
 
   return (
     <div className="space-y-6">
