@@ -6,7 +6,7 @@ import { useQueryParam } from "@/hooks/use-query-params";
 import { DataTable, ColumnDef } from "@/components/ui/data-table";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Plus } from "lucide-react";
+import { Plus, Search } from "lucide-react";
 import { useFormatDate } from "@/hooks/use-format-date";
 import { Input } from "@/components/ui/input";
 import {
@@ -111,42 +111,67 @@ export function TenantsPageTemplate({
           </Button>
         </AddTenantDialog>
       </div>
-
-      <div className="flex flex-col md:flex-row items-center gap-4 py-2">
-        <Input
-          placeholder="Filter by name..."
-          value={name}
-          onChange={(e) => {
-            setQueryParams({ name: e.target.value || null, page: "1" });
-          }}
-          className="max-w-sm"
-        />
-        <Select
-          value={status}
-          onValueChange={(val) => {
-            setQueryParams({
-              status: val === "All" ? "--" : val,
-              page: "1",
-            });
-          }}
-        >
-          <SelectTrigger className="w-45">
-            <SelectValue placeholder="Filter by status" />
-          </SelectTrigger>
-          <SelectContent>
-            {Object.entries(TENANT_STATUS).map(([key, val]) => {
-              const itemValue = key === "ALL" ? "all" : val;
-              const itemLabel = key === "ALL" ? "All" : key;
-              return (
-                <SelectItem key={key} value={itemValue}>
-                  {itemLabel}
-                </SelectItem>
-              );
-            })}
-          </SelectContent>
-        </Select>
+      {/* // Search and Filter Section */}
+      <div className="flex flex-col md:flex-row items-center  gap-4">
+        <div className="flex flex-col md:flex-row items-center gap-4 py-2">
+          <div className="space-y-2">
+            <label
+              htmlFor="search-activities"
+              className="text-sm font-medium text-gray-700"
+            >
+              Search
+            </label>
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-gray-400" />
+              <Input
+                placeholder="Search by name..."
+                value={name}
+                className="pl-10 max-w-sm"
+                onChange={(e) => {
+                  setQueryParams({ name: e.target.value || null, page: "1" });
+                }}
+                maxLength={255}
+              />
+            </div>
+          </div>
+        </div>
+        <div className="space-y-2">
+          <label
+            htmlFor="search-activities"
+            className="text-sm font-medium text-gray-700"
+          >
+            Filter by status
+          </label>
+          <div className="relative">
+            <Select
+              value={status}
+              onValueChange={(val) => {
+                setQueryParams({
+                  status: val === "All" ? "--" : val,
+                  page: "1",
+                });
+              }}
+            >
+              <SelectTrigger className="w-45">
+                <SelectValue placeholder="Filter by status" />
+              </SelectTrigger>
+              <SelectContent>
+                {Object.entries(TENANT_STATUS).map(([key, val]) => {
+                  const itemValue = key === "ALL" ? "all" : val;
+                  const itemLabel = key === "ALL" ? "All" : key;
+                  return (
+                    <SelectItem key={key} value={itemValue}>
+                      {itemLabel}
+                    </SelectItem>
+                  );
+                })}
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
       </div>
 
+      {/* // Data Table Section */}
       <DataTable
         data={tenants}
         columns={columns}

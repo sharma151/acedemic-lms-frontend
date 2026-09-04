@@ -24,6 +24,7 @@ import {
 } from "@/components/ui/form";
 import { useCustomMutation } from "@/hooks/use-custom-mutation";
 import { createTenantApi } from "../api/tenants";
+import { QUERY_KEYS } from "@/configs/querykey";
 
 const tenantSchema = z.object({
   name: z.string().min(2, { message: "Name must be at least 2 characters." }),
@@ -44,7 +45,7 @@ export function AddTenantDialog({ children, onSuccess }: AddTenantDialogProps) {
   const { mutate: createTenant, isPending } = useCustomMutation({
     service: createTenantApi,
     form: formRef as any,
-    queryKey: [["tenants"]], // This will invalidate the tenants query automatically on success
+    queryKey: [[QUERY_KEYS.TENANTS]], // This will invalidate the tenants query automatically on success
     successMessage: "Tenant created successfully",
     onSuccess: () => {
       setOpen(false);
