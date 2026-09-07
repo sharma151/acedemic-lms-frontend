@@ -40,7 +40,7 @@ src/
 ### Installation
 1. Clone the repository and install dependencies:
    ```bash
-   npm install
+   yarn install
    ```
 2. Configure your environment variables. Create a `.env.local` file at the root:
    ```env
@@ -50,7 +50,7 @@ src/
 
 3. Start the development server:
    ```bash
-   npm run dev
+   yarn dev
    ```
 
 ---
@@ -101,6 +101,7 @@ The `apiClient` (`src/lib/api-client.ts`) handles all requests, injecting `Autho
 | **Roles** | `/roles` | GET | Fetches all roles in current tenant |
 | | `/roles/{id}/permissions` | GET | Fetches granular permissions for RBAC |
 | **Users** | `/users` | GET, POST | CRUD operations for LMS Users |
+| **Plans** | `/plans` | GET | Fetches available subscription plans |
 
 ---
 

@@ -105,7 +105,7 @@ export function PlanCard({
                 className={
                   value
                     ? "text-foreground"
-                    : "text-muted-foreground line-through"
+                    : "text-muted-foreground"
                 }
               >
                 {featureLabels[key as keyof SubscriptionPlan["features"]]}
