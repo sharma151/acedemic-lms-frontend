@@ -12,6 +12,7 @@ import {
   UseFormReturn,
   useForm,
   useFormContext,
+  Resolver,
 } from "react-hook-form";
 import { ZodType, z } from "zod";
 
@@ -248,7 +249,7 @@ const Form = forwardRef(
     const form = useForm<TFormValues>({
       shouldFocusError: false,
       ...options,
-      resolver: zodResolver(schema) as any,
+      resolver: zodResolver(schema) as unknown as Resolver<TFormValues>,
       mode: options?.mode ?? "onSubmit",
     });
 

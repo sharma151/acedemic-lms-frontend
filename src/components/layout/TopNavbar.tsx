@@ -12,9 +12,9 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
-import Cookies from "js-cookie";
 import { useAuthStore } from "@/features/auth/store/useAuthStore";
 import { logoutApi } from "@/features/auth/api/auth";
+import { removeAuthToken, removeTenantId } from "@/lib/auth";
 import { useCustomMutation } from "@/hooks/use-custom-mutation";
 import { useGetProfile } from "@/features/profile/api/get-profile";
 import {
@@ -42,7 +42,8 @@ export function TopNavbar({ title = "Academic LMS" }: TopNavbarProps) {
     service: logoutApi,
     successMessage: "Successfully logged out",
     onSuccess: () => {
-      Cookies.remove("lms_access_token");
+      removeAuthToken();
+      removeTenantId();
       logoutStore();
       queryClient.clear(); // Clear the entire query cache (including the profile data)
       window.location.href = "/login";

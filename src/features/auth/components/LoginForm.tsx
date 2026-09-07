@@ -31,6 +31,7 @@ import { useCustomMutation } from "@/hooks/use-custom-mutation";
 import { useAuthStore } from "../store/useAuthStore";
 import { useQueryClient } from "@tanstack/react-query";
 import { QUERY_KEYS } from "@/configs/querykey";
+import { AxiosError } from "axios";
 
 export function LoginForm() {
   const formRef = useRef<UseFormReturn<LoginFormData>>(null);
@@ -44,8 +45,7 @@ export function LoginForm() {
     service: loginWithEmail,
     form: formRef as unknown as RefObject<UseFormReturn | null>,
     successMessage: "Successfully logged in!",
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    onSuccess: async (data: any) => {
+    onSuccess: async (data) => {
       if (data?.accessToken) {
         setAuthToken(data.accessToken);
         setUser(data.user);
@@ -97,11 +97,11 @@ export function LoginForm() {
         }
       }
     },
-    onError: (err: any) => {
+    onError: (err: AxiosError) => {
       const form = formRef.current;
       if (form) {
         const errorMsg =
-          err.response?.data?.message ||
+          (err.response?.data as { message?: string })?.message ||
           "User does not exist or wrong password";
         form.setError("root", { type: "server", message: errorMsg });
       }
