@@ -43,6 +43,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const handleUnauthorized = () => {
       if (isMounted) {
         removeAuthToken();
+        removeTenantId();
         setUser(null);
         window.location.href = "/login"; // Force full reload to clean any deep states, or router.push('/login') for client-side
       }

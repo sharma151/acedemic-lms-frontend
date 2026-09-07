@@ -44,7 +44,7 @@ export function AddTenantDialog({ children, onSuccess }: AddTenantDialogProps) {
 
   const { mutate: createTenant, isPending } = useCustomMutation({
     service: createTenantApi,
-    form: formRef as any,
+    form: formRef as unknown as React.RefObject<UseFormReturn | null>,
     queryKey: [[QUERY_KEYS.TENANTS]], // This will invalidate the tenants query automatically on success
     successMessage: "Tenant created successfully",
     onSuccess: () => {
