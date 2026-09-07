@@ -44,27 +44,28 @@ export function LoginForm() {
     service: loginWithEmail,
     form: formRef as unknown as RefObject<UseFormReturn | null>,
     successMessage: "Successfully logged in!",
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     onSuccess: async (data: any) => {
       if (data?.accessToken) {
         setAuthToken(data.accessToken);
         setUser(data.user);
-        
+
         // Force React Query to drop any stale profile data from a previous session
         queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.AUTH_PROFILE] });
-        
+
         // Initial fallback from login response
         let tenantId = data?.user?.tenantId;
-        
+
         try {
           const meData = await getAuthMe();
           // Extract tenantId from /me response if available, fallback to login response
-          tenantId = 
-            meData?.data?.tenantId || 
-            meData?.tenantId || 
-            meData?.data?.user?.tenantId || 
-            tenantId;
-            
-          console.log("Login success. Extracting tenantId:", tenantId, { loginUser: data?.user, meData });
+          console.log("Fetched user profile during login:", meData);
+          tenantId = meData.tenantId || tenantId;
+
+          console.log("Login success. Extracting tenantId:", tenantId, {
+            loginUser: data?.user,
+            meData,
+          });
         } catch (error) {
           console.error("Failed to fetch user profile during login", error);
         }
@@ -74,7 +75,7 @@ export function LoginForm() {
         if (tenantId) {
           params.set("tenantId", tenantId);
         }
-        
+
         const queryString = params.toString();
         const searchPart = queryString ? `?${queryString}` : "";
 
@@ -183,7 +184,9 @@ export function LoginForm() {
                                 <Eye className="h-4 w-4 text-slate-500" />
                               )}
                               <span className="sr-only">
-                                {showPassword ? "Hide password" : "Show password"}
+                                {showPassword
+                                  ? "Hide password"
+                                  : "Show password"}
                               </span>
                             </Button>
                           </div>

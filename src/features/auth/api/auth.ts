@@ -22,7 +22,29 @@ export const logoutApi = async (data?: unknown): Promise<void> => {
   await apiClient.post("/auth/logout", data);
 };
 
-export const getAuthMe = async (): Promise<any> => {
-  const response = await apiClient.get("/auth/me");
+export interface AuthMeResponse {
+  avatarUrl: string | null;
+  createdAt: string;
+  email: string;
+  firstName: string;
+  googleId: string | null;
+  id: string;
+  isActive: boolean;
+  lastLoginAt: string;
+  lastName: string;
+  role: string;
+  roleId: string;
+  tenant: unknown | null;
+  tenantId: string | null;
+  updatedAt: string;
+  message: string;
+  path: string;
+  statusCode: number;
+  success: boolean;
+  timestamp: string;
+}
+
+export const getAuthMe = async (): Promise<AuthMeResponse> => {
+  const response = await apiClient.get<AuthMeResponse>("/auth/me");
   return response.data;
 };

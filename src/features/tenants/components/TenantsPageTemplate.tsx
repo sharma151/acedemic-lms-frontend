@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
 import { useQueryParam } from "@/hooks/use-query-params";
 import { DataTable, ColumnDef } from "@/components/ui/data-table";
 import { Badge } from "@/components/ui/badge";
@@ -47,6 +47,7 @@ export function TenantsPageTemplate({
   description,
 }: TenantsPageTemplateProps) {
   const searchParams = useSearchParams();
+  const router = useRouter();
   const { setQueryParams } = useQueryParam("");
 
   const currentPage = Number(searchParams.get("page")) || 1;
@@ -261,6 +262,7 @@ export function TenantsPageTemplate({
         onPageSizeChange={(size) =>
           setQueryParams({ limit: size.toString(), page: "1" })
         }
+        onRowClick={(item) => router.push(`/super-admin/tenants/${item.id}`)}
       />
 
       <ConfirmDialog

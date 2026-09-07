@@ -80,3 +80,32 @@ export const suspendTenantApi = async (id: string): Promise<SuccessResponseInter
   const response = await apiClient.post(`/tenants/${id}/suspend`);
   return response.data;
 };
+
+export interface TenantUser {
+  id: string;
+  email: string;
+  firstName: string;
+  lastName: string;
+  avatarUrl: string | null;
+  isActive: boolean;
+  role: string;
+  createdAt: string;
+}
+
+export interface DetailedTenantData extends TenantData {
+  databaseUrl: string | null;
+  users: {
+    institutionAdmins: TenantUser[];
+    teachers: TenantUser[];
+    students: TenantUser[];
+    parents: TenantUser[];
+    accountants: TenantUser[];
+  };
+}
+
+export const getTenantById = async (
+  id: string,
+): Promise<SuccessResponseInterface<DetailedTenantData>> => {
+  const response = await apiClient.get(`/tenants/${id}`);
+  return response.data;
+};
