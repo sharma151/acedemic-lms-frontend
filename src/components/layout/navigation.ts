@@ -15,7 +15,13 @@ export const tenantNavigation: SidebarNavItem[] = [
     icon: LayoutDashboard,
     section: "Overview",
   },
-  { title: "Users", href: "/users", icon: Users, section: "Management" },
+  {
+    title: "Institution",
+    href: "/dashboard/institution",
+    icon: Building2,
+    section: "Overview",
+  },
+  // { title: "Users", href: "/users", icon: Users, section: "Management" },
   { title: "Roles", href: "/roles", icon: ShieldAlert, section: "Management" },
   {
     title: "Settings",
@@ -32,7 +38,12 @@ export const adminNavigation: SidebarNavItem[] = [
     icon: LayoutDashboard,
     section: "Platform Management",
   },
-  { title: "Tenants", href: "/super-admin/tenants", icon: Building2, section: "Management" },
+  {
+    title: "Tenants",
+    href: "/super-admin/tenants",
+    icon: Building2,
+    section: "Management",
+  },
   {
     title: "Global Settings",
     href: "/super-admin/settings",
