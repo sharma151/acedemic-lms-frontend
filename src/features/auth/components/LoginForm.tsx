@@ -26,7 +26,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Loader2, Eye, EyeOff } from "lucide-react";
 import { setAuthToken } from "@/lib/auth";
-import { loginWithEmail } from "../api/auth";
+import { loginWithEmail, getAuthMe } from "../api/auth";
 import { useCustomMutation } from "@/hooks/use-custom-mutation";
 import { useAuthStore } from "../store/useAuthStore";
 import { useQueryClient } from "@tanstack/react-query";
@@ -44,7 +44,7 @@ export function LoginForm() {
     service: loginWithEmail,
     form: formRef as unknown as RefObject<UseFormReturn | null>,
     successMessage: "Successfully logged in!",
-    onSuccess: (data: any) => {
+    onSuccess: async (data: any) => {
       if (data?.accessToken) {
         setAuthToken(data.accessToken);
         setUser(data.user);
@@ -52,12 +52,38 @@ export function LoginForm() {
         // Force React Query to drop any stale profile data from a previous session
         queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.AUTH_PROFILE] });
         
+        // Initial fallback from login response
+        let tenantId = data?.user?.tenantId;
+        
+        try {
+          const meData = await getAuthMe();
+          // Extract tenantId from /me response if available, fallback to login response
+          tenantId = 
+            meData?.data?.tenantId || 
+            meData?.tenantId || 
+            meData?.data?.user?.tenantId || 
+            tenantId;
+            
+          console.log("Login success. Extracting tenantId:", tenantId, { loginUser: data?.user, meData });
+        } catch (error) {
+          console.error("Failed to fetch user profile during login", error);
+        }
+
+        const params = new URLSearchParams(window.location.search);
+        // Only append tenantId if it's actually available
+        if (tenantId) {
+          params.set("tenantId", tenantId);
+        }
+        
+        const queryString = params.toString();
+        const searchPart = queryString ? `?${queryString}` : "";
+
         // Dynamically route based on the role returned from the login response
         const role = data.user?.role;
         if (role === Role.SUPER_ADMIN) {
-          router.replace("/super-admin/dashboard");
+          router.replace(`/super-admin/dashboard${searchPart}`);
         } else {
-          router.replace("/dashboard");
+          router.replace(`/dashboard${searchPart}`);
         }
       }
     },

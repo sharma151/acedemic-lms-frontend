@@ -6,7 +6,7 @@ import { useQueryParam } from "@/hooks/use-query-params";
 import { DataTable, ColumnDef } from "@/components/ui/data-table";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Plus, Search } from "lucide-react";
+import { Plus, Search, MoreHorizontal } from "lucide-react";
 import { useFormatDate } from "@/hooks/use-format-date";
 import { Input } from "@/components/ui/input";
 import {
@@ -16,11 +16,26 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useQuery } from "@tanstack/react-query";
-import { getTenants, TenantData, PaginationMetadata } from "../api/tenants";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import {
+  getTenants,
+  TenantData,
+  PaginationMetadata,
+  activateTenantApi,
+  suspendTenantApi,
+} from "../api/tenants";
 import { TENANT_STATUS } from "@/configs/constants";
 import { QUERY_KEYS } from "@/configs/querykey";
 import { AddTenantDialog } from "./AddTenantDialog";
+import { useState } from "react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { ConfirmDialog } from "@/components/ui/confirm-dialog";
+import { useNotifications } from "@/components/ui/notifications";
 
 interface TenantsPageTemplateProps {
   title: string;
@@ -40,6 +55,39 @@ export function TenantsPageTemplate({
   const status = searchParams.get("status") || "all";
 
   const { formatDate } = useFormatDate();
+  const [tenantToSuspend, setTenantToSuspend] = useState<string | null>(null);
+  const queryClient = useQueryClient();
+  const { addNotification } = useNotifications();
+
+  const activateMutation = useMutation({
+    mutationFn: activateTenantApi,
+    onSuccess: () => {
+      addNotification({
+        type: "success",
+        title: "Tenant activated successfully",
+      });
+      queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.TENANTS] });
+    },
+    onError: () => {
+      addNotification({ type: "error", title: "Failed to activate tenant" });
+    },
+  });
+
+  const suspendMutation = useMutation({
+    mutationFn: suspendTenantApi,
+    onSuccess: () => {
+      addNotification({
+        type: "success",
+        title: "Tenant suspended successfully",
+      });
+      queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.TENANTS] });
+      setTenantToSuspend(null);
+    },
+    onError: () => {
+      addNotification({ type: "error", title: "Failed to suspend tenant" });
+      setTenantToSuspend(null);
+    },
+  });
 
   const { data: response, isLoading } = useQuery({
     queryKey: [QUERY_KEYS.TENANTS, currentPage, pageSize, name, status],
@@ -94,6 +142,33 @@ export function TenantsPageTemplate({
         <span className="text-slate-500">
           {formatDate(item.updatedAt, "DEFAULT")}
         </span>
+      ),
+    },
+    {
+      header: "Actions",
+      cell: (item) => (
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="ghost" className="h-8 w-8 p-0">
+              <span className="sr-only">Open menu</span>
+              <MoreHorizontal className="h-4 w-4 rotate-90" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuItem
+              disabled={activateMutation.isPending || item.status === "active"}
+              onClick={() => activateMutation.mutate(item.id)}
+            >
+              Activate
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              disabled={item.status === "inactive"}
+              onClick={() => setTenantToSuspend(item.id)}
+            >
+              Suspend
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       ),
     },
   ];
@@ -186,6 +261,19 @@ export function TenantsPageTemplate({
         onPageSizeChange={(size) =>
           setQueryParams({ limit: size.toString(), page: "1" })
         }
+      />
+
+      <ConfirmDialog
+        isOpen={!!tenantToSuspend}
+        onClose={() => setTenantToSuspend(null)}
+        onConfirm={() =>
+          tenantToSuspend && suspendMutation.mutate(tenantToSuspend)
+        }
+        title="Suspend Tenant"
+        description="Are you sure you want to suspend this tenant? They will no longer be able to access the platform."
+        confirmText="Suspend"
+        variant="destructive"
+        isLoading={suspendMutation.isPending}
       />
     </div>
   );

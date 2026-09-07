@@ -70,3 +70,13 @@ export const getTenants = async (
   const response = await apiClient.get("/tenants", { params: dataPayload });
   return response.data;
 };
+
+export const activateTenantApi = async (id: string): Promise<SuccessResponseInterface<TenantData>> => {
+  const response = await apiClient.post(`/tenants/${id}/activate`);
+  return response.data;
+};
+
+export const suspendTenantApi = async (id: string): Promise<SuccessResponseInterface<TenantData>> => {
+  const response = await apiClient.post(`/tenants/${id}/suspend`);
+  return response.data;
+};
