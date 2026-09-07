@@ -63,6 +63,11 @@ export function LoginForm() {
           console.log("Fetched user profile during login:", meData);
           tenantId = meData.data?.tenantId || tenantId;
           role = meData.data?.role || role;
+          
+          // IMPORTANT: Update the store with the complete user profile
+          if (meData?.data) {
+            setUser(meData.data);
+          }
 
           console.log("Login success. Extracting tenantId:", tenantId, {
             loginUser: data?.user,
