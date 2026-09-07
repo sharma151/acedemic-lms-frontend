@@ -1,10 +1,15 @@
-export default function DashboardPage() {
+import { Metadata } from "next";
+import { DashboardTemplate } from "@/features/dashboard/components/DashboardTemplate";
+
+export const metadata: Metadata = {
+  title: "Dashboard | Academic LMS",
+  description: "Overview of your institution activity and metrics.",
+};
+
+export default function TenantDashboardPage() {
   return (
-    <div className="p-8">
-      <h1 className="text-3xl font-bold mb-4">Dashboard</h1>
-      <p className="text-muted-foreground">
-        Welcome to your academic LMS dashboard.
-      </p>
+    <div className="w-full">
+      <DashboardTemplate role="tenant" />
     </div>
   );
 }

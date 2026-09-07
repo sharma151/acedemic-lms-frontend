@@ -1,18 +1,11 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { QueryProvider } from "@/components/providers/QueryProvider";
 import { TenantThemeProvider } from "@/components/providers/TenantThemeProvider";
+import { Toaster } from "sonner";
+import { TooltipProvider } from "@/components/ui/tooltip";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
+import { AuthProvider } from "@/components/providers/AuthProvider";
 
 export const metadata: Metadata = {
   title: "Academic LMS",
@@ -26,11 +19,16 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen flex flex-col`}>
+      <body className="font-sans antialiased min-h-screen flex flex-col" suppressHydrationWarning>
         <QueryProvider>
-          <TenantThemeProvider>
-            {children}
-          </TenantThemeProvider>
+          <AuthProvider>
+            <TenantThemeProvider>
+              <TooltipProvider>
+                {children}
+                <Toaster richColors position="top-right" closeButton />
+              </TooltipProvider>
+            </TenantThemeProvider>
+          </AuthProvider>
         </QueryProvider>
       </body>
     </html>
