@@ -7,7 +7,7 @@ export interface User {
   lastName?: string;
   name?: string;
   role?: string;
-  tenantId?: string;
+  tenantId?: string | null;
 }
 
 interface AuthState {

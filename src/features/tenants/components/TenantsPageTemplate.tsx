@@ -37,6 +37,8 @@ import {
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { useNotifications } from "@/components/ui/notifications";
 
+import { useTenantsList } from "../hooks/useTenantsList";
+
 interface TenantsPageTemplateProps {
   title: string;
   description: string;
@@ -46,19 +48,14 @@ export function TenantsPageTemplate({
   title,
   description,
 }: TenantsPageTemplateProps) {
-  const searchParams = useSearchParams();
   const router = useRouter();
-  const { setQueryParams } = useQueryParam("");
-
-  const currentPage = Number(searchParams.get("page")) || 1;
-  const pageSize = Number(searchParams.get("limit")) || 10;
-  const name = searchParams.get("name") || "";
-  const status = searchParams.get("status") || "all";
-
   const { formatDate } = useFormatDate();
   const [tenantToSuspend, setTenantToSuspend] = useState<string | null>(null);
   const queryClient = useQueryClient();
   const { addNotification } = useNotifications();
+
+  const { tenants, metadata, isLoading, filters, setQueryParams } = useTenantsList();
+  const { currentPage, pageSize, name, status } = filters;
 
   const activateMutation = useMutation({
     mutationFn: activateTenantApi,
@@ -89,19 +86,6 @@ export function TenantsPageTemplate({
       setTenantToSuspend(null);
     },
   });
-
-  const { data: response, isLoading } = useQuery({
-    queryKey: [QUERY_KEYS.TENANTS, currentPage, pageSize, name, status],
-    queryFn: () =>
-      getTenants({
-        page: currentPage,
-        limit: pageSize,
-        name,
-        status: status === "all" ? undefined : status,
-      }),
-  });
-  const tenants = response?.data || [];
-  const metadata = response?.metadata as PaginationMetadata | undefined;
 
   const columns: ColumnDef<TenantData>[] = [
     {

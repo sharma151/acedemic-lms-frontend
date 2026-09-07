@@ -57,9 +57,11 @@ export function TopNavbar({ title = "Academic LMS" }: TopNavbarProps) {
     ? `${user.firstName} ${user.lastName || ""}`.trim()
     : user?.name || "Admin User";
 
-  const isSuperAdmin = user?.role === Role.SUPER_ADMIN || user?.role === "super-admin";
+  const isSuperAdmin =
+    user?.role === Role.SUPER_ADMIN || user?.role === "super-admin";
   const profile = profileResponse?.data;
-  const displayTitle = !isSuperAdmin && profile?.tenant?.name ? profile.tenant.name : title;
+  const displayTitle =
+    !isSuperAdmin && profile?.tenant?.name ? profile.tenant.name : title;
 
   return (
     <header className="sticky top-0 z-30 flex h-16 w-full items-center justify-between border-b bg-white dark:bg-slate-950 px-4 sm:px-6 shadow-sm">
@@ -126,11 +128,15 @@ export function TopNavbar({ title = "Academic LMS" }: TopNavbarProps) {
                   Change Password
                 </span>
               </DropdownMenuItem>
-              <DropdownMenuItem 
+              <DropdownMenuItem
                 className="cursor-pointer py-2 px-3 gap-3"
                 onClick={() => {
-                  const isSuperAdmin = user?.role === Role.SUPER_ADMIN || user?.role === "super-admin";
-                  router.push(isSuperAdmin ? "/super-admin/profile" : "/profile");
+                  const isSuperAdmin =
+                    user?.role === Role.SUPER_ADMIN ||
+                    user?.role === "super-admin";
+                  router.push(
+                    isSuperAdmin ? "/super-admin/profile" : "/profile",
+                  );
                 }}
               >
                 <UserIcon className="h-4 w-4 text-slate-500" />

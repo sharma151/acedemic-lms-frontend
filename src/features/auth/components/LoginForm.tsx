@@ -25,7 +25,7 @@ import { Separator } from "@/components/ui/separator";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Loader2, Eye, EyeOff } from "lucide-react";
-import { setAuthToken } from "@/lib/auth";
+import { setAuthToken, setTenantId, removeTenantId } from "@/lib/auth";
 import { loginWithEmail, getAuthMe } from "../api/auth";
 import { useCustomMutation } from "@/hooks/use-custom-mutation";
 import { useAuthStore } from "../store/useAuthStore";
@@ -56,11 +56,13 @@ export function LoginForm() {
         // Initial fallback from login response
         let tenantId = data?.user?.tenantId;
 
+        let role = data.user?.role;
         try {
           const meData = await getAuthMe();
           // Extract tenantId from /me response if available, fallback to login response
           console.log("Fetched user profile during login:", meData);
-          tenantId = meData.tenantId || tenantId;
+          tenantId = meData.data?.tenantId || tenantId;
+          role = meData.data?.role || role;
 
           console.log("Login success. Extracting tenantId:", tenantId, {
             loginUser: data?.user,
@@ -74,13 +76,15 @@ export function LoginForm() {
         // Only append tenantId if it's actually available
         if (tenantId) {
           params.set("tenantId", tenantId);
+          setTenantId(tenantId);
+        } else {
+          removeTenantId();
         }
 
         const queryString = params.toString();
         const searchPart = queryString ? `?${queryString}` : "";
 
         // Dynamically route based on the role returned from the login response
-        const role = data.user?.role;
         if (role === Role.SUPER_ADMIN) {
           router.replace(`/super-admin/dashboard${searchPart}`);
         } else {

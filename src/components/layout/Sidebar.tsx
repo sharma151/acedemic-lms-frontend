@@ -86,16 +86,17 @@ export function Sidebar({ items }: SidebarProps) {
                         tooltip={item.title}
                         className={cn(
                           "transition-all h-auto py-2.5 px-4 rounded-md text-[15px] text-slate-600 dark:text-slate-400 hover:bg-blue-50 dark:hover:bg-blue-900/30 hover:text-blue-600 dark:hover:text-blue-400",
+                          "group-data-[collapsible=icon]:!w-full group-data-[collapsible=icon]:!h-8 group-data-[collapsible=icon]:!justify-center group-data-[collapsible=icon]:!px-0",
                           isActive &&
                             "bg-blue-50 dark:bg-blue-900/40 text-blue-700 dark:text-blue-400 font-semibold shadow-sm",
                         )}
                       >
                         <Link
                           href={item.href}
-                          className="flex items-center gap-3 w-full"
+                          className="flex items-center gap-3 w-full group-data-[collapsible=icon]:justify-center"
                         >
                           <item.icon className={cn("shrink-0 transition-transform", isActive ? "h-5 w-5" : "h-[18px] w-[18px]")} />
-                          <span>{item.title}</span>
+                          <span className="group-data-[collapsible=icon]:hidden">{item.title}</span>
                         </Link>
                       </SidebarMenuButton>
                     </SidebarMenuItem>

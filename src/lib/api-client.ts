@@ -1,6 +1,5 @@
 import axios from "axios";
-import { getAuthToken, setAuthToken, removeAuthToken } from "./auth";
-import { useAuthStore } from "@/features/auth/store/useAuthStore";
+import { getAuthToken, setAuthToken, removeAuthToken, getTenantId, removeTenantId } from "./auth";
 
 const API_BASE_URL =
   process.env.NEXT_PUBLIC_API_URL || "http://localhost:8888/api/v1";
@@ -20,13 +19,10 @@ apiClient.interceptors.request.use(
       config.headers.Authorization = `Bearer ${token}`;
     }
 
-    // Attempt to get Tenant ID from somewhere (e.g. store or cookies, but typically from Zustand or window/document context)
-    // For client-side, we can rely on Zustand store, but since this is outside React, we might read from localStorage or a cookie.
-    if (typeof window !== "undefined") {
-      const tenantId = useAuthStore.getState().user?.tenantId;
-      if (tenantId) {
-        config.headers["X-Tenant-ID"] = tenantId;
-      }
+    // Attempt to get Tenant ID from localStorage/cookies
+    const tenantId = getTenantId();
+    if (tenantId) {
+      config.headers["X-Tenant-ID"] = tenantId;
     }
 
     return config;
@@ -70,10 +66,11 @@ apiClient.interceptors.response.use(
 
         return apiClient(originalRequest);
       } catch (refreshError) {
-        // Refresh failed, logout user
+        // Refresh failed, clear tokens and dispatch event for smooth client-side logout
         removeAuthToken();
+        removeTenantId();
         if (typeof window !== "undefined") {
-          window.location.href = "/login";
+          window.dispatchEvent(new Event('auth:unauthorized'));
         }
         return Promise.reject(refreshError);
       }

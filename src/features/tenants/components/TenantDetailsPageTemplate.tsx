@@ -1,6 +1,5 @@
 "use client";
 
-import React, { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { getTenantById, TenantUser } from "../api/tenants";
 import { Badge } from "@/components/ui/badge";
@@ -8,7 +7,7 @@ import { DataTable, ColumnDef } from "@/components/ui/data-table";
 import { Loader2, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useFormatDate } from "@/hooks/use-format-date";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import {
   Card,
   CardDescription,
@@ -31,8 +30,17 @@ export function TenantDetailsPageTemplate({
   tenantId,
 }: TenantDetailsPageTemplateProps) {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const pathname = usePathname();
   const { formatDate } = useFormatDate();
-  const [activeTab, setActiveTab] = useState<TabKey>("institutionAdmins");
+
+  const activeTab = (searchParams.get("tab") as TabKey) || "institutionAdmins";
+
+  const handleTabChange = (key: TabKey) => {
+    const params = new URLSearchParams(searchParams.toString());
+    params.set("tab", key);
+    router.replace(`${pathname}?${params.toString()}`, { scroll: false });
+  };
 
   const {
     data: response,
@@ -201,7 +209,7 @@ export function TenantDetailsPageTemplate({
           {tabs.map((tab) => (
             <button
               key={tab.key}
-              onClick={() => setActiveTab(tab.key)}
+              onClick={() => handleTabChange(tab.key)}
               className={`pb-2 text-sm font-medium transition-colors border-b-2 whitespace-nowrap ${
                 activeTab === tab.key
                   ? "border-primary text-primary"
