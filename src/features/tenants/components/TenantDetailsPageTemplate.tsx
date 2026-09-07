@@ -14,6 +14,11 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { Plus } from "lucide-react";
+import { useAuthStore } from "@/features/auth/store/useAuthStore";
+import { AddUserDialog } from "@/features/users/components/AddUserDialog";
+import { QUERY_KEYS } from "@/configs/querykey";
+import { Role } from "@/configs/constants";
 
 interface TenantDetailsPageTemplateProps {
   tenantId: string;
@@ -34,6 +39,7 @@ export function TenantDetailsPageTemplate({
   const pathname = usePathname();
   const { formatDate } = useFormatDate();
 
+  const { user } = useAuthStore();
   const activeTab = (searchParams.get("tab") as TabKey) || "institutionAdmins";
 
   const handleTabChange = (key: TabKey) => {
@@ -47,7 +53,7 @@ export function TenantDetailsPageTemplate({
     isLoading,
     isError,
   } = useQuery({
-    queryKey: ["tenant", tenantId],
+    queryKey: [QUERY_KEYS.TENANT_DETAILS, tenantId],
     queryFn: () => getTenantById(tenantId),
     enabled: !!tenantId,
   });
@@ -202,7 +208,16 @@ export function TenantDetailsPageTemplate({
       </div>
 
       <div className="mt-8 space-y-4">
-        <h3 className="text-xl font-bold tracking-tight">Users</h3>
+        <div className="flex items-center justify-between">
+          <h3 className="text-xl font-bold tracking-tight">Users</h3>
+          {user?.role === Role.INSTITUTION_ADMIN && (
+            <AddUserDialog tenantId={tenantId}>
+              <Button size="sm">
+                <Plus className="h-4 w-4 mr-2" /> Add User
+              </Button>
+            </AddUserDialog>
+          )}
+        </div>
 
         {/* Custom Tabs */}
         <div className="border-b border-border flex space-x-6 overflow-x-auto">

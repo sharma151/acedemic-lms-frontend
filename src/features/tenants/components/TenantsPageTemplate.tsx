@@ -1,8 +1,6 @@
 "use client";
 
-import React from "react";
-import { useSearchParams, useRouter } from "next/navigation";
-import { useQueryParam } from "@/hooks/use-query-params";
+import { useRouter } from "next/navigation";
 import { DataTable, ColumnDef } from "@/components/ui/data-table";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -16,11 +14,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import {
-  getTenants,
   TenantData,
-  PaginationMetadata,
   activateTenantApi,
   suspendTenantApi,
 } from "../api/tenants";
@@ -54,7 +50,8 @@ export function TenantsPageTemplate({
   const queryClient = useQueryClient();
   const { addNotification } = useNotifications();
 
-  const { tenants, metadata, isLoading, filters, setQueryParams } = useTenantsList();
+  const { tenants, metadata, isLoading, filters, setQueryParams } =
+    useTenantsList();
   const { currentPage, pageSize, name, status } = filters;
 
   const activateMutation = useMutation({
