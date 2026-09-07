@@ -92,6 +92,15 @@ export function LoginForm() {
         }
       }
     },
+    onError: (err: any) => {
+      const form = formRef.current;
+      if (form) {
+        const errorMsg =
+          err.response?.data?.message ||
+          "User does not exist or wrong password";
+        form.setError("root", { type: "server", message: errorMsg });
+      }
+    },
   });
 
   const onSubmit = (data: LoginFormData) => {
@@ -222,6 +231,12 @@ export function LoginForm() {
                     )}
                   /> 
                   */}
+
+                  {form.formState.errors.root && (
+                    <div className="p-3 text-sm font-medium text-red-500 bg-red-50 dark:bg-red-900/20 dark:text-red-400 rounded-md">
+                      {form.formState.errors.root.message}
+                    </div>
+                  )}
 
                   <Button
                     type="submit"

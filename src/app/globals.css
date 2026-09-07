@@ -134,3 +134,19 @@
     @apply font-sans;
   }
 }
+
+/* Override Sonner close button position to be inside top-right */
+[data-sonner-toast] [data-close-button] {
+  left: auto !important;
+  right: 8px !important;
+  top: 8px !important;
+  transform: none !important;
+  border: none !important;
+  background-color: transparent !important;
+}
+[data-sonner-toast] [data-close-button]:hover {
+  background-color: rgba(0, 0, 0, 0.05) !important;
+}
+.dark [data-sonner-toast] [data-close-button]:hover {
+  background-color: rgba(255, 255, 255, 0.1) !important;
+}

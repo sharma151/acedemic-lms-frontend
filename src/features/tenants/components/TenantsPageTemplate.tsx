@@ -46,7 +46,12 @@ export function TenantsPageTemplate({
 }: TenantsPageTemplateProps) {
   const router = useRouter();
   const { formatDate } = useFormatDate();
-  const [tenantToSuspend, setTenantToSuspend] = useState<string | null>(null);
+  const [tenantToSuspend, setTenantToSuspend] = useState<TenantData | null>(
+    null,
+  );
+  const [tenantToActivate, setTenantToActivate] = useState<TenantData | null>(
+    null,
+  );
   const queryClient = useQueryClient();
   const { addNotification } = useNotifications();
 
@@ -62,9 +67,11 @@ export function TenantsPageTemplate({
         title: "Tenant activated successfully",
       });
       queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.TENANTS] });
+      setTenantToActivate(null);
     },
     onError: () => {
       addNotification({ type: "error", title: "Failed to activate tenant" });
+      setTenantToActivate(null);
     },
   });
 
@@ -131,21 +138,31 @@ export function TenantsPageTemplate({
       cell: (item) => (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="h-8 w-8 p-0">
+            <Button
+              variant="ghost"
+              className="h-8 w-8 p-0"
+              onClick={(e) => e.stopPropagation()}
+            >
               <span className="sr-only">Open menu</span>
               <MoreHorizontal className="h-4 w-4 rotate-90" />
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
+          <DropdownMenuContent align="end" onClick={(e) => e.stopPropagation()}>
             <DropdownMenuItem
               disabled={activateMutation.isPending || item.status === "active"}
-              onClick={() => activateMutation.mutate(item.id)}
+              onClick={(e) => {
+                e.stopPropagation();
+                setTenantToActivate(item);
+              }}
             >
               Activate
             </DropdownMenuItem>
             <DropdownMenuItem
               disabled={item.status === "inactive"}
-              onClick={() => setTenantToSuspend(item.id)}
+              onClick={(e) => {
+                e.stopPropagation();
+                setTenantToSuspend(item);
+              }}
             >
               Suspend
             </DropdownMenuItem>
@@ -250,13 +267,46 @@ export function TenantsPageTemplate({
         isOpen={!!tenantToSuspend}
         onClose={() => setTenantToSuspend(null)}
         onConfirm={() =>
-          tenantToSuspend && suspendMutation.mutate(tenantToSuspend)
+          tenantToSuspend && suspendMutation.mutate(tenantToSuspend.id)
         }
-        title="Suspend Tenant"
-        description="Are you sure you want to suspend this tenant? They will no longer be able to access the platform."
+        title={
+          <>
+            Suspend <strong>{tenantToSuspend?.name || "Tenant"}</strong>?
+          </>
+        }
+        description={
+          <>
+            Are you sure you want to suspend{" "}
+            <strong>{tenantToSuspend?.name || "this tenant"}</strong>? They will
+            no longer be able to access the platform.
+          </>
+        }
         confirmText="Suspend"
         variant="destructive"
         isLoading={suspendMutation.isPending}
+      />
+
+      <ConfirmDialog
+        isOpen={!!tenantToActivate}
+        onClose={() => setTenantToActivate(null)}
+        onConfirm={() =>
+          tenantToActivate && activateMutation.mutate(tenantToActivate.id)
+        }
+        title={
+          <>
+            Activate <strong>{tenantToActivate?.name || "Tenant"}</strong>?
+          </>
+        }
+        description={
+          <>
+            Are you sure you want to activate{" "}
+            <strong>{tenantToActivate?.name || "this tenant"}</strong>? They
+            will regain access to the platform.
+          </>
+        }
+        confirmText="Activate"
+        variant="default"
+        isLoading={activateMutation.isPending}
       />
     </div>
   );
