@@ -16,6 +16,7 @@ import Cookies from "js-cookie";
 import { useAuthStore } from "@/features/auth/store/useAuthStore";
 import { logoutApi } from "@/features/auth/api/auth";
 import { useCustomMutation } from "@/hooks/use-custom-mutation";
+import { useGetProfile } from "@/features/profile/api/get-profile";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -35,6 +36,7 @@ export function TopNavbar({ title = "Academic LMS" }: TopNavbarProps) {
   const router = useRouter();
   const { user, logout: logoutStore } = useAuthStore();
   const queryClient = useQueryClient();
+  const { data: profileResponse } = useGetProfile();
 
   const { mutate: logout, isPending: isLoggingOut } = useCustomMutation({
     service: logoutApi,
@@ -55,12 +57,16 @@ export function TopNavbar({ title = "Academic LMS" }: TopNavbarProps) {
     ? `${user.firstName} ${user.lastName || ""}`.trim()
     : user?.name || "Admin User";
 
+  const isSuperAdmin = user?.role === Role.SUPER_ADMIN || user?.role === "super-admin";
+  const profile = profileResponse?.data;
+  const displayTitle = !isSuperAdmin && profile?.tenant?.name ? profile.tenant.name : title;
+
   return (
     <header className="sticky top-0 z-30 flex h-16 w-full items-center justify-between border-b bg-white dark:bg-slate-950 px-4 sm:px-6 shadow-sm">
       <div className="flex items-center gap-4">
         <SidebarTrigger className="-ml-1 md:hidden" />
         <h1 className="text-lg font-semibold text-slate-900 dark:text-white hidden sm:block">
-          {title}
+          {displayTitle}
         </h1>
       </div>
 
