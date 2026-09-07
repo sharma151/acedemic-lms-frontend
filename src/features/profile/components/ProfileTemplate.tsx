@@ -19,6 +19,7 @@ import {
   ShieldCheck,
   School,
 } from "lucide-react";
+import { ChangePasswordDialog } from "./ChangePasswordDialog";
 import { Button } from "@/components/ui/button";
 
 export function ProfileTemplate() {
@@ -87,9 +88,7 @@ export function ProfileTemplate() {
               <Button variant="outline" className="w-full">
                 Edit Profile
               </Button>
-              <Button variant="outline" className="w-full">
-                Change Password
-              </Button>
+              <ChangePasswordDialog />
             </div>
           </CardContent>
         </Card>
