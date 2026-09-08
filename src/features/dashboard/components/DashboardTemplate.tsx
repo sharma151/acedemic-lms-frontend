@@ -1,3 +1,5 @@
+"use client";
+
 import React from "react";
 import { Role } from "@/configs/constants";
 import { Button } from "@/components/ui/button";
@@ -6,46 +8,63 @@ import { EnrollmentChart } from "./EnrollmentChart";
 import { RecentActivity } from "./RecentActivity";
 import { PendingApprovals } from "./PendingApprovals";
 import { QuickActions } from "./QuickActions";
-import { Plus } from "lucide-react";
-
+import { Plus, Download, Calendar } from "lucide-react";
 import { useFormatDate } from "@/hooks/use-format-date";
 
 export function DashboardTemplate({ role = Role.SUPER_ADMIN }: { role?: string }) {
-  // Normally this data comes from an API or auth context
   const userName = "Saurav";
   const { formatDate } = useFormatDate();
-  const currentDate = formatDate(new Date(), 'DEFAULT');
+  const currentDate = formatDate(new Date(), "DEFAULT");
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+      {/* Precision Header Rail */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-border/60">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight text-primary">
-            Good morning, {userName}
-          </h1>
-          <p className="text-muted-foreground mt-1">
-            Here&apos;s what&apos;s happening across your {role === Role.SUPER_ADMIN ? "institutions" : "platform"} today — {currentDate}
+          <div className="flex items-center gap-2">
+            <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-foreground font-heading">
+              Executive Overview
+            </h1>
+            <span className="inline-flex items-center rounded-xs bg-accent/60 px-2 py-0.5 text-xs font-mono font-medium text-primary border border-primary/20">
+              {role === Role.SUPER_ADMIN ? "SUPER ADMIN PORTAL" : "CAMPUS PORTAL"}
+            </span>
+          </div>
+          <p className="text-xs sm:text-sm text-muted-foreground mt-1">
+            Welcome back, <span className="font-semibold text-foreground">{userName}</span>. System active across all monitored institutions.
           </p>
         </div>
-        {role === Role.SUPER_ADMIN && (
-          <Button className="bg-primary text-primary-foreground hover:bg-primary/90 shadow-sm font-semibold">
-            <Plus className="mr-2 h-4 w-4" /> Add Institution
+
+        <div className="flex items-center gap-2">
+          <div className="hidden md:flex items-center gap-1.5 px-3 py-1.5 rounded-md border border-border bg-card text-xs text-muted-foreground font-mono">
+            <Calendar className="h-3.5 w-3.5 text-primary" />
+            <span>{currentDate}</span>
+          </div>
+
+          <Button variant="outline" size="sm" className="h-8 text-xs gap-1.5 border-border">
+            <Download className="h-3.5 w-3.5" />
+            <span className="hidden sm:inline">Export Report</span>
           </Button>
-        )}
+
+          {role === Role.SUPER_ADMIN && (
+            <Button size="sm" className="h-8 text-xs gap-1.5 font-medium shadow-xs">
+              <Plus className="h-3.5 w-3.5" />
+              <span>Add Institution</span>
+            </Button>
+          )}
+        </div>
       </div>
 
-      {/* Stats row */}
+      {/* Stats Metric Strip */}
       <StatCards role={role} />
 
       {/* Middle row: Chart and Activity */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
         <EnrollmentChart />
         <RecentActivity />
       </div>
 
-      {/* Bottom row: Table and Quick Actions */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      {/* Bottom row: Approvals Table and Quick Actions */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
         {role === Role.SUPER_ADMIN && <PendingApprovals />}
         <QuickActions role={role} />
       </div>
