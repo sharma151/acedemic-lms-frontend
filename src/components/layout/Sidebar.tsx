@@ -1,8 +1,10 @@
+"use client";
+
 import React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
-import { LucideIcon, Mountain, ChevronLeft, ChevronRight } from "lucide-react";
+import { LucideIcon, GraduationCap, ChevronLeft, ChevronRight } from "lucide-react";
 import {
   Sidebar as ShadcnSidebar,
   SidebarContent,
@@ -45,58 +47,69 @@ export function Sidebar({ items }: SidebarProps) {
   );
 
   return (
-    <ShadcnSidebar collapsible="icon">
+    <ShadcnSidebar collapsible="icon" className="border-r border-border bg-sidebar text-sidebar-foreground">
       <button
         onClick={toggleSidebar}
-        className="absolute -right-4 top-18 z-50 hidden h-8 w-8 items-center justify-center rounded-full border border-border bg-background text-muted-foreground shadow-sm hover:text-foreground md:flex"
+        className="absolute -right-3 top-18 z-50 hidden h-6 w-6 items-center justify-center rounded-full border border-border bg-background text-muted-foreground shadow-xs hover:text-foreground hover:border-primary/50 transition-colors md:flex"
+        aria-label="Toggle sidebar collapse"
       >
         {state === "expanded" ? (
-          <ChevronLeft className="h-4 w-4" />
+          <ChevronLeft className="h-3.5 w-3.5" />
         ) : (
-          <ChevronRight className="h-4 w-4" />
+          <ChevronRight className="h-3.5 w-3.5" />
         )}
       </button>
-      <SidebarHeader className="flex h-16 shrink-0 items-center justify-center px-4 border-b border-border">
+
+      <SidebarHeader className="flex h-14 shrink-0 items-center justify-start px-4 border-b border-border/80">
         <Link
           href="/"
-          className="flex items-center gap-2 font-bold text-xl text-primary overflow-hidden"
+          className="flex items-center gap-2.5 font-bold text-base text-foreground tracking-tight overflow-hidden"
         >
-          <Mountain className="w-6 h-6 shrink-0" />
-          <span className="truncate group-data-[collapsible=icon]:hidden">
-            LMS Portal
+          <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-primary text-primary-foreground">
+            <GraduationCap className="h-4 w-4" />
+          </div>
+          <span className="truncate group-data-[collapsible=icon]:hidden font-heading text-sm font-semibold tracking-tight">
+            Academic LMS
           </span>
         </Link>
       </SidebarHeader>
 
-      <SidebarContent className="py-4">
+      <SidebarContent className="py-3 px-2 space-y-4">
         {Object.entries(sections).map(([section, sectionItems]) => (
-          <SidebarGroup key={section}>
-            <SidebarGroupLabel className="group-data-[collapsible=icon]:hidden">
+          <SidebarGroup key={section} className="p-0">
+            <SidebarGroupLabel className="px-2 text-[10px] font-mono uppercase tracking-wider text-muted-foreground group-data-[collapsible=icon]:hidden">
               {section}
             </SidebarGroupLabel>
-            <SidebarGroupContent>
+            <SidebarGroupContent className="mt-1">
               <SidebarMenu>
                 {sectionItems.map((item) => {
                   const isActive = pathname.startsWith(item.href);
                   return (
-                    <SidebarMenuItem key={item.href} className="mb-1">
+                    <SidebarMenuItem key={item.href} className="mb-0.5">
                       <SidebarMenuButton
                         asChild
                         isActive={isActive}
                         tooltip={item.title}
                         className={cn(
-                          "transition-all h-auto py-2.5 px-4 rounded-md text-[15px] text-slate-600 dark:text-slate-400 hover:bg-blue-50 dark:hover:bg-blue-900/30 hover:text-blue-600 dark:hover:text-blue-400",
+                          "relative transition-all h-8 py-1.5 px-2.5 rounded-md text-[13px] font-medium text-muted-foreground hover:bg-accent/50 hover:text-foreground",
                           "group-data-[collapsible=icon]:!w-full group-data-[collapsible=icon]:!h-8 group-data-[collapsible=icon]:!justify-center group-data-[collapsible=icon]:!px-0",
                           isActive &&
-                            "bg-blue-50 dark:bg-blue-900/40 text-blue-700 dark:text-blue-400 font-semibold shadow-sm",
+                            "bg-accent/80 text-primary font-semibold shadow-2xs before:absolute before:left-0 before:top-1.5 before:bottom-1.5 before:w-[3px] before:rounded-r-sm before:bg-primary",
                         )}
                       >
                         <Link
                           href={item.href}
-                          className="flex items-center gap-3 w-full group-data-[collapsible=icon]:justify-center"
+                          className="flex items-center gap-2.5 w-full group-data-[collapsible=icon]:justify-center"
                         >
-                          <item.icon className={cn("shrink-0 transition-transform", isActive ? "h-5 w-5" : "h-[18px] w-[18px]")} />
-                          <span className="group-data-[collapsible=icon]:hidden">{item.title}</span>
+                          <item.icon
+                            className={cn(
+                              "shrink-0 transition-transform",
+                              isActive ? "h-4 w-4 text-primary" : "h-4 w-4 text-muted-foreground",
+                            )}
+                          />
+                          <span className="group-data-[collapsible=icon]:hidden truncate">
+                            {item.title}
+                          </span>
                         </Link>
                       </SidebarMenuButton>
                     </SidebarMenuItem>
