@@ -3,12 +3,12 @@
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Loader2 } from "lucide-react";
-import { useAuthStore } from "@/features/auth/store/useAuthStore";
+import { useSession } from "@/lib/session";
 import { Role } from "@/configs/constants";
 
 export default function Home() {
   const router = useRouter();
-  const { user } = useAuthStore();
+  const user = useSession((state) => state.user);
 
   useEffect(() => {
     if (user) {

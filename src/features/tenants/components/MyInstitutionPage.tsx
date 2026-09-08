@@ -1,12 +1,12 @@
 "use client";
 
 import React from "react";
-import { useAuthStore } from "@/features/auth/store/useAuthStore";
+import { useSession } from "@/lib/session";
 import { TenantDetailsPageTemplate } from "./TenantDetailsPageTemplate";
 import { Loader2 } from "lucide-react";
 
 export function MyInstitutionPage() {
-  const user = useAuthStore((state) => state.user);
+  const user = useSession((state) => state.user);
 
   if (!user) {
     return (

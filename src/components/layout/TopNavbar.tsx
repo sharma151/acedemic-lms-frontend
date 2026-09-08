@@ -15,9 +15,9 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
-import { useAuthStore } from "@/features/auth/store/useAuthStore";
+import { useSession } from "@/lib/session";
 import { logoutApi } from "@/features/auth/api/auth";
-import { removeAuthToken, removeTenantId } from "@/lib/auth";
+
 import { useCustomMutation } from "@/hooks/use-custom-mutation";
 import { useGetProfile } from "@/features/profile/api/get-profile";
 import {
@@ -36,7 +36,8 @@ interface TopNavbarProps {
 
 export function TopNavbar({ title = "Academic LMS" }: TopNavbarProps) {
   const router = useRouter();
-  const { user, logout: logoutStore } = useAuthStore();
+  const user = useSession((state) => state.user);
+  const clearSession = useSession((state) => state.clearSession);
   const queryClient = useQueryClient();
   const { data: profileResponse } = useGetProfile();
 
@@ -44,9 +45,7 @@ export function TopNavbar({ title = "Academic LMS" }: TopNavbarProps) {
     service: logoutApi,
     successMessage: "Successfully signed out",
     onSuccess: () => {
-      removeAuthToken();
-      removeTenantId();
-      logoutStore();
+      clearSession();
       queryClient.clear();
       window.location.href = "/login";
     },
