@@ -157,25 +157,26 @@ export function ProfileTemplate() {
                   </p>
                 </div>
               )}
-
-              <div className="space-y-1 sm:col-span-2 pt-4 border-t border-border/50">
-                <div className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
-                  <Calendar className="h-4 w-4" />
-                  Member Since
+              <div className=" sm:col-span-2 flex  items-center gap-10  text-sm ">
+                <div className="space-y-1 sm:col-span-2 ">
+                  <div className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
+                    <Calendar className="h-4 w-4" />
+                    Member Since
+                  </div>
+                  <p className="text-sm font-medium text-foreground">
+                    {formatDate(profile?.createdAt, "WITH_TIME")}
+                  </p>
                 </div>
-                <p className="text-sm font-medium text-foreground">
-                  {formatDate(profile?.createdAt, "WITH_TIME")}
-                </p>
-              </div>
 
-              <div className="space-y-1 sm:col-span-2">
-                <div className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
-                  <Clock className="h-4 w-4" />
-                  Last Login
+                <div className="space-y-1 sm:col-span-2">
+                  <div className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
+                    <Clock className="h-4 w-4" />
+                    Last Login
+                  </div>
+                  <p className="text-sm font-medium text-foreground">
+                    {formatDate(profile?.lastLoginAt, "WITH_TIME")}
+                  </p>
                 </div>
-                <p className="text-sm font-medium text-foreground">
-                  {formatDate(profile?.lastLoginAt, "WITH_TIME")}
-                </p>
               </div>
             </div>
           </CardContent>
