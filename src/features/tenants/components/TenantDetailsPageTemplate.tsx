@@ -15,7 +15,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Plus } from "lucide-react";
-import { useAuthStore } from "@/features/auth/store/useAuthStore";
+import { useSession } from "@/lib/session";
 import { AddUserDialog } from "@/features/users/components/AddUserDialog";
 import { QUERY_KEYS } from "@/configs/querykey";
 import { Role } from "@/configs/constants";
@@ -39,7 +39,7 @@ export function TenantDetailsPageTemplate({
   const pathname = usePathname();
   const { formatDate } = useFormatDate();
 
-  const { user } = useAuthStore();
+  const user = useSession((state) => state.user);
   const activeTab = (searchParams.get("tab") as TabKey) || "institutionAdmins";
 
   const handleTabChange = (key: TabKey) => {

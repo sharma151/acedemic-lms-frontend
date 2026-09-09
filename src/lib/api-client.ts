@@ -1,5 +1,5 @@
 import axios from "axios";
-import { getAuthToken, setAuthToken, removeAuthToken, getTenantId, removeTenantId } from "./auth";
+import { getSessionState } from "./session";
 
 const API_BASE_URL =
   process.env.NEXT_PUBLIC_API_URL || "http://localhost:8888/api/v1";
@@ -14,13 +14,12 @@ export const apiClient = axios.create({
 // Request Interceptor
 apiClient.interceptors.request.use(
   (config) => {
-    const token = getAuthToken();
+    const { token, tenantId } = getSessionState();
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
 
-    // Attempt to get Tenant ID from localStorage/cookies
-    const tenantId = getTenantId();
+    // Attempt to get Tenant ID from session
     if (tenantId) {
       config.headers["X-Tenant-ID"] = tenantId;
     }
@@ -61,8 +60,8 @@ apiClient.interceptors.response.use(
 
         const { accessToken } = response.data;
 
-        // Update token in storage
-        setAuthToken(accessToken);
+        // Update token in session
+        getSessionState().updateToken(accessToken);
 
         // Update authorization header and retry original request
         apiClient.defaults.headers.common["Authorization"] =
@@ -71,9 +70,8 @@ apiClient.interceptors.response.use(
 
         return apiClient(originalRequest);
       } catch (refreshError) {
-        // Refresh failed, clear tokens and dispatch event for smooth client-side logout
-        removeAuthToken();
-        removeTenantId();
+        // Refresh failed, clear session and dispatch event for smooth client-side logout
+        getSessionState().clearSession();
         if (typeof window !== "undefined") {
           window.dispatchEvent(new Event('auth:unauthorized'));
         }

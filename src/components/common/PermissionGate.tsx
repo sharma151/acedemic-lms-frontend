@@ -1,6 +1,6 @@
 'use client';
 
-import { useAuthStore } from '@/features/auth/store/useAuthStore';
+import { useSession } from '@/lib/session';
 import { ReactNode } from 'react';
 import { Role } from '@/configs/constants';
 
@@ -11,7 +11,7 @@ interface PermissionGateProps {
 }
 
 export function PermissionGate({ permission, children, fallback = null }: PermissionGateProps) {
-  const user = useAuthStore((state) => state.user);
+  const user = useSession((state) => state.user);
 
   // Check if the user has the required role/permission
   const hasRole = Array.isArray(user?.role) 

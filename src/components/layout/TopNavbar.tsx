@@ -7,7 +7,7 @@ import {
   Mail,
   User,
   ChevronDown,
-  KeyRound,
+  Settings,
   LogOut,
   User as UserIcon,
   Shield,
@@ -15,9 +15,9 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
-import { useAuthStore } from "@/features/auth/store/useAuthStore";
+import { useSession } from "@/lib/session";
 import { logoutApi } from "@/features/auth/api/auth";
-import { removeAuthToken, removeTenantId } from "@/lib/auth";
+
 import { useCustomMutation } from "@/hooks/use-custom-mutation";
 import { useGetProfile } from "@/features/profile/api/get-profile";
 import {
@@ -36,7 +36,8 @@ interface TopNavbarProps {
 
 export function TopNavbar({ title = "Academic LMS" }: TopNavbarProps) {
   const router = useRouter();
-  const { user, logout: logoutStore } = useAuthStore();
+  const user = useSession((state) => state.user);
+  const clearSession = useSession((state) => state.clearSession);
   const queryClient = useQueryClient();
   const { data: profileResponse } = useGetProfile();
 
@@ -44,9 +45,7 @@ export function TopNavbar({ title = "Academic LMS" }: TopNavbarProps) {
     service: logoutApi,
     successMessage: "Successfully signed out",
     onSuccess: () => {
-      removeAuthToken();
-      removeTenantId();
-      logoutStore();
+      clearSession();
       queryClient.clear();
       window.location.href = "/login";
     },
@@ -145,9 +144,14 @@ export function TopNavbar({ title = "Academic LMS" }: TopNavbarProps) {
                 <span>Personal Profile</span>
               </DropdownMenuItem>
 
-              <DropdownMenuItem className="cursor-pointer py-1.5 px-2.5 text-xs text-foreground hover:bg-accent focus:bg-accent">
-                <KeyRound className="mr-2 h-3.5 w-3.5 text-muted-foreground" />
-                <span>Security Credentials</span>
+              <DropdownMenuItem
+                className="cursor-pointer py-1.5 px-2.5 text-xs text-foreground hover:bg-accent focus:bg-accent"
+                onClick={() => {
+                  router.push(isSuperAdmin ? "/super-admin/settings" : "/settings");
+                }}
+              >
+                <Settings className="mr-2 h-3.5 w-3.5 text-muted-foreground" />
+                <span>Settings</span>
               </DropdownMenuItem>
             </div>
 

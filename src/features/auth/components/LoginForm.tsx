@@ -25,10 +25,9 @@ import { Separator } from "@/components/ui/separator";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Loader2, Eye, EyeOff } from "lucide-react";
-import { setAuthToken, setTenantId, removeTenantId } from "@/lib/auth";
 import { loginWithEmail, getAuthMe } from "../api/auth";
 import { useCustomMutation } from "@/hooks/use-custom-mutation";
-import { useAuthStore } from "../store/useAuthStore";
+import { useSession } from "@/lib/session";
 import { useQueryClient } from "@tanstack/react-query";
 import { QUERY_KEYS } from "@/configs/querykey";
 import { AxiosError } from "axios";
@@ -36,7 +35,7 @@ import { AxiosError } from "axios";
 export function LoginForm() {
   const formRef = useRef<UseFormReturn<LoginFormData>>(null);
   const [showPassword, setShowPassword] = useState(false);
-  const setUser = useAuthStore((state) => state.setUser);
+  const setSession = useSession((state) => state.setSession);
   const queryClient = useQueryClient();
 
   const router = useRouter();
@@ -47,45 +46,36 @@ export function LoginForm() {
     successMessage: "Successfully logged in!",
     onSuccess: async (data) => {
       if (data?.accessToken) {
-        setAuthToken(data.accessToken);
-        setUser(data.user);
+        let userProfile = data.user;
+        let tenantId = userProfile?.tenantId;
+        let role = userProfile?.role;
+        
+        // We set session temporarily to allow getAuthMe to use the token
+        setSession(data.accessToken, tenantId || null, userProfile);
 
         // Force React Query to drop any stale profile data from a previous session
         queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.AUTH_PROFILE] });
 
-        // Initial fallback from login response
-        let tenantId = data?.user?.tenantId;
-
-        let role = data.user?.role;
         try {
           const meData = await getAuthMe();
-          // Extract tenantId from /me response if available, fallback to login response
           console.log("Fetched user profile during login:", meData);
-          tenantId = meData.data?.tenantId || tenantId;
-          role = meData.data?.role || role;
           
-          // IMPORTANT: Update the store with the complete user profile
           if (meData?.data) {
-            setUser(meData.data);
+            userProfile = meData.data;
+            tenantId = userProfile.tenantId || tenantId;
+            role = userProfile.role || role;
+            
+            // IMPORTANT: Update the store with the complete user profile
+            setSession(data.accessToken, tenantId || null, userProfile);
           }
-
-          console.log("Login success. Extracting tenantId:", tenantId, {
-            loginUser: data?.user,
-            meData,
-          });
         } catch (error) {
           console.error("Failed to fetch user profile during login", error);
         }
 
         const params = new URLSearchParams(window.location.search);
-        // Only append tenantId if it's actually available
         if (tenantId) {
           params.set("tenantId", tenantId);
-          setTenantId(tenantId);
-        } else {
-          removeTenantId();
         }
-
         const queryString = params.toString();
         const searchPart = queryString ? `?${queryString}` : "";
 

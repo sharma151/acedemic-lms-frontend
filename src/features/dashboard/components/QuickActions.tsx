@@ -46,7 +46,7 @@ export function QuickActions({ role }: QuickActionsProps) {
   ];
 
   return (
-    <Card className="col-span-1 border border-border bg-card shadow-xs flex flex-col justify-between">
+    <Card className="col-span-1 border border-border bg-card shadow-xs flex flex-col">
       <CardHeader className="pb-3 border-b border-border/40">
         <CardTitle className="text-sm font-semibold tracking-tight text-foreground">
           Administrative Actions
@@ -65,13 +65,13 @@ export function QuickActions({ role }: QuickActionsProps) {
               return (
                 <button
                   key={action.id}
-                  className="group flex items-center justify-between rounded-md border border-border/80 bg-background/50 p-2.5 text-left text-xs transition-all hover:border-primary/50 hover:bg-accent/40 focus-visible:outline-hidden focus-visible:ring-1 focus-visible:ring-ring"
+                  className="w-full min-w-0 group flex items-center justify-between rounded-md border border-border/80 bg-background/50 p-2.5 text-left text-xs transition-all hover:border-primary/50 hover:bg-accent/40 focus-visible:outline-hidden focus-visible:ring-1 focus-visible:ring-ring"
                 >
-                  <div className="flex items-center gap-3 min-w-0">
+                  <div className="flex items-center gap-3 min-w-0 flex-1">
                     <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-xs bg-accent/60 text-primary group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
                       <Icon className="h-3.5 w-3.5" />
                     </div>
-                    <div className="min-w-0">
+                    <div className="min-w-0 flex-1">
                       <p className="font-semibold text-foreground group-hover:text-primary transition-colors truncate">
                         {action.title}
                       </p>

@@ -158,7 +158,7 @@ export function TenantsPageTemplate({
               Activate
             </DropdownMenuItem>
             <DropdownMenuItem
-              disabled={item.status === "inactive"}
+              disabled={suspendMutation.isPending || item.status === "suspended"}
               onClick={(e) => {
                 e.stopPropagation();
                 setTenantToSuspend(item);
