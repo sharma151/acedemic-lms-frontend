@@ -4,4 +4,5 @@ export const QUERY_KEYS = {
   USERS: "users",
   AUTH_PROFILE: "auth-profile",
   SUBSCRIPTION_PLANS: "subscription-plans",
+  SETTINGS: "settings",
 } as const;
