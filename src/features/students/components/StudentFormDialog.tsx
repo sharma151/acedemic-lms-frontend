@@ -1,6 +1,5 @@
 "use client";
 
-import React from "react";
 import { Loader2 } from "lucide-react";
 
 import {
@@ -28,12 +27,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-import {
-  createStudentSchema,
-  updateStudentSchema,
-  CreateStudentFormData,
-  UpdateStudentFormData,
-} from "../schemas/students";
+import { createStudentSchema, updateStudentSchema } from "../schemas/students";
 import { Student } from "../types";
 import { useCreateStudent, useUpdateStudent } from "../api/students";
 
@@ -63,10 +57,8 @@ export const StudentFormDialog = ({
 
   const defaultValues = isEditing
     ? {
-        email: student!.user?.email || "",
         firstName: student!.user?.firstName || "",
         lastName: student!.user?.lastName || "",
-        admissionNumber: student!.admissionNumber || "",
         dateOfBirth: student!.dateOfBirth
           ? new Date(student!.dateOfBirth).toISOString().split("T")[0]
           : "",
@@ -238,38 +230,42 @@ export const StudentFormDialog = ({
                     )}
                   />
 
-                  <FormField
-                    control={form.control}
-                    name="admissionNumber"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Admission Number</FormLabel>
-                        <FormControl>
-                          <Input {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                  {!isEditing && (
+                    <FormField
+                      control={form.control}
+                      name="admissionNumber"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Admission Number</FormLabel>
+                          <FormControl>
+                            <Input {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  )}
 
                   {/* Contact Information */}
                   <div className="md:col-span-2 text-sm font-semibold text-slate-700 bg-slate-50 p-2 rounded mt-2">
                     Contact & Account
                   </div>
 
-                  <FormField
-                    control={form.control}
-                    name="email"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Email Address</FormLabel>
-                        <FormControl>
-                          <Input type="email" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                  {!isEditing && (
+                    <FormField
+                      control={form.control}
+                      name="email"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Email Address</FormLabel>
+                          <FormControl>
+                            <Input type="email" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  )}
 
                   {!isEditing && (
                     <FormField

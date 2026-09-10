@@ -23,10 +23,8 @@ export const createStudentSchema = z.object({
 export type CreateStudentFormData = z.infer<typeof createStudentSchema>;
 
 export const updateStudentSchema = z.object({
-  email: z.string().email("Invalid email address").optional(),
   firstName: z.string().min(1, "First name is required").optional(),
   lastName: z.string().min(1, "Last name is required").optional(),
-  admissionNumber: z.string().min(1, "Admission number is required").optional(),
   dateOfBirth: z.string().min(1, "Date of birth is required").optional(),
   gender: z.enum(["MALE", "FEMALE", "OTHER"]).optional(),
   bloodGroup: z.enum(["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"]).optional(),

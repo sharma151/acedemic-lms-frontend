@@ -95,10 +95,8 @@ export interface CreateStudentPayload {
 }
 
 export interface UpdateStudentPayload {
-  email?: string;
   firstName?: string;
   lastName?: string;
-  admissionNumber?: string;
   dateOfBirth?: string;
   gender?: Gender;
   bloodGroup?: BloodGroup;

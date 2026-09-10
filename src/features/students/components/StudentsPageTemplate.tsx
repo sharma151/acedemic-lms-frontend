@@ -1,7 +1,7 @@
 "use client";
 
-import React, { useState } from "react";
-import { useRouter, useSearchParams, usePathname } from "next/navigation";
+import { useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Plus, Search, Eye } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -69,10 +69,11 @@ export const StudentsPageTemplate = ({
 
   const columns: ColumnDef<Student>[] = [
     {
-      header: "Admission No",
-      accessorKey: "admissionNumber",
-      className: "font-medium text-slate-900",
+      header: "S.N.",
+      className: "w-16 font-medium text-slate-500",
+      cell: (_, index) => (currentPage - 1) * pageSize + index + 1,
     },
+
     {
       header: "Name",
       cell: (student) => {
@@ -97,6 +98,11 @@ export const StudentsPageTemplate = ({
           return <span className="text-muted-foreground">—</span>;
         return `  ${enrollment.rollNumber}`;
       },
+    },
+    {
+      header: "Admission No",
+      accessorKey: "admissionNumber",
+      className: "font-medium text-slate-900",
     },
     {
       header: "Emergency Contact",
