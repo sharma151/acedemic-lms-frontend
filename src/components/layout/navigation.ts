@@ -28,7 +28,12 @@ export const tenantNavigation: SidebarNavItem[] = [
     icon: GraduationCap,
     section: "Management",
   },
-  // { title: "Users", href: "/users", icon: Users, section: "Management" },
+  {
+    title: "Students",
+    href: "/students",
+    icon: Users,
+    section: "Management",
+  },
   { title: "Roles", href: "/roles", icon: ShieldAlert, section: "Management" },
   {
     title: "Settings",
@@ -55,6 +60,12 @@ export const adminNavigation: SidebarNavItem[] = [
     title: "Academics",
     href: "/super-admin/academics",
     icon: GraduationCap,
+    section: "Platform Management",
+  },
+  {
+    title: "Students",
+    href: "/super-admin/students",
+    icon: Users,
     section: "Platform Management",
   },
   {
