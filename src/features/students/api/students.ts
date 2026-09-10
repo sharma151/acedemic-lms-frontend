@@ -1,4 +1,4 @@
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { apiClient } from "@/lib/api-client";
 import { QUERY_KEYS } from "@/configs/querykey";
 import { useCustomMutation } from "@/hooks/use-custom-mutation";
@@ -46,13 +46,15 @@ export interface GetStudentHistoryResponse {
 // --- API Functions ---
 
 export const getStudents = async (
-  filters?: GetStudentsFilters
+  filters?: GetStudentsFilters,
 ): Promise<{ data: Student[]; metadata?: PaginationMetadata }> => {
-  const response = await apiClient.get<GetStudentsResponse>("/students", { params: filters });
+  const response = await apiClient.get<GetStudentsResponse>("/students", {
+    params: filters,
+  });
   return { data: response.data.data, metadata: response.data.metadata };
 };
 
-export const getStudent = async (id: string): Promise<Student> => {
+export const getStudentDetails = async (id: string): Promise<Student> => {
   const response = await apiClient.get<GetStudentResponse>(`/students/${id}`);
   return response.data.data;
 };
@@ -62,28 +64,58 @@ export const createStudent = async (data: CreateStudentPayload) => {
   return response.data;
 };
 
-export const updateStudent = async ({ id, data }: { id: string; data: UpdateStudentPayload }) => {
+export const updateStudent = async ({
+  id,
+  data,
+}: {
+  id: string;
+  data: UpdateStudentPayload;
+}) => {
   const response = await apiClient.patch(`/students/${id}`, data);
   return response.data;
 };
 
-export const getStudentHistory = async (id: string): Promise<StudentHistory[]> => {
-  const response = await apiClient.get<GetStudentHistoryResponse>(`/students/${id}/history`);
+export const getStudentHistory = async (
+  id: string,
+): Promise<StudentHistory[]> => {
+  const response = await apiClient.get<GetStudentHistoryResponse>(
+    `/students/${id}/history`,
+  );
   return response.data.data;
 };
 
-export const promoteStudent = async ({ id, data }: { id: string; data: PromoteStudentPayload }) => {
+export const promoteStudent = async ({
+  id,
+  data,
+}: {
+  id: string;
+  data: PromoteStudentPayload;
+}) => {
   const response = await apiClient.post(`/students/${id}/promote`, data);
   return response.data;
 };
 
-export const linkParent = async ({ id, data }: { id: string; data: LinkParentPayload }) => {
+export const linkParent = async ({
+  id,
+  data,
+}: {
+  id: string;
+  data: LinkParentPayload;
+}) => {
   const response = await apiClient.post(`/students/${id}/parents`, data);
   return response.data;
 };
 
-export const unlinkParent = async ({ id, parentUserId }: { id: string; parentUserId: string }) => {
-  const response = await apiClient.delete(`/students/${id}/parents/${parentUserId}`);
+export const unlinkParent = async ({
+  id,
+  parentUserId,
+}: {
+  id: string;
+  parentUserId: string;
+}) => {
+  const response = await apiClient.delete(
+    `/students/${id}/parents/${parentUserId}`,
+  );
   return response.data;
 };
 
@@ -96,10 +128,10 @@ export const useStudents = (filters: GetStudentsFilters = {}) => {
   });
 };
 
-export const useStudent = (id?: string) => {
+export const useStudentDetails = (id?: string) => {
   return useQuery({
     queryKey: [QUERY_KEYS.STUDENT_DETAILS, id],
-    queryFn: () => getStudent(id!),
+    queryFn: () => getStudentDetails(id!),
     enabled: !!id,
   });
 };
@@ -113,8 +145,7 @@ export const useStudentHistory = (id?: string) => {
 };
 
 export const useCreateStudent = () => {
-  const queryClient = useQueryClient();
-  return useCustomMutation<CreateStudentPayload, any>({
+  return useCustomMutation<CreateStudentPayload, Student>({
     queryKey: [[QUERY_KEYS.STUDENTS]],
     service: createStudent,
     successMessage: "Student registered successfully",
@@ -122,8 +153,7 @@ export const useCreateStudent = () => {
 };
 
 export const useUpdateStudent = () => {
-  const queryClient = useQueryClient();
-  return useCustomMutation<{ id: string; data: UpdateStudentPayload }, any>({
+  return useCustomMutation<{ id: string; data: UpdateStudentPayload }, Student>({
     queryKey: [[QUERY_KEYS.STUDENTS], [QUERY_KEYS.STUDENT_DETAILS]],
     service: updateStudent,
     successMessage: "Student profile updated successfully",
@@ -131,17 +161,18 @@ export const useUpdateStudent = () => {
 };
 
 export const usePromoteStudent = (studentId: string) => {
-  const queryClient = useQueryClient();
-  return useCustomMutation<{ id: string; data: PromoteStudentPayload }, any>({
-    queryKey: [[QUERY_KEYS.STUDENT_HISTORY, studentId], [QUERY_KEYS.STUDENT_DETAILS, studentId]],
+  return useCustomMutation<{ id: string; data: PromoteStudentPayload }, StudentHistory>({
+    queryKey: [
+      [QUERY_KEYS.STUDENT_HISTORY, studentId],
+      [QUERY_KEYS.STUDENT_DETAILS, studentId],
+    ],
     service: promoteStudent,
     successMessage: "Student promoted successfully",
   });
 };
 
 export const useLinkParent = (studentId: string) => {
-  const queryClient = useQueryClient();
-  return useCustomMutation<{ id: string; data: LinkParentPayload }, any>({
+  return useCustomMutation<{ id: string; data: LinkParentPayload }, unknown>({
     queryKey: [[QUERY_KEYS.STUDENT_DETAILS, studentId]],
     service: linkParent,
     successMessage: "Parent linked successfully",
@@ -149,8 +180,7 @@ export const useLinkParent = (studentId: string) => {
 };
 
 export const useUnlinkParent = (studentId: string) => {
-  const queryClient = useQueryClient();
-  return useCustomMutation<{ id: string; parentUserId: string }, any>({
+  return useCustomMutation<{ id: string; parentUserId: string }, unknown>({
     queryKey: [[QUERY_KEYS.STUDENT_DETAILS, studentId]],
     service: unlinkParent,
     successMessage: "Parent unlinked successfully",

@@ -86,7 +86,7 @@ export const StudentFormDialog = ({
         },
       };
 
-  const onSubmit = (data: any) => {
+  const onSubmit = (data:any) => {
     if (isEditing) {
       updateMutation.mutate(
         { id: student!.id, data },

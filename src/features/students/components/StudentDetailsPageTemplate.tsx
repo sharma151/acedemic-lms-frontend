@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useStudent } from "../api/students";
+import { useStudentDetails } from "../api/students";
 
 import { ProfileTab } from "./tabs/ProfileTab";
 import { AcademicHistoryTab } from "./tabs/AcademicHistoryTab";
@@ -23,7 +23,7 @@ export const StudentDetailsPageTemplate = ({
   basePath,
 }: StudentDetailsPageTemplateProps) => {
   const router = useRouter();
-  const { data: student, isLoading } = useStudent(studentId);
+  const { data: student, isLoading } = useStudentDetails(studentId);
 
   if (isLoading) {
     return (
