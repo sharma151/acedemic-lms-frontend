@@ -32,8 +32,10 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { useNotifications } from "@/components/ui/notifications";
+import { PermissionGate } from "@/components/common/PermissionGate";
 
 import { useTenantsList } from "../hooks/useTenantsList";
+import { RegisterUserModal } from "./RegisterUserModal";
 
 interface TenantsPageTemplateProps {
   title: string;
@@ -52,6 +54,8 @@ export function TenantsPageTemplate({
   const [tenantToActivate, setTenantToActivate] = useState<TenantData | null>(
     null,
   );
+  const [tenantToRegisterUser, setTenantToRegisterUser] =
+    useState<TenantData | null>(null);
   const queryClient = useQueryClient();
   const { addNotification } = useNotifications();
 
@@ -158,7 +162,9 @@ export function TenantsPageTemplate({
               Activate
             </DropdownMenuItem>
             <DropdownMenuItem
-              disabled={suspendMutation.isPending || item.status === "suspended"}
+              disabled={
+                suspendMutation.isPending || item.status === "suspended"
+              }
               onClick={(e) => {
                 e.stopPropagation();
                 setTenantToSuspend(item);
@@ -166,6 +172,16 @@ export function TenantsPageTemplate({
             >
               Suspend
             </DropdownMenuItem>
+            <PermissionGate permission="super-admin">
+              <DropdownMenuItem
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setTenantToRegisterUser(item);
+                }}
+              >
+                Register User
+              </DropdownMenuItem>
+            </PermissionGate>
           </DropdownMenuContent>
         </DropdownMenu>
       ),
@@ -307,6 +323,12 @@ export function TenantsPageTemplate({
         confirmText="Activate"
         variant="default"
         isLoading={activateMutation.isPending}
+      />
+
+      <RegisterUserModal
+        open={!!tenantToRegisterUser}
+        onOpenChange={(open) => !open && setTenantToRegisterUser(null)}
+        tenantSlug={tenantToRegisterUser?.slug || null}
       />
     </div>
   );

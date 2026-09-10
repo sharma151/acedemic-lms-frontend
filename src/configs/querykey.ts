@@ -5,4 +5,6 @@ export const QUERY_KEYS = {
   AUTH_PROFILE: "auth-profile",
   SUBSCRIPTION_PLANS: "subscription-plans",
   SETTINGS: "settings",
+  ACADEMIC_YEARS: "academic-years",
+  ACADEMIC_CLASSES: "academic-classes",
 } as const;

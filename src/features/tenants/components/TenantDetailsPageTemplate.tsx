@@ -213,7 +213,7 @@ export function TenantDetailsPageTemplate({
           {user?.role === Role.INSTITUTION_ADMIN && (
             <AddUserDialog tenantId={tenantId}>
               <Button size="sm">
-                <Plus className="h-4 w-4 mr-2" /> Add User
+                <Plus className="h-4 w-4 mr-2" /> Add Users
               </Button>
             </AddUserDialog>
           )}

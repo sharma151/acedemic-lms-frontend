@@ -2,6 +2,7 @@
 import { apiClient } from "@/lib/api-client";
 import { SuccessResponseInterface } from "@/types/api";
 import { TENANT_STATUS } from "@/configs/constants";
+import { RegisterTenantUserFormData } from "../schemas/tenantUserSchema";
 
 // --- Types ---
 
@@ -71,12 +72,16 @@ export const getTenants = async (
   return response.data;
 };
 
-export const activateTenantApi = async (id: string): Promise<SuccessResponseInterface<TenantData>> => {
+export const activateTenantApi = async (
+  id: string,
+): Promise<SuccessResponseInterface<TenantData>> => {
   const response = await apiClient.post(`/tenants/${id}/activate`);
   return response.data;
 };
 
-export const suspendTenantApi = async (id: string): Promise<SuccessResponseInterface<TenantData>> => {
+export const suspendTenantApi = async (
+  id: string,
+): Promise<SuccessResponseInterface<TenantData>> => {
   const response = await apiClient.post(`/tenants/${id}/suspend`);
   return response.data;
 };
@@ -107,5 +112,12 @@ export const getTenantById = async (
   id: string,
 ): Promise<SuccessResponseInterface<DetailedTenantData>> => {
   const response = await apiClient.get(`/tenants/${id}`);
+  return response.data;
+};
+
+export const registerTenantUserApi = async (
+  data: RegisterTenantUserFormData,
+): Promise<SuccessResponseInterface<TenantUser>> => {
+  const response = await apiClient.post("/auth/register", data);
   return response.data;
 };
