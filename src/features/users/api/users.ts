@@ -7,20 +7,25 @@ export const addUserApi = async (data: AddUserFormData): Promise<unknown> => {
 };
 
 export const updateUserApi = async ({ id, data }: { id: string; data: UpdateUserFormData }): Promise<unknown> => {
-  let payload: any = data;
-  let headers = {};
-  
-  if (data.avatarUrl instanceof File) {
-    const formData = new FormData();
+  const formData = new FormData();
+
+  // Only append fields that were explicitly provided
+  if (data.firstName !== undefined && data.firstName !== "") {
     formData.append("firstName", data.firstName);
+  }
+  if (data.lastName !== undefined && data.lastName !== "") {
     formData.append("lastName", data.lastName);
+  }
+  if (data.roleName !== undefined && data.roleName !== "") {
     formData.append("roleName", data.roleName);
-    formData.append("avatarUrl", data.avatarUrl);
-    payload = formData;
-    headers = { "Content-Type": "multipart/form-data" };
+  }
+  if (data.avatar instanceof File) {
+    formData.append("avatar", data.avatar);
   }
 
-  const response = await apiClient.put(`/users/${id}`, payload, { headers });
+  const response = await apiClient.patch(`/users/${id}`, formData, {
+    headers: { "Content-Type": "multipart/form-data" },
+  });
   return response.data;
 };
 

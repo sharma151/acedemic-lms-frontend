@@ -95,7 +95,7 @@ export function UpdateUserDialog({
               firstName: user.firstName || "",
               lastName: user.lastName || "",
               roleName: user.role || "",
-              avatarUrl: user.avatarUrl || "",
+              avatar: undefined,
             },
           }}
           onSubmit={onSubmit}
@@ -169,19 +169,33 @@ export function UpdateUserDialog({
 
               <FormField
                 control={form.control}
-                name="avatarUrl"
-                render={({ field: { onChange, ...fieldProps } }) => (
+                name="avatar"
+                render={({ field: { onChange, value: _value, ...fieldProps } }) => (
                   <FormItem>
-                    <FormLabel>Avatar</FormLabel>
+                    <FormLabel>
+                      Avatar{" "}
+                      <span className="text-muted-foreground text-xs font-normal">
+                        (optional · jpg, png · max 5MB)
+                      </span>
+                    </FormLabel>
+                    {user.avatarUrl && (
+                      <div className="mb-1 flex items-center gap-2">
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img
+                          src={user.avatarUrl}
+                          alt="Current avatar"
+                          className="h-10 w-10 rounded-full object-cover border"
+                        />
+                        <span className="text-xs text-muted-foreground">Current avatar</span>
+                      </div>
+                    )}
                     <FormControl>
                       <Input
                         type="file"
-                        accept=".png, .jpeg, .jpg, .webp"
+                        accept="image/jpeg,image/png,.jpg,.jpeg,.png"
                         onChange={(e) => {
                           const file = e.target.files?.[0];
-                          if (file) {
-                            onChange(file);
-                          }
+                          onChange(file ?? undefined);
                         }}
                         {...fieldProps}
                       />
