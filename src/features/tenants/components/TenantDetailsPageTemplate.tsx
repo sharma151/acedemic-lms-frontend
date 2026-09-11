@@ -1,11 +1,18 @@
 "use client";
 
+import React, { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { getTenantById, TenantUser } from "../api/tenants";
 import { Badge } from "@/components/ui/badge";
 import { DataTable, ColumnDef } from "@/components/ui/data-table";
-import { Loader2, ArrowLeft } from "lucide-react";
+import { Loader2, ArrowLeft, MoreHorizontal } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { useFormatDate } from "@/hooks/use-format-date";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import {
@@ -17,6 +24,8 @@ import {
 import { Plus } from "lucide-react";
 import { useSession } from "@/lib/session";
 import { AddUserDialog } from "@/features/users/components/AddUserDialog";
+import { UpdateUserDialog } from "@/features/users/components/UpdateUserDialog";
+import { DeleteUserDialog } from "@/features/users/components/DeleteUserDialog";
 import { QUERY_KEYS } from "@/configs/querykey";
 import { Role } from "@/configs/constants";
 
@@ -39,8 +48,15 @@ export function TenantDetailsPageTemplate({
   const pathname = usePathname();
   const { formatDate } = useFormatDate();
 
+  const [selectedUserForUpdate, setSelectedUserForUpdate] =
+    useState<TenantUser | null>(null);
+  const [selectedUserForDelete, setSelectedUserForDelete] =
+    useState<TenantUser | null>(null);
+
   const user = useSession((state) => state.user);
-  const activeTab = (searchParams.get("tab") as TabKey) || "institutionAdmins";
+  const defaultTab =
+    user?.role === Role.INSTITUTION_ADMIN ? "teachers" : "institutionAdmins";
+  const activeTab = (searchParams.get("tab") as TabKey) || defaultTab;
 
   const handleTabChange = (key: TabKey) => {
     const params = new URLSearchParams(searchParams.toString());
@@ -91,13 +107,23 @@ export function TenantDetailsPageTemplate({
     accountants: tenant.users?.accountants || [],
   };
 
-  const tabs: { key: TabKey; label: string }[] = [
+  const allTabs: { key: TabKey; label: string }[] = [
     { key: "institutionAdmins", label: "Institution Admins" },
     { key: "teachers", label: "Teachers" },
     { key: "students", label: "Students" },
     { key: "parents", label: "Parents" },
     { key: "accountants", label: "Accountants" },
   ];
+
+  const tabs = allTabs.filter((tab) => {
+    if (
+      user?.role === Role.INSTITUTION_ADMIN &&
+      tab.key === "institutionAdmins"
+    ) {
+      return false;
+    }
+    return true;
+  });
 
   const columns: ColumnDef<TenantUser>[] = [
     {
@@ -141,6 +167,30 @@ export function TenantDetailsPageTemplate({
         <span className="text-slate-500">
           {formatDate(item.createdAt, "DEFAULT")}
         </span>
+      ),
+    },
+    {
+      header: "Actions",
+      cell: (item) => (
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="ghost" className="h-8 w-8 p-0">
+              <span className="sr-only">Open menu</span>
+              <MoreHorizontal className="h-4 w-4 rotate-90" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuItem onClick={() => setSelectedUserForUpdate(item)}>
+              Update User
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={() => setSelectedUserForDelete(item)}
+              className="text-red-600 focus:text-red-600 focus:bg-red-50"
+            >
+              Delete User
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       ),
     },
   ];
@@ -245,6 +295,19 @@ export function TenantDetailsPageTemplate({
           />
         </div>
       </div>
+
+      <UpdateUserDialog
+        open={!!selectedUserForUpdate}
+        onOpenChange={(open) => !open && setSelectedUserForUpdate(null)}
+        user={selectedUserForUpdate}
+        tenantId={tenantId}
+      />
+      <DeleteUserDialog
+        open={!!selectedUserForDelete}
+        onOpenChange={(open) => !open && setSelectedUserForDelete(null)}
+        user={selectedUserForDelete}
+        tenantId={tenantId}
+      />
     </div>
   );
 }

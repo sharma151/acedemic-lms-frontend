@@ -14,3 +14,12 @@ export const AddUserSchema = z.object({
 });
 
 export type AddUserFormData = z.infer<typeof AddUserSchema>;
+
+export const UpdateUserSchema = z.object({
+  firstName: z.string().min(1, "First name is required"),
+  lastName: z.string().min(1, "Last name is required"),
+  roleName: z.string().min(1, "Role name is required"),
+  avatarUrl: z.any().optional(),
+});
+
+export type UpdateUserFormData = z.infer<typeof UpdateUserSchema>;
