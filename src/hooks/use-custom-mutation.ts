@@ -28,7 +28,7 @@ type props<T, X = unknown> = {
   service: (
     data: T,
   ) => Promise<X | SuccessResponseInterface<X> | MutationResponse<X>>;
-  form?: UseFormReturn | React.RefObject<UseFormReturn | null>;
+  form?: UseFormReturn<any> | React.RefObject<UseFormReturn<any> | null>;
   navigateTo?: string;
   onSuccess?: (data: X) => void;
   onError?: (err: AxiosError) => void;

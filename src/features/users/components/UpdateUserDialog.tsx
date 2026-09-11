@@ -1,7 +1,6 @@
 "use client";
 
-import React from "react";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useCustomMutation } from "@/hooks/use-custom-mutation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -49,18 +48,13 @@ export function UpdateUserDialog({
   tenantId,
 }: UpdateUserDialogProps) {
   const { addNotification } = useNotifications();
-  const queryClient = useQueryClient();
 
-  const mutation = useMutation({
-    mutationFn: updateUserApi,
+  const mutation = useCustomMutation({
+    service: updateUserApi,
+    queryKey: [[QUERY_KEYS.TENANT_DETAILS, tenantId]],
+    successTitle: "User updated successfully",
+    successMessage: "User updated successfully",
     onSuccess: () => {
-      addNotification({
-        type: "success",
-        title: "User updated successfully",
-      });
-      queryClient.invalidateQueries({
-        queryKey: [QUERY_KEYS.TENANT_DETAILS, tenantId],
-      });
       onOpenChange(false);
     },
     onError: (error: unknown) => {

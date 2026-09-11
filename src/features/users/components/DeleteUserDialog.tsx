@@ -1,6 +1,7 @@
 "use client";
 
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQueryClient } from "@tanstack/react-query";
+import { useCustomMutation } from "@/hooks/use-custom-mutation";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -30,18 +31,13 @@ export function DeleteUserDialog({
   tenantId,
 }: DeleteUserDialogProps) {
   const { addNotification } = useNotifications();
-  const queryClient = useQueryClient();
 
-  const mutation = useMutation({
-    mutationFn: deleteUserApi,
+  const mutation = useCustomMutation({
+    service: deleteUserApi,
+    queryKey: [[QUERY_KEYS.TENANT_DETAILS, tenantId]],
+    successTitle: "User deleted successfully",
+    successMessage: "User deleted successfully",
     onSuccess: () => {
-      addNotification({
-        type: "success",
-        title: "User deleted successfully",
-      });
-      queryClient.invalidateQueries({
-        queryKey: [QUERY_KEYS.TENANT_DETAILS, tenantId],
-      });
       onOpenChange(false);
     },
     onError: (error: unknown) => {
@@ -69,7 +65,8 @@ export function DeleteUserDialog({
         <DialogHeader>
           <DialogTitle>Delete User</DialogTitle>
           <DialogDescription>
-            Are you sure you want to delete {user.firstName} {user.lastName}? This action cannot be undone.
+            Are you sure you want to delete {user.firstName} {user.lastName}?
+            This action cannot be undone.
           </DialogDescription>
         </DialogHeader>
 

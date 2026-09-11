@@ -14,7 +14,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useCustomMutation } from "@/hooks/use-custom-mutation";
 import {
   TenantData,
   activateTenantApi,
@@ -56,21 +56,18 @@ export function TenantsPageTemplate({
   );
   const [tenantToRegisterUser, setTenantToRegisterUser] =
     useState<TenantData | null>(null);
-  const queryClient = useQueryClient();
   const { addNotification } = useNotifications();
 
   const { tenants, metadata, isLoading, filters, setQueryParams } =
     useTenantsList();
   const { currentPage, pageSize, name, status } = filters;
 
-  const activateMutation = useMutation({
-    mutationFn: activateTenantApi,
+  const activateMutation = useCustomMutation({
+    service: activateTenantApi,
+    queryKey: [[QUERY_KEYS.TENANTS]],
+    successTitle: "Tenant activated successfully",
+    successMessage: "Tenant activated successfully",
     onSuccess: () => {
-      addNotification({
-        type: "success",
-        title: "Tenant activated successfully",
-      });
-      queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.TENANTS] });
       setTenantToActivate(null);
     },
     onError: () => {
@@ -79,14 +76,12 @@ export function TenantsPageTemplate({
     },
   });
 
-  const suspendMutation = useMutation({
-    mutationFn: suspendTenantApi,
+  const suspendMutation = useCustomMutation({
+    service: suspendTenantApi,
+    queryKey: [[QUERY_KEYS.TENANTS]],
+    successTitle: "Tenant suspended successfully",
+    successMessage: "Tenant suspended successfully",
     onSuccess: () => {
-      addNotification({
-        type: "success",
-        title: "Tenant suspended successfully",
-      });
-      queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.TENANTS] });
       setTenantToSuspend(null);
     },
     onError: () => {
