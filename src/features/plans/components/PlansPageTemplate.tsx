@@ -14,6 +14,8 @@ export function PlansPageTemplate() {
     "monthly",
   );
 
+  console.log("plans", plans);
+
   // Use the custom hook to track selected plan in URL
   const { value: selectedPlanSlug, setValue: setSelectedPlan } =
     useQueryParam("plan");
