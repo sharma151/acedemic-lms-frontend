@@ -38,7 +38,17 @@ export const getClassSections = async (
     "/academics/classes",
     { params },
   );
-  return { data: response.data.data, metadata: response.data.metadata };
+  
+  let classes: ClassSection[] = [];
+  const resData = response.data.data;
+  
+  if (Array.isArray(resData)) {
+    classes = resData;
+  } else if (resData && typeof resData === "object") {
+    classes = Object.values(resData).flat() as ClassSection[];
+  }
+
+  return { data: classes, metadata: response.data.metadata };
 };
 //get class section details
 export const getClassSectionDetails = async (
@@ -85,7 +95,7 @@ export const useGetClassSection = (id?: string) => {
 };
 
 export const useCreateClassSection = () => {
-  return useCustomMutation<ClassSectionFormData, any>({
+  return useCustomMutation<ClassSectionFormData, Error>({
     queryKey: [[QUERY_KEYS.ACADEMIC_CLASSES]],
     service: createClassSection,
     successMessage: "Class created successfully",
@@ -95,7 +105,7 @@ export const useCreateClassSection = () => {
 export const useUpdateClassSection = () => {
   return useCustomMutation<
     { id: string; data: Partial<ClassSectionFormData> },
-    any
+    Error
   >({
     queryKey: [[QUERY_KEYS.ACADEMIC_CLASSES]],
     service: updateClassSection,

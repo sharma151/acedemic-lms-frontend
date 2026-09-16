@@ -44,15 +44,7 @@ export const ClassesTab = () => {
       limit: pageSize,
     });
     
-  let classes: ClassSection[] = [];
-  if (Array.isArray(classResponse?.data)) {
-    classes = classResponse.data;
-  } else if (Array.isArray(classResponse)) {
-    classes = classResponse as any;
-  } else if (classResponse?.data && typeof classResponse.data === "object") {
-    // Flatten grouped data if backend sends it grouped by class name
-    classes = Object.values(classResponse.data).flat() as ClassSection[];
-  }
+  const classes: ClassSection[] = classResponse?.data || [];
   const metadata = classResponse?.metadata;
 
   const { data: yearsResponse, isLoading: isLoadingYears } =

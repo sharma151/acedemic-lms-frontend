@@ -115,7 +115,7 @@ export const useGetSubjectsByClass = (
 // ─── Mutation Hooks ───────────────────────────────────────────────────────────
 
 export const useCreateSubject = () => {
-  return useCustomMutation<SubjectFormData, any>({
+  return useCustomMutation<SubjectFormData, Error>({
     queryKey: [[QUERY_KEYS.ACADEMIC_SUBJECTS]],
     service: createSubject,
     successTitle: "Subject Created",
@@ -124,7 +124,7 @@ export const useCreateSubject = () => {
 };
 
 export const useUpdateSubject = () => {
-  return useCustomMutation<{ id: string; data: Partial<SubjectFormData> }, any>(
+  return useCustomMutation<{ id: string; data: Partial<SubjectFormData> }, Error>(
     {
       queryKey: [[QUERY_KEYS.ACADEMIC_SUBJECTS]],
       service: updateSubject,
@@ -135,7 +135,7 @@ export const useUpdateSubject = () => {
 };
 
 export const useDeleteSubject = () => {
-  return useCustomMutation<string, any>({
+  return useCustomMutation<string, Error>({
     queryKey: [[QUERY_KEYS.ACADEMIC_SUBJECTS]],
     service: deleteSubject,
     successTitle: "Subject Deleted",
@@ -144,7 +144,7 @@ export const useDeleteSubject = () => {
 };
 
 export const useAssignTeacher = () => {
-  return useCustomMutation<{ id: string; data: AssignTeacherFormData }, any>({
+  return useCustomMutation<{ id: string; data: AssignTeacherFormData }, Error>({
     queryKey: [[QUERY_KEYS.ACADEMIC_SUBJECTS]],
     service: assignTeacher,
     successTitle: "Teacher Assigned",

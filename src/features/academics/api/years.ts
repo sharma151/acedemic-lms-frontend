@@ -68,7 +68,7 @@ export const useGetAcademicYear = (id?: string) => {
 };
 
 export const useCreateAcademicYear = () => {
-  return useCustomMutation<AcademicYearFormData, any>({
+  return useCustomMutation<AcademicYearFormData, Error>({
     queryKey: [[QUERY_KEYS.ACADEMIC_YEARS]],
     service: createAcademicYear,
     successMessage: "Academic year created successfully",
@@ -76,7 +76,7 @@ export const useCreateAcademicYear = () => {
 };
 
 export const useUpdateAcademicYear = () => {
-  return useCustomMutation<{ id: string; data: Partial<AcademicYearFormData> }, any>({
+  return useCustomMutation<{ id: string; data: Partial<AcademicYearFormData> }, Error>({
     queryKey: [[QUERY_KEYS.ACADEMIC_YEARS]],
     service: updateAcademicYear,
     successMessage: "Academic year updated successfully",

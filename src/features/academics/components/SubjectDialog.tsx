@@ -57,17 +57,7 @@ export const SubjectDialog = ({
   const { data: classesResponse, isLoading: isLoadingClasses } =
     useGetClassSections();
 
-  let classes: any[] = [];
-  if (Array.isArray(classesResponse?.data)) {
-    classes = classesResponse.data;
-  } else if (Array.isArray(classesResponse)) {
-    classes = classesResponse as any;
-  } else if (
-    classesResponse?.data &&
-    typeof classesResponse.data === "object"
-  ) {
-    classes = Object.values(classesResponse.data).flat();
-  }
+  const classes: any[] = classesResponse?.data || [];
 
   const defaultValues: SubjectFormData = {
     classId: defaultClassId || "",

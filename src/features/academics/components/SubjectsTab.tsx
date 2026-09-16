@@ -19,8 +19,6 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-  SelectGroup,
-  SelectLabel,
 } from "@/components/ui/select";
 import {
   DropdownMenu,
@@ -92,17 +90,10 @@ export const SubjectsTab = () => {
 
   const { data: classesResponse, isLoading: isLoadingClasses } =
     useGetClassSections();
-  let classes: ClassSection[] = [];
-  if (Array.isArray(classesResponse?.data)) {
-    classes = classesResponse.data;
-  } else if (Array.isArray(classesResponse)) {
-    classes = classesResponse as any;
-  } else if (
-    classesResponse?.data &&
-    typeof classesResponse.data === "object"
-  ) {
-    classes = Object.values(classesResponse.data).flat() as ClassSection[];
-  }
+  const classes: ClassSection[] = useMemo(
+    () => classesResponse?.data || [],
+    [classesResponse?.data],
+  );
 
   // Dialog state
   const [isSubjectDialogOpen, setIsSubjectDialogOpen] = useState(false);
@@ -116,7 +107,7 @@ export const SubjectsTab = () => {
   // Class lookup map
   const classMap = useMemo(() => {
     return classes.reduce(
-      (acc: Record<string, string>, cls: any) => {
+      (acc: Record<string, string>, cls: ClassSection) => {
         acc[cls.id] = cls.name + (cls.section ? ` — ${cls.section}` : "");
         return acc;
       },
@@ -196,7 +187,7 @@ export const SubjectsTab = () => {
       cell: (sub) =>
         sub.description ? (
           <span
-            className="text-slate-500 text-sm line-clamp-1 max-w-[200px]"
+            className="text-slate-500 text-sm line-clamp-1 max-w-50"
             title={sub.description}
           >
             {sub.description}
