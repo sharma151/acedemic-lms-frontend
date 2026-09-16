@@ -1,14 +1,31 @@
 "use client";
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { AcademicYearsTab } from "./AcademicYearsTab";
 import { ClassesTab } from "./ClassesTab";
 import { SubjectsTab } from "./SubjectsTab";
-import { useQueryParam } from "@/hooks/use-query-params";
+import { useSearchParams } from "next/navigation";
 
 export const AcademicsPageTemplate = () => {
-  const { value: activeTab, setValue: setActiveTab } = useQueryParam("tab");
-  const currentTab = activeTab || "years";
+  const searchParams = useSearchParams();
+  const tabFromUrl = searchParams.get("tab") || "years";
+  const [currentTab, setCurrentTab] = useState(tabFromUrl);
+  const [prevTabFromUrl, setPrevTabFromUrl] = useState(tabFromUrl);
+
+  // Sync state during render if URL changes externally (e.g., browser back button)
+  // This is the recommended pattern in React to avoid useEffect cascading renders.
+  if (tabFromUrl !== prevTabFromUrl) {
+    setPrevTabFromUrl(tabFromUrl);
+    setCurrentTab(tabFromUrl);
+  }
+
+  const handleTabChange = (val: string) => {
+    setCurrentTab(val);
+    const params = new URLSearchParams(searchParams.toString());
+    params.set("tab", val);
+    // Use history API to update URL instantly without Next.js navigation cycle
+    window.history.pushState(null, "", `?${params.toString()}`);
+  };
 
   return (
     <div className="flex-1 space-y-4 p-4 md:p-8 pt-6">
@@ -20,7 +37,7 @@ export const AcademicsPageTemplate = () => {
 
       <Tabs
         value={currentTab}
-        onValueChange={(val) => setActiveTab(val)}
+        onValueChange={handleTabChange}
         className="space-y-4"
       >
         <TabsList className="bg-slate-100 border border-slate-200">

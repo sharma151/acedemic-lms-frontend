@@ -31,7 +31,7 @@ const useFilterSearch = ({
 }: Props) => {
   const [searchInput, setSearchInputState] = useState(initialValue ?? '');
   const [debouncedSearch, setDebouncedSearch] = useState(initialValue ?? '');
-  const timerRef = useRef<ReturnType<typeof setTimeout>>();
+  const timerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   const onSearchChangeRef = useRef(onSearchChange);
   
   // Keep the ref updated with the latest callback
