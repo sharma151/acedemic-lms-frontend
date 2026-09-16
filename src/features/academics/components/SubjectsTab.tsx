@@ -1,16 +1,8 @@
 "use client";
-import React, { useState, useMemo } from "react";
+import { useState, useMemo } from "react";
 import { useSearchParams } from "next/navigation";
-import {
-  Plus,
-  Pencil,
-  Search,
-  UserCog,
-  Trash2,
-  MoreHorizontal,
-} from "lucide-react";
+import { Plus, Pencil, UserCog, Trash2, MoreHorizontal } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { DataTable, ColumnDef } from "@/components/ui/data-table";
 import {
@@ -35,7 +27,7 @@ import { useGetClassSections } from "../api/classes";
 import { Subject, ClassSection } from "../types";
 import { SubjectDialog } from "./SubjectDialog";
 import { AssignTeacherDialog } from "./AssignTeacherDialog";
-import { useDebounce } from "@/hooks/use-debounce";
+import useFilterSearch from "@/hooks/use-filter-search";
 import { useSession } from "@/lib/session";
 import { useQuery } from "@tanstack/react-query";
 import { getTenantById } from "@/features/tenants/api/tenants";
@@ -58,10 +50,14 @@ export const SubjectsTab = () => {
   const pageSize = Number(searchParams.get("subLimit")) || 10;
 
   // Filters
-  const [searchInput, setSearchInput] = useState(
-    searchParams.get("subSearch") || "",
-  );
-  const debouncedSearch = useDebounce(searchInput, 400);
+  const { renderSearch, debouncedSearch } = useFilterSearch({
+    id: "search-subjects",
+    placeholder: "Search by name or code...",
+    initialValue: searchParams.get("subSearch") || "",
+    onSearchChange: (next) => {
+      setQueryParams({ subSearch: next || null, subPage: "1" });
+    },
+  });
 
   const { value: classIdFilter } = useQueryParam("subClassId");
 
@@ -134,11 +130,6 @@ export const SubjectsTab = () => {
   const handleEdit = (subject: Subject) => {
     setEditingSubject(subject);
     setIsSubjectDialogOpen(true);
-  };
-
-  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchInput(e.target.value);
-    setQueryParams({ subSearch: e.target.value || null, subPage: "1" });
   };
 
   const columns: ColumnDef<Subject>[] = [
@@ -252,17 +243,7 @@ export const SubjectsTab = () => {
 
       {/* Filters */}
       <div className="flex flex-col sm:flex-row gap-3 items-center bg-slate-50 p-3 rounded-lg border border-slate-100">
-        {/* Search */}
-        <div className="relative w-full sm:w-72">
-          <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-slate-400" />
-          <Input
-            type="text"
-            placeholder="Search by name or code..."
-            className="pl-9 bg-white"
-            value={searchInput}
-            onChange={handleSearchChange}
-          />
-        </div>
+        <div className="w-full sm:w-72">{renderSearch()}</div>
 
         {/* Filter by class */}
         <Select

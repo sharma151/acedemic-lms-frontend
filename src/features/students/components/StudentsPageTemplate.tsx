@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Plus, Search, Eye } from "lucide-react";
+import { Plus, Eye } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { DataTable, ColumnDef } from "@/components/ui/data-table";
@@ -15,6 +15,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useQueryParam } from "@/hooks/use-query-params";
+import useFilterSearch from "@/hooks/use-filter-search";
 import { Student } from "../types";
 import { useStudents } from "../api/students";
 import { StudentFormDialog } from "./StudentFormDialog";
@@ -43,6 +44,15 @@ export const StudentsPageTemplate = ({
   const classId = searchParams.get("classId") || "all";
   const academicYearId = searchParams.get("academicYearId") || "all";
   const status = searchParams.get("status") || "all";
+
+  const { renderSearch } = useFilterSearch({
+    id: "search-students",
+    placeholder: "Search name...",
+    initialValue: search,
+    onSearchChange: (next) => {
+      setQueryParams({ search: next || null, page: "1" });
+    },
+  });
 
   const { data: studentsResponse, isLoading } = useStudents({
     page: currentPage,
@@ -164,17 +174,7 @@ export const StudentsPageTemplate = ({
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 py-4 bg-slate-50 p-4 rounded-lg border border-slate-100">
-        <div className="relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
-          <Input
-            placeholder="Search name..."
-            value={search}
-            onChange={(e) =>
-              setQueryParams({ search: e.target.value || null, page: "1" })
-            }
-            className="pl-9 bg-white"
-          />
-        </div>
+        <div className="w-full">{renderSearch()}</div>
 
         <Input
           placeholder="Admission No."
