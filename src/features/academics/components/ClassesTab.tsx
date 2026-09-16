@@ -20,11 +20,11 @@ import { ClassDialog } from "./ClassDialog";
 
 export const ClassesTab = () => {
   const {
-    value: academicYearId,
-    setValue: setAcademicYearId,
-    remove: removeAcademicYearId,
-  } = useQueryParam("academicYearId");
-  const selectedYearId = academicYearId || "all";
+    value: academicYearName,
+    setValue: setAcademicYearName,
+    remove: removeAcademicYearName,
+  } = useQueryParam("academicYearName");
+  const selectedYearName = academicYearName || "all";
 
   const searchParams = useSearchParams();
   const { setQueryParams } = useQueryParam("");
@@ -34,11 +34,22 @@ export const ClassesTab = () => {
 
   const { data: classResponse, isLoading: isLoadingClasses } =
     useGetClassSections({
-      academicYearId: academicYearId || undefined,
+      academicYearName:
+        academicYearName && academicYearName !== "all"
+          ? academicYearName
+          : undefined,
       page: currentPage,
       limit: pageSize,
     });
-  const classes = classResponse?.data || [];
+  let classes: ClassSection[] = [];
+  if (Array.isArray(classResponse?.data)) {
+    classes = classResponse.data;
+  } else if (Array.isArray(classResponse)) {
+    classes = classResponse as any;
+  } else if (classResponse?.data && typeof classResponse.data === "object") {
+    // Flatten grouped data if backend sends it grouped by class name
+    classes = Object.values(classResponse.data).flat() as ClassSection[];
+  }
   const metadata = classResponse?.metadata;
 
   const { data: yearsResponse, isLoading: isLoadingYears } =
@@ -72,9 +83,9 @@ export const ClassesTab = () => {
     );
   }, [years]);
 
-  // Filter classes based on search query (academic year is handled by API)
+  // Filter classes based on search query (API handles academic year filtering now)
   const filteredClasses = useMemo(() => {
-    return classes.filter((cls) => {
+    return classes.filter((cls: ClassSection) => {
       const matchesSearch =
         cls.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
         (cls.section &&
@@ -146,12 +157,12 @@ export const ClassesTab = () => {
       <div className="flex flex-col sm:flex-row gap-4 items-center justify-between bg-slate-50 p-3 rounded-lg border border-slate-100">
         <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
           <Select
-            value={selectedYearId}
+            value={selectedYearName}
             onValueChange={(val) => {
               if (val === "all") {
-                removeAcademicYearId();
+                removeAcademicYearName();
               } else {
-                setAcademicYearId(val);
+                setAcademicYearName(val);
               }
             }}
           >
@@ -161,7 +172,7 @@ export const ClassesTab = () => {
             <SelectContent>
               <SelectItem value="all">All Academic Years</SelectItem>
               {years.map((year) => (
-                <SelectItem key={year.id} value={year.id}>
+                <SelectItem key={year.id} value={year.name}>
                   {year.name}
                 </SelectItem>
               ))}

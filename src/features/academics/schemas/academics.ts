@@ -24,3 +24,19 @@ export const classSectionSchema = z.object({
 });
 
 export type ClassSectionFormData = z.infer<typeof classSectionSchema>;
+
+export const subjectSchema = z.object({
+  classId: z.string().min(1, "Class is required"),
+  name: z.string().min(1, "Subject name is required"),
+  code: z.string().min(1, "Subject code is required"),
+  description: z.string().optional(),
+  teacherId: z.string().nullable().optional(),
+});
+
+export type SubjectFormData = z.infer<typeof subjectSchema>;
+
+export const assignTeacherSchema = z.object({
+  teacherId: z.string().nullable().optional(),
+});
+
+export type AssignTeacherFormData = z.infer<typeof assignTeacherSchema>;
