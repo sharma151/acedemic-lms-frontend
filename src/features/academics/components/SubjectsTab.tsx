@@ -1,7 +1,14 @@
 "use client";
 import React, { useState, useMemo } from "react";
 import { useSearchParams } from "next/navigation";
-import { Plus, Pencil, Search, UserCog, Trash2, MoreHorizontal } from "lucide-react";
+import {
+  Plus,
+  Pencil,
+  Search,
+  UserCog,
+  Trash2,
+  MoreHorizontal,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -12,6 +19,8 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
+  SelectGroup,
+  SelectLabel,
 } from "@/components/ui/select";
 import {
   DropdownMenu,
@@ -22,10 +31,10 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { useQueryParam } from "@/hooks/use-query-params";
-import { useGetSubjects } from "../api/subjects";
+import { useGetSubjects, useGetSubjectsByClass } from "../api/subjects";
 import { useDeleteSubject } from "../api/subjects";
 import { useGetClassSections } from "../api/classes";
-import { Subject } from "../types";
+import { Subject, ClassSection } from "../types";
 import { SubjectDialog } from "./SubjectDialog";
 import { AssignTeacherDialog } from "./AssignTeacherDialog";
 import { useDebounce } from "@/hooks/use-debounce";
@@ -43,7 +52,6 @@ export const SubjectsTab = () => {
     queryFn: () => getTenantById(tenantId!),
     enabled: !!tenantId,
   });
-  const teachers = tenantResponse?.data?.users?.teachers || [];
   const searchParams = useSearchParams();
   const { setQueryParams } = useQueryParam("");
 
@@ -57,29 +65,44 @@ export const SubjectsTab = () => {
   );
   const debouncedSearch = useDebounce(searchInput, 400);
 
-  const {
-    value: classIdFilter,
-    setValue: setClassIdFilter,
-    remove: removeClassIdFilter,
-  } = useQueryParam("subClassId");
+  const { value: classIdFilter } = useQueryParam("subClassId");
 
   // Fetch data
-  const { data: subjectsResponse, isLoading } = useGetSubjects({
+  const getSubjectsParams = {
     page: currentPage,
     limit: pageSize,
     search: debouncedSearch || undefined,
-    classId: classIdFilter || undefined,
-  });
+  };
+
+  const { data: allSubjectsResponse, isLoading: isLoadingAll } = useGetSubjects(
+    getSubjectsParams,
+    !classIdFilter,
+  );
+
+  const { data: classSubjectsResponse, isLoading: isLoadingClass } =
+    useGetSubjectsByClass(classIdFilter || "", getSubjectsParams);
+
+  const subjectsResponse = classIdFilter
+    ? classSubjectsResponse
+    : allSubjectsResponse;
+  const isLoading = classIdFilter ? isLoadingClass : isLoadingAll;
+
   const subjects = subjectsResponse?.data || [];
   const metadata = subjectsResponse?.metadata;
 
   const { data: classesResponse, isLoading: isLoadingClasses } =
     useGetClassSections();
-  const classes = Array.isArray(classesResponse?.data)
-    ? classesResponse.data
-    : Array.isArray(classesResponse)
-      ? (classesResponse as any)
-      : [];
+  let classes: ClassSection[] = [];
+  if (Array.isArray(classesResponse?.data)) {
+    classes = classesResponse.data;
+  } else if (Array.isArray(classesResponse)) {
+    classes = classesResponse as any;
+  } else if (
+    classesResponse?.data &&
+    typeof classesResponse.data === "object"
+  ) {
+    classes = Object.values(classesResponse.data).flat() as ClassSection[];
+  }
 
   // Dialog state
   const [isSubjectDialogOpen, setIsSubjectDialogOpen] = useState(false);
@@ -104,12 +127,12 @@ export const SubjectsTab = () => {
   // Normalized teachers list for dialogs
   const teacherOptions = useMemo(
     () =>
-      teachers.map((t) => ({
+      (tenantResponse?.data?.users?.teachers || []).map((t) => ({
         id: t.id,
         firstName: t.firstName,
         lastName: t.lastName,
       })),
-    [teachers],
+    [tenantResponse],
   );
 
   const handleAdd = () => {
@@ -152,8 +175,8 @@ export const SubjectsTab = () => {
         sub.class
           ? `${sub.class.name}${sub.class.section ? ` — ${sub.class.section}` : ""}`
           : classMap[sub.classId] || (
-            <span className="text-muted-foreground">—</span>
-          ),
+              <span className="text-muted-foreground">—</span>
+            ),
     },
     {
       header: "Assigned Teacher",
@@ -254,12 +277,10 @@ export const SubjectsTab = () => {
         <Select
           value={classIdFilter || "all"}
           onValueChange={(val) => {
-            if (val === "all") {
-              removeClassIdFilter();
-            } else {
-              setClassIdFilter(val);
-            }
-            setQueryParams({ subPage: "1" });
+            setQueryParams({
+              subClassId: val === "all" ? null : val,
+              subPage: "1",
+            });
           }}
         >
           <SelectTrigger className="w-full sm:w-60 bg-white">
@@ -267,7 +288,7 @@ export const SubjectsTab = () => {
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">All Classes</SelectItem>
-            {classes.map((cls: any) => (
+            {classes.map((cls) => (
               <SelectItem key={cls.id} value={cls.id}>
                 {cls.name}
                 {cls.section ? ` — ${cls.section}` : ""}
@@ -288,9 +309,7 @@ export const SubjectsTab = () => {
         totalPages={metadata?.totalPage || 1}
         totalItems={metadata?.totalData || subjects.length}
         pageSize={metadata?.perPage || pageSize}
-        onPageChange={(page) =>
-          setQueryParams({ subPage: page.toString() })
-        }
+        onPageChange={(page) => setQueryParams({ subPage: page.toString() })}
         onPageSizeChange={(size) =>
           setQueryParams({ subLimit: size.toString(), subPage: "1" })
         }

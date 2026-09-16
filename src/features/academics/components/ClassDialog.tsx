@@ -60,7 +60,6 @@ export const ClassDialog = ({
 
   const onSubmit = (data: ClassSectionFormData) => {
     if (isEditing) {
-      // The backend does not allow updating the academicYearId for an existing class
       const { ...updateData } = data;
       updateMutation.mutate(
         { id: classSection.id, data: updateData },

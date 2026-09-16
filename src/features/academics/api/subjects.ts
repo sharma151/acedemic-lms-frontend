@@ -93,10 +93,11 @@ export const assignTeacher = async ({
 
 // ─── Query Hooks ──────────────────────────────────────────────────────────────
 
-export const useGetSubjects = (params?: GetSubjectsParams) => {
+export const useGetSubjects = (params?: GetSubjectsParams, enabled: boolean = true) => {
   return useQuery({
     queryKey: [QUERY_KEYS.ACADEMIC_SUBJECTS, params],
     queryFn: () => getSubjects(params),
+    enabled,
   });
 };
 

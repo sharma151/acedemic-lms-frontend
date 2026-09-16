@@ -25,13 +25,12 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
+  SelectGroup,
+  SelectLabel,
 } from "@/components/ui/select";
 import { subjectSchema, SubjectFormData } from "../schemas/academics";
 import { Subject } from "../types";
-import {
-  useCreateSubject,
-  useUpdateSubject,
-} from "../api/subjects";
+import { useCreateSubject, useUpdateSubject } from "../api/subjects";
 import { useGetClassSections } from "../api/classes";
 
 interface SubjectDialogProps {
@@ -57,11 +56,18 @@ export const SubjectDialog = ({
 
   const { data: classesResponse, isLoading: isLoadingClasses } =
     useGetClassSections();
-  const classes = Array.isArray(classesResponse?.data)
-    ? classesResponse.data
-    : Array.isArray(classesResponse)
-      ? (classesResponse as any)
-      : [];
+
+  let classes: any[] = [];
+  if (Array.isArray(classesResponse?.data)) {
+    classes = classesResponse.data;
+  } else if (Array.isArray(classesResponse)) {
+    classes = classesResponse as any;
+  } else if (
+    classesResponse?.data &&
+    typeof classesResponse.data === "object"
+  ) {
+    classes = Object.values(classesResponse.data).flat();
+  }
 
   const defaultValues: SubjectFormData = {
     classId: defaultClassId || "",

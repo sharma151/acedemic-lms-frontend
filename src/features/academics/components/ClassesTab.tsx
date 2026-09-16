@@ -19,11 +19,13 @@ import { ClassSection } from "../types";
 import { ClassDialog } from "./ClassDialog";
 
 export const ClassesTab = () => {
+
   const {
     value: academicYearName,
     setValue: setAcademicYearName,
     remove: removeAcademicYearName,
   } = useQueryParam("academicYearName");
+
   const selectedYearName = academicYearName || "all";
 
   const searchParams = useSearchParams();
@@ -41,6 +43,7 @@ export const ClassesTab = () => {
       page: currentPage,
       limit: pageSize,
     });
+    
   let classes: ClassSection[] = [];
   if (Array.isArray(classResponse?.data)) {
     classes = classResponse.data;
@@ -173,7 +176,7 @@ export const ClassesTab = () => {
               <SelectItem value="all">All Academic Years</SelectItem>
               {years.map((year) => (
                 <SelectItem key={year.id} value={year.name}>
-                  {year.name}
+                    {year.name}
                 </SelectItem>
               ))}
             </SelectContent>
