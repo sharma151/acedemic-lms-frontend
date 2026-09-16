@@ -30,22 +30,25 @@ export function PlanCard({
   const price =
     billingCycle === "monthly" ? plan.priceMonthly : plan.priceYearly;
 
-  const featureLabels: Record<keyof SubscriptionPlan["features"], string> = {
-    hostel: "Hostel Management",
-    grading: "Grading System",
-    library: "Library Management",
-    reports: "Standard Reports",
-    apiAccess: "API Access",
-    timetable: "Timetable Module",
-    transport: "Transport Management",
-    attendance: "Attendance Tracking",
-    parentPortal: "Parent Portal",
-    customReports: "Custom Reports",
-    onlineClasses: "Online Classes",
-    examManagement: "Exam Management",
-    smsNotifications: "SMS Notifications",
-    emailNotifications: "Email Notifications",
-  };
+  // Ordered array — determines the display order of features in the UI.
+  // Add / reorder entries here to change the card layout.
+  const featureLabels: [keyof SubscriptionPlan["features"], string][] = [
+    ["attendance",         "Attendance Tracking"],
+    ["grading",           "Grading System"],
+    ["reports",           "Standard Reports"],
+    ["timetable",         "Timetable Module"],
+    ["library",           "Library Management"],
+    ["transport",         "Transport Management"],
+    ["hostel",            "Hostel Management"],
+    ["examManagement",    "Exam Management"],
+    ["onlineClasses",     "Online Classes"],
+    ["parentPortal",      "Parent Portal"],
+    ["smsNotifications",  "SMS Notifications"],
+    ["emailNotifications","Email Notifications"],
+    ["customReports",     "Custom Reports"],
+    ["apiAccess",         "API Access"],
+  ];
+
 
   return (
     <Card
@@ -56,7 +59,7 @@ export function PlanCard({
           ? "border-primary shadow-lg dark:border-primary/50"
           : "border-border dark:border-border",
         isSelected &&
-          "ring-2 ring-primary ring-offset-2 dark:ring-offset-background border-primary bg-secondary/50 dark:bg-secondary/20"
+          "ring-2 ring-primary ring-offset-2 dark:ring-offset-background border-primary bg-secondary/50 dark:bg-secondary/20",
       )}
     >
       {isEnterprise && (
@@ -69,7 +72,10 @@ export function PlanCard({
         <div className="flex justify-between items-start">
           <CardTitle className="text-2xl font-bold">{plan.name}</CardTitle>
           {isSelected && (
-            <Badge variant="default" className="bg-primary text-primary-foreground">
+            <Badge
+              variant="default"
+              className="bg-primary text-primary-foreground"
+            >
               Selected
             </Badge>
           )}
@@ -90,34 +96,39 @@ export function PlanCard({
         </div>
 
         <ul className="space-y-3 text-sm">
-          {Object.entries(plan.features).map(([key, value]) => (
-            <li key={key} className="flex items-center">
-              {value ? (
-                <div className="mr-3 flex h-5 w-5 items-center justify-center rounded-full bg-green-100 dark:bg-green-900/30">
-                  <Check className="h-3 w-3 text-green-600 dark:text-green-400" />
-                </div>
-              ) : (
-                <div className="mr-3 flex h-5 w-5 items-center justify-center rounded-full bg-muted dark:bg-muted/50">
-                  <X className="h-3 w-3 text-muted-foreground" />
-                </div>
-              )}
-              <span
-                className={
-                  value
-                    ? "text-foreground"
-                    : "text-muted-foreground"
-                }
-              >
-                {featureLabels[key as keyof SubscriptionPlan["features"]]}
-              </span>
-            </li>
-          ))}
+          {featureLabels.map(([key, label]) => {
+            const value = plan.features[key];
+            return (
+              <li key={key} className="flex items-center">
+                {value ? (
+                  <div className="mr-3 flex h-5 w-5 items-center justify-center rounded-full bg-green-100 dark:bg-green-900/30">
+                    <Check className="h-3 w-3 text-green-600 dark:text-green-400" />
+                  </div>
+                ) : (
+                  <div className="mr-3 flex h-5 w-5 items-center justify-center rounded-full bg-muted dark:bg-muted/50">
+                    <X className="h-3 w-3 text-muted-foreground" />
+                  </div>
+                )}
+                <span
+                  className={
+                    value
+                      ? "text-foreground"
+                      : "text-muted-foreground"
+                  }
+                >
+                  {label}
+                </span>
+              </li>
+            );
+          })}
           <li className="flex items-center">
             <div className="mr-3 flex h-5 w-5 items-center justify-center rounded-full bg-green-100 dark:bg-green-900/30">
               <Check className="h-3 w-3 text-green-600 dark:text-green-400" />
             </div>
             <span className="text-foreground font-medium">
-              {plan.maxStudents ? `Up to ${plan.maxStudents} Students` : "Unlimited Students"}
+              {plan.maxStudents
+                ? `Up to ${plan.maxStudents} Students`
+                : "Unlimited Students"}
             </span>
           </li>
           <li className="flex items-center">
@@ -125,7 +136,9 @@ export function PlanCard({
               <Check className="h-3 w-3 text-green-600 dark:text-green-400" />
             </div>
             <span className="text-foreground font-medium">
-              {plan.maxTeachers ? `Up to ${plan.maxTeachers} Teachers` : "Unlimited Teachers"}
+              {plan.maxTeachers
+                ? `Up to ${plan.maxTeachers} Teachers`
+                : "Unlimited Teachers"}
             </span>
           </li>
         </ul>
@@ -137,7 +150,7 @@ export function PlanCard({
             "w-full transition-all font-semibold",
             isEnterprise
               ? "bg-primary hover:bg-primary/90 text-primary-foreground shadow-md"
-              : "bg-secondary hover:bg-secondary/80 text-secondary-foreground"
+              : "bg-secondary hover:bg-secondary/80 text-secondary-foreground",
           )}
           variant={isEnterprise ? "default" : "secondary"}
         >

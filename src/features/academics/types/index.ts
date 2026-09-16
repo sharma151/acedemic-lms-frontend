@@ -28,3 +28,24 @@ export interface ClassSection {
   createdAt: string;
   updatedAt: string;
 }
+
+export interface SubjectTeacher {
+  id: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  avatarUrl?: string | null;
+}
+
+export interface Subject {
+  id: string;
+  classId: string;
+  name: string;
+  code: string;
+  description?: string | null;
+  teacherId?: string | null;
+  teacher?: SubjectTeacher | null;
+  class?: { id: string; name: string; section?: string | null } | null;
+  createdAt: string;
+  updatedAt: string;
+}

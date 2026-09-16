@@ -10,4 +10,5 @@ export const QUERY_KEYS = {
   STUDENTS: "students",
   STUDENT_DETAILS: "student-details",
   STUDENT_HISTORY: "student-history",
+  ACADEMIC_SUBJECTS: "academic-subjects",
 } as const;

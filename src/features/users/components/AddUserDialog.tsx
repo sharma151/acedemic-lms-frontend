@@ -3,7 +3,8 @@
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQueryClient } from "@tanstack/react-query";
+import { useCustomMutation } from "@/hooks/use-custom-mutation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -60,18 +61,14 @@ export function AddUserDialog({
     },
   });
 
-  const mutation = useMutation({
-    mutationFn: addUserApi,
+  const mutation = useCustomMutation({
+    service: addUserApi,
+    queryKey: [[QUERY_KEYS.TENANT_DETAILS, tenantId]],
+    successTitle: "User added successfully",
+    successMessage: "User added successfully",
+    form: form,
     onSuccess: () => {
-      addNotification({
-        type: "success",
-        title: "User added successfully",
-      });
-      queryClient.invalidateQueries({
-        queryKey: [QUERY_KEYS.TENANT_DETAILS, tenantId],
-      });
       setOpen(false);
-      form.reset();
     },
     onError: (error: unknown) => {
       addNotification({

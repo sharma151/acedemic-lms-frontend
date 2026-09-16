@@ -25,12 +25,12 @@ export interface GetClassSectionResponse {
 }
 
 export interface GetClassSectionsParams {
-  academicYearId?: string;
   page?: number;
   limit?: number;
   name?: string;
+  academicYearName?: string;
 }
-
+//get class sections
 export const getClassSections = async (
   params?: GetClassSectionsParams,
 ): Promise<{ data: ClassSection[]; metadata?: PaginationMetadata }> => {
@@ -38,21 +38,33 @@ export const getClassSections = async (
     "/academics/classes",
     { params },
   );
-  return { data: response.data.data, metadata: response.data.metadata };
-};
+  
+  let classes: ClassSection[] = [];
+  const resData = response.data.data;
+  
+  if (Array.isArray(resData)) {
+    classes = resData;
+  } else if (resData && typeof resData === "object") {
+    classes = Object.values(resData).flat() as ClassSection[];
+  }
 
-export const getClassSection = async (id: string): Promise<ClassSection> => {
+  return { data: classes, metadata: response.data.metadata };
+};
+//get class section details
+export const getClassSectionDetails = async (
+  id: string,
+): Promise<ClassSection> => {
   const response = await apiClient.get<GetClassSectionResponse>(
     `/academics/classes/${id}`,
   );
   return response.data.data;
 };
-
+//create class section
 export const createClassSection = async (data: ClassSectionFormData) => {
   const response = await apiClient.post(`/academics/classes`, data);
   return response.data;
 };
-
+//update class section
 export const updateClassSection = async ({
   id,
   data,
@@ -64,6 +76,9 @@ export const updateClassSection = async ({
   return response.data;
 };
 
+
+//hooks
+
 export const useGetClassSections = (params?: GetClassSectionsParams) => {
   return useQuery({
     queryKey: [QUERY_KEYS.ACADEMIC_CLASSES, params],
@@ -74,13 +89,13 @@ export const useGetClassSections = (params?: GetClassSectionsParams) => {
 export const useGetClassSection = (id?: string) => {
   return useQuery({
     queryKey: [QUERY_KEYS.ACADEMIC_CLASSES, id],
-    queryFn: () => getClassSection(id!),
+    queryFn: () => getClassSectionDetails(id as string),
     enabled: !!id,
   });
 };
 
 export const useCreateClassSection = () => {
-  return useCustomMutation<ClassSectionFormData, any>({
+  return useCustomMutation<ClassSectionFormData, Error>({
     queryKey: [[QUERY_KEYS.ACADEMIC_CLASSES]],
     service: createClassSection,
     successMessage: "Class created successfully",
@@ -90,7 +105,7 @@ export const useCreateClassSection = () => {
 export const useUpdateClassSection = () => {
   return useCustomMutation<
     { id: string; data: Partial<ClassSectionFormData> },
-    any
+    Error
   >({
     queryKey: [[QUERY_KEYS.ACADEMIC_CLASSES]],
     service: updateClassSection,

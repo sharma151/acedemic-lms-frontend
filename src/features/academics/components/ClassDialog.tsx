@@ -60,8 +60,9 @@ export const ClassDialog = ({
 
   const onSubmit = (data: ClassSectionFormData) => {
     if (isEditing) {
+      const { ...updateData } = data;
       updateMutation.mutate(
-        { id: classSection.id, data },
+        { id: classSection.id, data: updateData },
         { onSuccess: () => onOpenChange(false) },
       );
     } else {
@@ -87,7 +88,7 @@ export const ClassDialog = ({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-106.25">
         <DialogHeader>
           <DialogTitle>
             {isEditing ? "Edit Class & Section" : "Add Class & Section"}
