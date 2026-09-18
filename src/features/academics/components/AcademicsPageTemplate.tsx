@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import { useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { AcademicYearsTab } from "./AcademicYearsTab";
 import { ClassesTab } from "./ClassesTab";
@@ -23,7 +23,6 @@ export const AcademicsPageTemplate = () => {
     setCurrentTab(val);
     const params = new URLSearchParams(searchParams.toString());
     params.set("tab", val);
-    // Use history API to update URL instantly without Next.js navigation cycle
     window.history.pushState(null, "", `?${params.toString()}`);
   };
 

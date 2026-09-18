@@ -1,5 +1,4 @@
 "use client";
-import React from "react";
 import {
   Dialog,
   DialogContent,
@@ -25,8 +24,6 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-  SelectGroup,
-  SelectLabel,
 } from "@/components/ui/select";
 import { subjectSchema, SubjectFormData } from "../schemas/academics";
 import { Subject } from "../types";
@@ -99,7 +96,7 @@ export const SubjectDialog = ({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[500px]">
+      <DialogContent className="sm:max-w-125">
         <DialogHeader>
           <DialogTitle>
             {isEditing ? "Edit Subject" : "Add Subject"}
@@ -142,7 +139,7 @@ export const SubjectDialog = ({
                         {classes.map((cls: any) => (
                           <SelectItem key={cls.id} value={cls.id}>
                             {cls.name}
-                            {cls.section ? ` — ${cls.section}` : ""}
+                            {cls.section ? ` - ${cls.section}` : ""}
                           </SelectItem>
                         ))}
                       </SelectContent>
