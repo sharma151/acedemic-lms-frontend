@@ -26,3 +26,5 @@ export const TENANT_STATUS = {
   Suspended: "suspended",
   Pending: "pending",
 } as const;
+
+export const DEBOUNCE_DELAY = 400;

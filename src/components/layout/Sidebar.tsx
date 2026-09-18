@@ -33,7 +33,7 @@ interface SidebarProps {
 
 export function Sidebar({ items }: SidebarProps) {
   const pathname = usePathname();
-  const { state, toggleSidebar } = useSidebar();
+  const { state, toggleSidebar, isMobile, setOpenMobile } = useSidebar();
 
   // Group items by section
   const sections = items.reduce(
@@ -64,6 +64,9 @@ export function Sidebar({ items }: SidebarProps) {
         <Link
           href="/"
           className="flex items-center gap-2.5 font-bold text-base text-foreground tracking-tight overflow-hidden"
+          onClick={() => {
+            if (isMobile) setOpenMobile(false);
+          }}
         >
           <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-primary text-primary-foreground">
             <GraduationCap className="h-4 w-4" />
@@ -99,6 +102,9 @@ export function Sidebar({ items }: SidebarProps) {
                       >
                         <Link
                           href={item.href}
+                          onClick={() => {
+                            if (isMobile) setOpenMobile(false);
+                          }}
                           className="flex items-center gap-2.5 w-full group-data-[collapsible=icon]:justify-center"
                         >
                           <item.icon

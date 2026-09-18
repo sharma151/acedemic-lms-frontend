@@ -4,9 +4,9 @@ import { useRouter } from "next/navigation";
 import { DataTable, ColumnDef } from "@/components/ui/data-table";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Plus, Search, MoreHorizontal } from "lucide-react";
+import { Plus, MoreHorizontal } from "lucide-react";
 import { useFormatDate } from "@/hooks/use-format-date";
-import { Input } from "@/components/ui/input";
+import useFilterSearch from "@/hooks/use-filter-search";
 import {
   Select,
   SelectContent,
@@ -61,6 +61,15 @@ export function TenantsPageTemplate({
   const { tenants, metadata, isLoading, filters, setQueryParams } =
     useTenantsList();
   const { currentPage, pageSize, name, status } = filters;
+
+  const { renderSearch } = useFilterSearch({
+    id: "search-tenants",
+    placeholder: "Search by name...",
+    initialValue: name || "",
+    onSearchChange: (next) => {
+      setQueryParams({ name: next || null, page: "1" });
+    },
+  });
 
   const activateMutation = useCustomMutation({
     service: activateTenantApi,
@@ -206,17 +215,8 @@ export function TenantsPageTemplate({
             >
               Search
             </label>
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-gray-400" />
-              <Input
-                placeholder="Search by name..."
-                value={name}
-                className="pl-10 max-w-sm"
-                onChange={(e) => {
-                  setQueryParams({ name: e.target.value || null, page: "1" });
-                }}
-                maxLength={255}
-              />
+            <div className="w-full max-w-sm">
+              {renderSearch()}
             </div>
           </div>
         </div>

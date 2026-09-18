@@ -5,6 +5,7 @@ import { QueryProvider } from "@/components/providers/QueryProvider";
 import { TenantThemeProvider } from "@/components/providers/TenantThemeProvider";
 import { Toaster } from "sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import NextTopLoader from "nextjs-toploader";
 
 import { AuthProvider } from "@/components/providers/AuthProvider";
 
@@ -31,6 +32,7 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${geistSans.variable} ${geistMono.variable}`}>
       <body className="font-sans antialiased min-h-screen flex flex-col" suppressHydrationWarning>
+        <NextTopLoader color="#4f46e5" showSpinner={false} />
         <QueryProvider>
           <AuthProvider>
             <TenantThemeProvider>

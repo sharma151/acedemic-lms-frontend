@@ -1,9 +1,8 @@
 "use client";
-import React, { useState, useMemo } from "react";
+import { useState, useMemo } from "react";
 import { useSearchParams } from "next/navigation";
-import { Plus, Pencil, Search } from "lucide-react";
+import { Plus, Pencil } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { DataTable, ColumnDef } from "@/components/ui/data-table";
 import {
   Select,
@@ -17,9 +16,9 @@ import { useGetClassSections } from "../api/classes";
 import { useGetAcademicYears } from "../api/years";
 import { ClassSection } from "../types";
 import { ClassDialog } from "./ClassDialog";
+import useFilterSearch from "@/hooks/use-filter-search";
 
 export const ClassesTab = () => {
-
   const {
     value: academicYearName,
     setValue: setAcademicYearName,
@@ -43,7 +42,7 @@ export const ClassesTab = () => {
       page: currentPage,
       limit: pageSize,
     });
-    
+
   const classes: ClassSection[] = classResponse?.data || [];
   const metadata = classResponse?.metadata;
 
@@ -55,7 +54,14 @@ export const ClassesTab = () => {
   const [editingClass, setEditingClass] = useState<ClassSection | null>(null);
 
   // Filters
-  const [searchQuery, setSearchQuery] = useState("");
+  const { renderSearch, debouncedSearch: searchQuery } = useFilterSearch({
+    id: "search-classes",
+    placeholder: "Search classes...",
+    initialValue: searchParams.get("search") || "",
+    onSearchChange: (next) => {
+      setQueryParams({ search: next || null, page: "1" });
+    },
+  });
 
   const handleEdit = (classSection: ClassSection) => {
     setEditingClass(classSection);
@@ -168,22 +174,13 @@ export const ClassesTab = () => {
               <SelectItem value="all">All Academic Years</SelectItem>
               {years.map((year) => (
                 <SelectItem key={year.id} value={year.name}>
-                    {year.name}
+                  {year.name}
                 </SelectItem>
               ))}
             </SelectContent>
           </Select>
 
-          <div className="relative w-full sm:w-62.5">
-            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-slate-400" />
-            <Input
-              type="text"
-              placeholder="Search classes..."
-              className="pl-9 bg-white"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-            />
-          </div>
+          <div className="w-full sm:w-62.5">{renderSearch()}</div>
         </div>
       </div>
 
