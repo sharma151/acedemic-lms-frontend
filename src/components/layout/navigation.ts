@@ -6,6 +6,7 @@ import {
   Building2,
   CreditCard,
   GraduationCap,
+  Calendar,
 } from "lucide-react";
 import { SidebarNavItem } from "./Sidebar";
 
@@ -39,6 +40,12 @@ export const tenantNavigation: SidebarNavItem[] = [
     title: "Settings",
     href: "/settings",
     icon: Settings,
+    section: "Configuration",
+  },
+  {
+    title: "Timetable",
+    href: "/timetable-configurations",
+    icon: Calendar,
     section: "Configuration",
   },
 ];
@@ -79,5 +86,11 @@ export const adminNavigation: SidebarNavItem[] = [
     href: "/super-admin/plans",
     icon: CreditCard,
     section: "Platform Management",
+  },
+  {
+    title: "Timetable",
+    href: "/super-admin/timetable-configurations",
+    icon: Calendar,
+    section: "Configuration",
   },
 ];

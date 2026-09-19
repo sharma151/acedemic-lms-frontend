@@ -11,4 +11,7 @@ export const QUERY_KEYS = {
   STUDENT_DETAILS: "student-details",
   STUDENT_HISTORY: "student-history",
   ACADEMIC_SUBJECTS: "academic-subjects",
+  TIMETABLE_CONFIGURATIONS: "timetable-configurations",
+  TIMETABLE_CONFIGURATION_DAYS: "timetable-configuration-days",
+  TIMETABLE_CONFIGURATION_PERIODS: "timetable-configuration-periods",
 } as const;
