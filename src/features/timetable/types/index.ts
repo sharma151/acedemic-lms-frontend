@@ -50,3 +50,49 @@ export interface Period {
   createdAt: string;
   updatedAt: string;
 }
+
+export interface TimetableSlot {
+  id: string;
+  academicYearId: string;
+  timetableConfigurationId: string;
+  periodId: string;
+  classId: string;
+  subjectId: string;
+  primaryTeacherId?: string | null;
+  secondaryTeacherId?: string | null;
+  substituteTeacherId?: string | null;
+  tag?: "Theory" | "Practical" | "Lab" | string | null;
+  startTime: string;
+  endTime: string;
+  day: string;
+  date?: string | null;
+  slot?: string | null;
+  type: PeriodType;
+  status: string;
+  remark?: string | null;
+  
+  // Relations
+  subject?: { id: string; name: string; code?: string };
+  primaryTeacher?: { id: string; firstName: string; lastName: string };
+  secondaryTeacher?: { id: string; firstName: string; lastName: string };
+  substituteTeacher?: { id: string; firstName: string; lastName: string };
+  teacher?: { id: string; name: string; avatarUrl?: string; isSubstitute?: boolean };
+  class?: { id: string; name: string; section?: string };
+}
+
+export interface DayMatrix {
+  day: string;
+  date: string;
+  totalPeriods: number;
+  periods: Period[];
+}
+
+export interface WeeklyMatrixResponse {
+  class: { id: string; name: string; section?: string };
+  academicYear: { id: string; name: string };
+  configuration: TimetableConfiguration;
+  configDays: WorkingDay[];
+  configPeriods: Period[];
+  days: DayMatrix[];
+  slots: TimetableSlot[];
+}

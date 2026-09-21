@@ -14,6 +14,17 @@ import {
 import { QUERY_KEYS } from "@/configs/querykey";
 import { useCustomMutation } from "@/hooks/use-custom-mutation";
 
+import { CreateSlotFormData, UpdateSlotFormData, AssignSubstituteFormData } from "../schemas/timetable";
+import { WeeklyMatrixResponse } from "../types";
+
+export interface GetWeeklyMatrixParams {
+  academicYearId?: string;
+  timetableConfigurationId?: string;
+  classId?: string;
+  startDate?: string;
+  endDate?: string;
+}
+
 // --- API Response Interfaces ---
 
 export interface GetConfigurationsResponse {
@@ -184,7 +195,7 @@ export const useGetWorkingDays = (configurationId?: string) => {
 
 export const useCreateWorkingDay = (configurationId?: string) => {
   return useCustomMutation<{ configurationId: string; data: WorkingDayFormData }, Error>({
-    queryKey: [[QUERY_KEYS.TIMETABLE_CONFIGURATION_DAYS, configurationId]],
+    queryKey: [[QUERY_KEYS.TIMETABLE_CONFIGURATION_DAYS, configurationId || ""]],
     service: createWorkingDay,
     successMessage: "Working day created successfully",
   });
@@ -192,7 +203,7 @@ export const useCreateWorkingDay = (configurationId?: string) => {
 
 export const useUpdateWorkingDay = (configurationId?: string) => {
   return useCustomMutation<{ configurationId: string; dayId: string; data: Partial<WorkingDayFormData> }, Error>({
-    queryKey: [[QUERY_KEYS.TIMETABLE_CONFIGURATION_DAYS, configurationId]],
+    queryKey: [[QUERY_KEYS.TIMETABLE_CONFIGURATION_DAYS, configurationId || ""]],
     service: updateWorkingDay,
     successMessage: "Working day updated successfully",
   });
@@ -200,7 +211,7 @@ export const useUpdateWorkingDay = (configurationId?: string) => {
 
 export const useDeleteWorkingDay = (configurationId?: string) => {
   return useCustomMutation<{ configurationId: string; dayId: string }, Error>({
-    queryKey: [[QUERY_KEYS.TIMETABLE_CONFIGURATION_DAYS, configurationId]],
+    queryKey: [[QUERY_KEYS.TIMETABLE_CONFIGURATION_DAYS, configurationId || ""]],
     service: deleteWorkingDay,
     successMessage: "Working day deleted successfully",
   });
@@ -217,7 +228,7 @@ export const useGetPeriods = (configurationId?: string) => {
 
 export const useCreatePeriod = (configurationId?: string) => {
   return useCustomMutation<{ configurationId: string; data: PeriodFormData }, Error>({
-    queryKey: [[QUERY_KEYS.TIMETABLE_CONFIGURATION_PERIODS, configurationId]],
+    queryKey: [[QUERY_KEYS.TIMETABLE_CONFIGURATION_PERIODS, configurationId || ""]],
     service: createPeriod,
     successMessage: "Period created successfully",
   });
@@ -225,7 +236,7 @@ export const useCreatePeriod = (configurationId?: string) => {
 
 export const useUpdatePeriod = (configurationId?: string) => {
   return useCustomMutation<{ configurationId: string; periodId: string; data: Partial<PeriodFormData> }, Error>({
-    queryKey: [[QUERY_KEYS.TIMETABLE_CONFIGURATION_PERIODS, configurationId]],
+    queryKey: [[QUERY_KEYS.TIMETABLE_CONFIGURATION_PERIODS, configurationId || ""]],
     service: updatePeriod,
     successMessage: "Period updated successfully",
   });
@@ -233,8 +244,76 @@ export const useUpdatePeriod = (configurationId?: string) => {
 
 export const useDeletePeriod = (configurationId?: string) => {
   return useCustomMutation<{ configurationId: string; periodId: string }, Error>({
-    queryKey: [[QUERY_KEYS.TIMETABLE_CONFIGURATION_PERIODS, configurationId]],
+    queryKey: [[QUERY_KEYS.TIMETABLE_CONFIGURATION_PERIODS, configurationId || ""]],
     service: deletePeriod,
     successMessage: "Period deleted successfully",
+  });
+};
+
+// --- Slots API ---
+
+export const getWeeklyMatrix = async (params: GetWeeklyMatrixParams): Promise<WeeklyMatrixResponse> => {
+  const response = await apiClient.get<{ data: WeeklyMatrixResponse }>("/timetables/weekly-matrix", { params });
+  return response.data.data;
+};
+
+export const createTimetableSlot = async (data: CreateSlotFormData) => {
+  const response = await apiClient.post("/timetables", data);
+  return response.data;
+};
+
+export const updateTimetableSlot = async ({ id, data }: { id: string; data: UpdateSlotFormData }) => {
+  const response = await apiClient.patch(`/timetables/${id}`, data);
+  return response.data;
+};
+
+export const deleteTimetableSlot = async (id: string) => {
+  const response = await apiClient.delete(`/timetables/${id}`);
+  return response.data;
+};
+
+export const assignSubstituteTeacher = async ({ id, data }: { id: string; data: AssignSubstituteFormData }) => {
+  const response = await apiClient.patch(`/timetables/${id}/substitute`, data);
+  return response.data;
+};
+
+// Hooks
+export const useGetWeeklyMatrix = (params: GetWeeklyMatrixParams) => {
+  return useQuery({
+    queryKey: [QUERY_KEYS.TIMETABLES, "weekly-matrix", params],
+    queryFn: () => getWeeklyMatrix(params),
+    enabled: !!params.classId && !!params.timetableConfigurationId,
+  });
+};
+
+export const useCreateTimetableSlot = () => {
+  return useCustomMutation<CreateSlotFormData, Error>({
+    queryKey: [[QUERY_KEYS.TIMETABLES]],
+    service: createTimetableSlot,
+    successMessage: "Slot assigned successfully",
+  });
+};
+
+export const useUpdateTimetableSlot = () => {
+  return useCustomMutation<{ id: string; data: UpdateSlotFormData }, Error>({
+    queryKey: [[QUERY_KEYS.TIMETABLES]],
+    service: updateTimetableSlot,
+    successMessage: "Slot updated successfully",
+  });
+};
+
+export const useDeleteTimetableSlot = () => {
+  return useCustomMutation<string, Error>({
+    queryKey: [[QUERY_KEYS.TIMETABLES]],
+    service: deleteTimetableSlot,
+    successMessage: "Slot deleted successfully",
+  });
+};
+
+export const useAssignSubstituteTeacher = () => {
+  return useCustomMutation<{ id: string; data: AssignSubstituteFormData }, Error>({
+    queryKey: [[QUERY_KEYS.TIMETABLES]],
+    service: assignSubstituteTeacher,
+    successMessage: "Substitute assigned successfully",
   });
 };

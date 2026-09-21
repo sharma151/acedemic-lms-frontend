@@ -153,7 +153,7 @@ export const PeriodsTab = ({ configurationId }: PeriodsTabProps) => {
         description={`Are you sure you want to delete ${periodToDelete?.name}?`}
         onConfirm={confirmDelete}
         confirmText="Delete"
-        confirmVariant="destructive"
+        variant="destructive"
         isLoading={deleteMutation.isPending}
       />
     </div>

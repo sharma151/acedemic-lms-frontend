@@ -184,7 +184,7 @@ export const WorkingDaysTab = ({ configurationId }: WorkingDaysTabProps) => {
         description={`Are you sure you want to delete ${dayToDelete?.label}?`}
         onConfirm={confirmDelete}
         confirmText="Delete"
-        confirmVariant="destructive"
+        variant="destructive"
         isLoading={deleteMutation.isPending}
       />
     </div>

@@ -14,4 +14,5 @@ export const QUERY_KEYS = {
   TIMETABLE_CONFIGURATIONS: "timetable-configurations",
   TIMETABLE_CONFIGURATION_DAYS: "timetable-configuration-days",
   TIMETABLE_CONFIGURATION_PERIODS: "timetable-configuration-periods",
+  TIMETABLES: "timetables",
 } as const;

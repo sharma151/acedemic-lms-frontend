@@ -197,7 +197,7 @@ export const TimetableConfigurationsTemplate = () => {
         description={`Are you sure you want to delete ${configToDelete?.name}? This action cannot be undone.`}
         onConfirm={confirmDelete}
         confirmText="Delete"
-        confirmVariant="destructive"
+        variant="destructive"
         isLoading={deleteMutation.isPending}
       />
     </div>
