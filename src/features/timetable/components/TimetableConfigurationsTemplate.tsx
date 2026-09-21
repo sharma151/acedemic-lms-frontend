@@ -1,5 +1,6 @@
 "use client";
 import React, { useState } from "react";
+import { useDisclosure } from "@/hooks/use-disclosure";
 import { useSearchParams, useRouter } from "next/navigation";
 import { Plus, Settings2, Pencil, Star, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -35,20 +36,20 @@ export const TimetableConfigurationsTemplate = () => {
 
   const configurations = response?.data || [];
   const metadata = response?.metadata;
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const addConfigDialog = useDisclosure();
   const [editingConfig, setEditingConfig] = useState<TimetableConfiguration | null>(null);
   
-  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const deleteConfigDialog = useDisclosure();
   const [configToDelete, setConfigToDelete] = useState<TimetableConfiguration | null>(null);
 
   const handleEdit = (config: TimetableConfiguration) => {
     setEditingConfig(config);
-    setIsDialogOpen(true);
+    addConfigDialog.open();
   };
 
   const handleAdd = () => {
     setEditingConfig(null);
-    setIsDialogOpen(true);
+    addConfigDialog.open();
   };
 
   const handleConfigure = (config: TimetableConfiguration) => {
@@ -57,14 +58,14 @@ export const TimetableConfigurationsTemplate = () => {
 
   const handleDelete = (config: TimetableConfiguration) => {
     setConfigToDelete(config);
-    setIsDeleteDialogOpen(true);
+    deleteConfigDialog.open();
   };
 
   const confirmDelete = () => {
     if (configToDelete) {
       deleteMutation.mutate(configToDelete.id, {
         onSuccess: () => {
-          setIsDeleteDialogOpen(false);
+          deleteConfigDialog.close();
           setConfigToDelete(null);
         }
       });
@@ -182,17 +183,18 @@ export const TimetableConfigurationsTemplate = () => {
       />
 
       <ConfigurationDialog
-        open={isDialogOpen}
+        open={addConfigDialog.isOpen}
         onOpenChange={(open) => {
-          setIsDialogOpen(open);
+          if (open) addConfigDialog.open();
+          else addConfigDialog.close();
           if (!open) setTimeout(() => setEditingConfig(null), 300);
         }}
         configuration={editingConfig}
       />
 
       <ConfirmDialog
-        isOpen={isDeleteDialogOpen}
-        onClose={() => setIsDeleteDialogOpen(false)}
+        isOpen={deleteConfigDialog.isOpen}
+        onClose={deleteConfigDialog.close}
         title="Delete Configuration"
         description={`Are you sure you want to delete ${configToDelete?.name}? This action cannot be undone.`}
         onConfirm={confirmDelete}

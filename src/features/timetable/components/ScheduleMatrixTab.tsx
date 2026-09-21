@@ -1,5 +1,6 @@
 "use client";
 import React, { useState, useMemo } from "react";
+import { useDisclosure } from "@/hooks/use-disclosure";
 import { useGetWorkingDays, useGetPeriods, useGetWeeklyMatrix, useDeleteTimetableSlot, useGetConfiguration } from "../api/timetable";
 import { useGetClassSections } from "@/features/academics/api/classes";
 import { Loader2, Plus, Edit2, UserCog, Trash2, MoreVertical } from "lucide-react";
@@ -35,7 +36,7 @@ export const ScheduleMatrixTab = ({ configurationId }: ScheduleMatrixTabProps) =
   const deleteMutation = useDeleteTimetableSlot();
 
   // Modals state
-  const [isSlotDialogOpen, setIsSlotDialogOpen] = useState(false);
+  const slotDialog = useDisclosure();
   const [selectedDay, setSelectedDay] = useState<WorkingDay | null>(null);
   const [selectedPeriod, setSelectedPeriod] = useState<Period | null>(null);
   const [editingSlot, setEditingSlot] = useState<TimetableSlot | null>(null);
@@ -74,14 +75,14 @@ export const ScheduleMatrixTab = ({ configurationId }: ScheduleMatrixTabProps) =
     setSelectedDay(day);
     setSelectedPeriod(period);
     setEditingSlot(null);
-    setIsSlotDialogOpen(true);
+    slotDialog.open();
   };
 
   const handleEditSlot = (slot: TimetableSlot, day: WorkingDay, period: Period) => {
     setSelectedDay(day);
     setSelectedPeriod(period);
     setEditingSlot(slot);
-    setIsSlotDialogOpen(true);
+    slotDialog.open();
   };
 
   return (
@@ -225,9 +226,10 @@ export const ScheduleMatrixTab = ({ configurationId }: ScheduleMatrixTabProps) =
       {/* Dialogs */}
       {config && selectedDay && selectedPeriod && (
         <AssignSlotDialog
-          open={isSlotDialogOpen}
+          open={slotDialog.isOpen}
           onOpenChange={(open) => {
-            setIsSlotDialogOpen(open);
+            if (open) slotDialog.open();
+            else slotDialog.close();
             if (!open) {
               setTimeout(() => {
                 setSelectedDay(null);

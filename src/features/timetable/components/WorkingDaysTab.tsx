@@ -1,5 +1,6 @@
 "use client";
 import React, { useState } from "react";
+import { useDisclosure } from "@/hooks/use-disclosure";
 import { Plus, Pencil, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { DataTable, ColumnDef } from "@/components/ui/data-table";
@@ -19,25 +20,25 @@ export const WorkingDaysTab = ({ configurationId }: WorkingDaysTabProps) => {
   const deleteMutation = useDeleteWorkingDay(configurationId);
   const updateMutation = useUpdateWorkingDay(configurationId);
 
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const addDialog = useDisclosure();
   const [editingDay, setEditingDay] = useState<WorkingDay | null>(null);
 
-  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const deleteDialog = useDisclosure();
   const [dayToDelete, setDayToDelete] = useState<WorkingDay | null>(null);
 
   const handleEdit = (day: WorkingDay) => {
     setEditingDay(day);
-    setIsDialogOpen(true);
+    addDialog.open();
   };
 
   const handleAdd = () => {
     setEditingDay(null);
-    setIsDialogOpen(true);
+    addDialog.open();
   };
 
   const handleDelete = (day: WorkingDay) => {
     setDayToDelete(day);
-    setIsDeleteDialogOpen(true);
+    deleteDialog.open();
   };
 
   const handleToggleWorkingDay = (day: WorkingDay, checked: boolean) => {
@@ -54,7 +55,7 @@ export const WorkingDaysTab = ({ configurationId }: WorkingDaysTabProps) => {
         { configurationId, dayId: dayToDelete.id },
         {
           onSuccess: () => {
-            setIsDeleteDialogOpen(false);
+            deleteDialog.close();
             setDayToDelete(null);
           },
         }
@@ -168,9 +169,10 @@ export const WorkingDaysTab = ({ configurationId }: WorkingDaysTabProps) => {
       />
 
       <WorkingDayDialog
-        open={isDialogOpen}
+        open={addDialog.isOpen}
         onOpenChange={(open) => {
-          setIsDialogOpen(open);
+          if (open) addDialog.open();
+          else addDialog.close();
           if (!open) setTimeout(() => setEditingDay(null), 300);
         }}
         configurationId={configurationId}
@@ -178,8 +180,8 @@ export const WorkingDaysTab = ({ configurationId }: WorkingDaysTabProps) => {
       />
 
       <ConfirmDialog
-        isOpen={isDeleteDialogOpen}
-        onClose={() => setIsDeleteDialogOpen(false)}
+        isOpen={deleteDialog.isOpen}
+        onClose={deleteDialog.close}
         title="Delete Working Day"
         description={`Are you sure you want to delete ${dayToDelete?.label}?`}
         onConfirm={confirmDelete}

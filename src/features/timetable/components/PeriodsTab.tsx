@@ -1,5 +1,6 @@
 "use client";
 import React, { useState } from "react";
+import { useDisclosure } from "@/hooks/use-disclosure";
 import { Plus, Pencil, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { DataTable, ColumnDef } from "@/components/ui/data-table";
@@ -17,25 +18,25 @@ export const PeriodsTab = ({ configurationId }: PeriodsTabProps) => {
   const { data: periods = [], isLoading } = useGetPeriods(configurationId);
   const deleteMutation = useDeletePeriod(configurationId);
 
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const addPeriodDialog = useDisclosure();
   const [editingPeriod, setEditingPeriod] = useState<Period | null>(null);
 
-  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const deletePeriodDialog = useDisclosure();
   const [periodToDelete, setPeriodToDelete] = useState<Period | null>(null);
 
   const handleEdit = (period: Period) => {
     setEditingPeriod(period);
-    setIsDialogOpen(true);
+    addPeriodDialog.open();
   };
 
   const handleAdd = () => {
     setEditingPeriod(null);
-    setIsDialogOpen(true);
+    addPeriodDialog.open();
   };
 
   const handleDelete = (period: Period) => {
     setPeriodToDelete(period);
-    setIsDeleteDialogOpen(true);
+    deletePeriodDialog.open();
   };
 
   const confirmDelete = () => {
@@ -44,7 +45,7 @@ export const PeriodsTab = ({ configurationId }: PeriodsTabProps) => {
         { configurationId, periodId: periodToDelete.id },
         {
           onSuccess: () => {
-            setIsDeleteDialogOpen(false);
+            deletePeriodDialog.close();
             setPeriodToDelete(null);
           },
         }
@@ -137,9 +138,10 @@ export const PeriodsTab = ({ configurationId }: PeriodsTabProps) => {
       />
 
       <PeriodDialog
-        open={isDialogOpen}
+        open={addPeriodDialog.isOpen}
         onOpenChange={(open) => {
-          setIsDialogOpen(open);
+          if (open) addPeriodDialog.open();
+          else addPeriodDialog.close();
           if (!open) setTimeout(() => setEditingPeriod(null), 300);
         }}
         configurationId={configurationId}
@@ -147,8 +149,8 @@ export const PeriodsTab = ({ configurationId }: PeriodsTabProps) => {
       />
 
       <ConfirmDialog
-        isOpen={isDeleteDialogOpen}
-        onClose={() => setIsDeleteDialogOpen(false)}
+        isOpen={deletePeriodDialog.isOpen}
+        onClose={deletePeriodDialog.close}
         title="Delete Period"
         description={`Are you sure you want to delete ${periodToDelete?.name}?`}
         onConfirm={confirmDelete}

@@ -53,8 +53,9 @@ export const ConfigurationDialog = ({
 
   const onSubmit = (data: ConfigurationFormData) => {
     if (isEditing) {
+      const { academicYearId, ...updateData } = data;
       updateMutation.mutate(
-        { id: configuration.id, data },
+        { id: configuration.id, data: updateData },
         { onSuccess: () => onOpenChange(false) },
       );
     } else {
@@ -118,30 +119,32 @@ export const ConfigurationDialog = ({
                 )}
               />
 
-              <FormField
-                control={form.control}
-                name="academicYearId"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Academic Year</FormLabel>
-                    <Select onValueChange={field.onChange} value={field.value}>
-                      <FormControl>
-                        <SelectTrigger disabled={isLoadingYears}>
-                          <SelectValue placeholder="Select Academic Year" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        {academicYears.map((year) => (
-                          <SelectItem key={year.id} value={year.id}>
-                            {year.name}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+              {!isEditing && (
+                <FormField
+                  control={form.control}
+                  name="academicYearId"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Academic Year</FormLabel>
+                      <Select onValueChange={field.onChange} value={field.value}>
+                        <FormControl>
+                          <SelectTrigger disabled={isLoadingYears}>
+                            <SelectValue placeholder="Select Academic Year" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {academicYears.map((year) => (
+                            <SelectItem key={year.id} value={year.id}>
+                              {year.name}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              )}
 
               <FormField
                 control={form.control}
