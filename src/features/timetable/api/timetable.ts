@@ -253,7 +253,8 @@ export const useDeletePeriod = (configurationId?: string) => {
 // --- Slots API ---
 
 export const getWeeklyMatrix = async (params: GetWeeklyMatrixParams): Promise<WeeklyMatrixResponse> => {
-  const response = await apiClient.get<{ data: WeeklyMatrixResponse }>("/timetables/weekly-matrix", { params });
+  const { classId, ...apiParams } = params;
+  const response = await apiClient.get<{ data: WeeklyMatrixResponse }>("/timetables/weekly-matrix", { params: apiParams });
   return response.data.data;
 };
 

@@ -32,7 +32,7 @@ export const ScheduleMatrixTab = ({ configurationId }: ScheduleMatrixTabProps) =
     classId: selectedClassId,
   });
 
-  const slots = matrixResponse?.slots || [];
+  const slots = (matrixResponse?.slots || []).filter(slot => slot.classId === selectedClassId);
   const deleteMutation = useDeleteTimetableSlot();
 
   // Modals state
