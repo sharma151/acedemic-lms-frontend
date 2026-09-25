@@ -72,7 +72,8 @@ export const updateClassSection = async ({
   id: string;
   data: Partial<ClassSectionFormData>;
 }) => {
-  const response = await apiClient.patch(`/academics/classes/${id}`, data);
+  const { academicYearId, ...updateData } = data;
+  const response = await apiClient.patch(`/academics/classes/${id}`, updateData);
   return response.data;
 };
 
