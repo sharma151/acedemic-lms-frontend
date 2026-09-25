@@ -9,10 +9,12 @@ import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { AssignSlotDialog } from "./AssignSlotDialog";
 import { AssignSubstituteDialog } from "./AssignSubstituteDialog";
 import { TimetableSlot, Period, WorkingDay } from "../types";
+import useFilterSearch from "@/hooks/use-filter-search";
 
 interface ScheduleMatrixTabProps {
   configurationId: string;
@@ -20,6 +22,12 @@ interface ScheduleMatrixTabProps {
 
 export const ScheduleMatrixTab = ({ configurationId }: ScheduleMatrixTabProps) => {
   const [selectedClassId, setSelectedClassId] = useState<string>("");
+  
+  const { renderSearch: renderTeacherSearch, debouncedSearch: debouncedTeacherName } = useFilterSearch({
+    id: "teacher-search",
+    placeholder: "Search by teacher name...",
+    className: "w-full sm:w-64",
+  });
 
   const { data: config } = useGetConfiguration(configurationId);
   const { data: days = [], isLoading: isLoadingDays } = useGetWorkingDays(configurationId);
@@ -27,9 +35,13 @@ export const ScheduleMatrixTab = ({ configurationId }: ScheduleMatrixTabProps) =
   const { data: classesResponse, isLoading: isLoadingClasses } = useGetClassSections({ limit: 100 });
   const classes = classesResponse?.data || [];
 
+  const selectedClass = classes.find((c) => c.id === selectedClassId);
+
   const { data: matrixResponse, isLoading: isLoadingMatrix } = useGetWeeklyMatrix({
     timetableConfigurationId: configurationId,
-    classId: selectedClassId,
+    className: selectedClass?.name,
+    teacherName: debouncedTeacherName || undefined,
+    classId: selectedClassId, // keeping classId here just in case, but it's omitted in getWeeklyMatrix
   });
 
   const slots = matrixResponse?.slots || [];
@@ -87,33 +99,41 @@ export const ScheduleMatrixTab = ({ configurationId }: ScheduleMatrixTabProps) =
 
   return (
     <div className="mt-4 space-y-4 pb-4">
-      <div className="flex items-center gap-3 bg-slate-50 p-3 rounded-lg border border-slate-100">
-        <span className="text-sm font-medium text-slate-700 whitespace-nowrap">Select Class:</span>
-        <Select value={selectedClassId} onValueChange={setSelectedClassId}>
-          <SelectTrigger className="w-full sm:w-72 bg-white">
-            <SelectValue placeholder="Choose a class to view schedule" />
-          </SelectTrigger>
-          <SelectContent>
-            {classes.map((cls) => (
-              <SelectItem key={cls.id} value={cls.id}>
-                {cls.name} {cls.section ? `— ${cls.section}` : ""}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-        {isLoadingMatrix && <Loader2 className="h-4 w-4 animate-spin text-slate-400 ml-2" />}
+      <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 bg-slate-50 p-4 rounded-lg border border-slate-100">
+        <div className="flex items-center gap-3">
+          <span className="text-sm font-medium text-slate-700 whitespace-nowrap">Class:</span>
+          <Select value={selectedClassId} onValueChange={setSelectedClassId}>
+            <SelectTrigger className="w-full sm:w-64 bg-white">
+              <SelectValue placeholder="Select a class" />
+            </SelectTrigger>
+            <SelectContent>
+              {classes.map((cls) => (
+                <SelectItem key={cls.id} value={cls.id}>
+                  {cls.name} {cls.section ? `— ${cls.section}` : ""}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+
+        <div className="flex items-center gap-3">
+          <span className="text-sm font-medium text-slate-700 whitespace-nowrap">Teacher:</span>
+          {renderTeacherSearch()}
+        </div>
+
+        {isLoadingMatrix && <Loader2 className="h-4 w-4 animate-spin text-slate-400 ml-auto" />}
       </div>
 
-      {!selectedClassId ? (
+      {!selectedClassId && !debouncedTeacherName ? (
         <Card className="flex flex-col items-center justify-center p-12 text-center mt-4">
           <div className="rounded-full bg-slate-100 p-3 mb-4">
             <svg className="w-6 h-6 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z" />
             </svg>
           </div>
-          <h3 className="text-lg font-semibold text-slate-900">No Class Selected</h3>
+          <h3 className="text-lg font-semibold text-slate-900">No Filter Applied</h3>
           <p className="text-sm text-slate-500 mt-1 max-w-sm">
-            Select a class from the dropdown above to view and assign schedule periods.
+            Select a class or search by teacher name to view the schedule periods.
           </p>
         </Card>
       ) : (

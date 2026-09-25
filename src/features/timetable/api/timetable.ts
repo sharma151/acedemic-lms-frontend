@@ -21,6 +21,8 @@ export interface GetWeeklyMatrixParams {
   academicYearId?: string;
   timetableConfigurationId?: string;
   classId?: string;
+  className?: string;
+  teacherName?: string;
   startDate?: string;
   endDate?: string;
 }
@@ -283,7 +285,7 @@ export const useGetWeeklyMatrix = (params: GetWeeklyMatrixParams) => {
   return useQuery({
     queryKey: [QUERY_KEYS.TIMETABLES, "weekly-matrix", params],
     queryFn: () => getWeeklyMatrix(params),
-    enabled: !!params.classId && !!params.timetableConfigurationId,
+    enabled: (!!params.classId || !!params.className || !!params.teacherName) && !!params.timetableConfigurationId,
   });
 };
 
