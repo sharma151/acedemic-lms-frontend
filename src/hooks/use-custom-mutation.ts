@@ -86,6 +86,16 @@ export const useCustomMutation = <T, X>({
     onError: (err: AxiosError) => {
       const actualForm = form && "current" in form ? form.current : form;
       if (actualForm) syncFormErrors(actualForm, err);
+      
+      const errData = err.response?.data as any;
+      const errorMessage = errData?.message || err.message || "An error occurred";
+      
+      addNotification({
+        type: "error",
+        title: "Error",
+        message: errorMessage,
+      });
+
       if (onError) onError(err);
     },
   });
