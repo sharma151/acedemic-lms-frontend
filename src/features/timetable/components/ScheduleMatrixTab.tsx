@@ -14,6 +14,7 @@ import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { AssignSlotDialog } from "./AssignSlotDialog";
 import { AssignSubstituteDialog } from "./AssignSubstituteDialog";
 import { TimetableSlot, Period, WorkingDay } from "../types";
+import useFilterSearch from "@/hooks/use-filter-search";
 
 interface ScheduleMatrixTabProps {
   configurationId: string;
@@ -21,7 +22,12 @@ interface ScheduleMatrixTabProps {
 
 export const ScheduleMatrixTab = ({ configurationId }: ScheduleMatrixTabProps) => {
   const [selectedClassId, setSelectedClassId] = useState<string>("");
-  const [teacherName, setTeacherName] = useState<string>("");
+  
+  const { renderSearch: renderTeacherSearch, debouncedSearch: debouncedTeacherName } = useFilterSearch({
+    id: "teacher-search",
+    placeholder: "Search by teacher name...",
+    className: "w-full sm:w-64",
+  });
 
   const { data: config } = useGetConfiguration(configurationId);
   const { data: days = [], isLoading: isLoadingDays } = useGetWorkingDays(configurationId);
@@ -34,7 +40,7 @@ export const ScheduleMatrixTab = ({ configurationId }: ScheduleMatrixTabProps) =
   const { data: matrixResponse, isLoading: isLoadingMatrix } = useGetWeeklyMatrix({
     timetableConfigurationId: configurationId,
     className: selectedClass?.name,
-    teacherName: teacherName || undefined,
+    teacherName: debouncedTeacherName || undefined,
     classId: selectedClassId, // keeping classId here just in case, but it's omitted in getWeeklyMatrix
   });
 
@@ -112,18 +118,13 @@ export const ScheduleMatrixTab = ({ configurationId }: ScheduleMatrixTabProps) =
 
         <div className="flex items-center gap-3">
           <span className="text-sm font-medium text-slate-700 whitespace-nowrap">Teacher:</span>
-          <Input 
-            placeholder="Search by teacher name..." 
-            value={teacherName} 
-            onChange={(e) => setTeacherName(e.target.value)}
-            className="w-full sm:w-64 bg-white"
-          />
+          {renderTeacherSearch()}
         </div>
 
         {isLoadingMatrix && <Loader2 className="h-4 w-4 animate-spin text-slate-400 ml-auto" />}
       </div>
 
-      {!selectedClassId && !teacherName ? (
+      {!selectedClassId && !debouncedTeacherName ? (
         <Card className="flex flex-col items-center justify-center p-12 text-center mt-4">
           <div className="rounded-full bg-slate-100 p-3 mb-4">
             <svg className="w-6 h-6 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
