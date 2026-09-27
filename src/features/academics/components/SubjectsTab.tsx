@@ -199,7 +199,7 @@ export const SubjectsTab = () => {
               onClick={(e) => e.stopPropagation()}
             >
               <span className="sr-only">Open menu</span>
-              <MoreHorizontal className="h-4 w-4" />
+              <MoreHorizontal className="h-4 w-4 rotate-90" />
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" onClick={(e) => e.stopPropagation()}>

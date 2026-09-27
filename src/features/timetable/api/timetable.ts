@@ -22,6 +22,7 @@ export interface GetWeeklyMatrixParams {
   timetableConfigurationId?: string;
   classId?: string;
   className?: string;
+  section?: string;
   teacherName?: string;
   startDate?: string;
   endDate?: string;
@@ -255,8 +256,7 @@ export const useDeletePeriod = (configurationId?: string) => {
 // --- Slots API ---
 
 export const getWeeklyMatrix = async (params: GetWeeklyMatrixParams): Promise<WeeklyMatrixResponse> => {
-  const { classId, ...apiParams } = params;
-  const response = await apiClient.get<{ data: WeeklyMatrixResponse }>("/timetables/weekly-matrix", { params: apiParams });
+  const response = await apiClient.get<{ data: WeeklyMatrixResponse }>("/timetables/weekly-matrix", { params });
   return response.data.data;
 };
 

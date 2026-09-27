@@ -23,7 +23,7 @@ export function DashboardLayout({
   return (
     <SidebarProvider>
       <Sidebar items={navigation} />
-      <SidebarInset className="bg-slate-50 dark:bg-black">
+      <SidebarInset className="bg-slate-50 dark:bg-black min-w-0">
         <TopNavbar title={title} />
         <main className="flex-1 p-4 md:p-6 lg:p-8">
           <div className="mx-auto max-w-7xl w-full">
