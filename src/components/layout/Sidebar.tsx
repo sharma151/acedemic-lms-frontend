@@ -29,9 +29,10 @@ interface SidebarProps {
   items: SidebarNavItem[];
   isOpen?: boolean;
   setIsOpen?: (isOpen: boolean) => void;
+  homeHref?: string;
 }
 
-export function Sidebar({ items }: SidebarProps) {
+export function Sidebar({ items, homeHref = "/" }: SidebarProps) {
   const pathname = usePathname();
   const { state, toggleSidebar, isMobile, setOpenMobile } = useSidebar();
 
@@ -62,7 +63,7 @@ export function Sidebar({ items }: SidebarProps) {
 
       <SidebarHeader className="flex h-14 shrink-0 items-center justify-start px-4 border-b border-border/80">
         <Link
-          href="/"
+          href={homeHref}
           className="flex items-center gap-2.5 font-bold text-base text-foreground tracking-tight overflow-hidden"
           onClick={() => {
             if (isMobile) setOpenMobile(false);

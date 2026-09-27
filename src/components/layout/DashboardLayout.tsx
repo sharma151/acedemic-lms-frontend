@@ -19,10 +19,11 @@ export function DashboardLayout({
   title,
 }: DashboardLayoutProps) {
   const navigation = role === "superadmin" ? adminNavigation : tenantNavigation;
+  const homeHref = role === "superadmin" ? "/super-admin/dashboard" : "/dashboard";
 
   return (
     <SidebarProvider>
-      <Sidebar items={navigation} />
+      <Sidebar items={navigation} homeHref={homeHref} />
       <SidebarInset className="bg-slate-50 dark:bg-black min-w-0">
         <TopNavbar title={title} />
         <main className="flex-1 p-4 md:p-6 lg:p-8">
