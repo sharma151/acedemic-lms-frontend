@@ -1,4 +1,4 @@
-import { PlansPageTemplate } from "@/features/plans/components/PlansPageTemplate";
+import { PlansPageTemplate } from "@/features/plans";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {

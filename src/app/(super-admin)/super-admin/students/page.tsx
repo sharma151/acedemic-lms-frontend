@@ -1,4 +1,4 @@
-import { StudentsPageTemplate } from "@/features/students/components/StudentsPageTemplate";
+import { StudentsPageTemplate } from "@/features/students";
 
 export default function SuperAdminStudentsPage() {
   return (

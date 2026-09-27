@@ -1,4 +1,4 @@
-import { ProfileTemplate } from "@/features/profile/components/ProfileTemplate";
+import { ProfileTemplate } from "@/features/profile";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {

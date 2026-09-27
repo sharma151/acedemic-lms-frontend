@@ -1,4 +1,4 @@
-import { AcademicsPageTemplate } from "@/features/academics/components/AcademicsPageTemplate";
+import { AcademicsPageTemplate } from "@/features/academics";
 
 export const metadata = {
   title: "Academics | Super Admin",
