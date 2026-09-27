@@ -1,7 +1,7 @@
 "use client";
 import { useState, useMemo } from "react";
 import { useSearchParams } from "next/navigation";
-import { Plus, Pencil } from "lucide-react";
+import { Plus, Pencil, MoreHorizontal, Trash } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { DataTable, ColumnDef } from "@/components/ui/data-table";
 import {
@@ -12,10 +12,17 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useQueryParam } from "@/hooks/use-query-params";
-import { useGetClassSections } from "../api/classes";
+import { useGetClassSections, useDeleteClassSection } from "../api/classes";
 import { useGetAcademicYears } from "../api/years";
 import { ClassSection } from "../types";
 import { ClassDialog } from "./ClassDialog";
+import { ConfirmDialog } from "@/components/ui/confirm-dialog";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import useFilterSearch from "@/hooks/use-filter-search";
 
 export const ClassesTab = () => {
@@ -52,6 +59,9 @@ export const ClassesTab = () => {
 
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingClass, setEditingClass] = useState<ClassSection | null>(null);
+  const [deletingClass, setDeletingClass] = useState<ClassSection | null>(null);
+
+  const deleteMutation = useDeleteClassSection();
 
   // Filters
   const { renderSearch, debouncedSearch: searchQuery } = useFilterSearch({
@@ -122,15 +132,26 @@ export const ClassesTab = () => {
     {
       header: "Actions",
       cell: (cls) => (
-        <Button
-          onClick={(e) => {
-            e.stopPropagation();
-            handleEdit(cls);
-          }}
-        >
-          <Pencil className="h-4 w-4 mr-2" />
-          Edit
-        </Button>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="ghost" className="h-8 w-8 p-0">
+              <MoreHorizontal className="h-4 w-4 rotate-90" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuItem onClick={() => handleEdit(cls)}>
+              <Pencil className="mr-2 h-4 w-4" />
+              Edit
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={() => setDeletingClass(cls)}
+              className="text-destructive focus:text-destructive"
+            >
+              <Trash className="mr-2 h-4 w-4" />
+              Delete
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       ),
     },
   ];
@@ -207,6 +228,24 @@ export const ClassesTab = () => {
           if (!open) setTimeout(() => setEditingClass(null), 300);
         }}
         classSection={editingClass}
+      />
+
+      <ConfirmDialog
+        isOpen={!!deletingClass}
+        onClose={() => setDeletingClass(null)}
+        onConfirm={() => {
+          if (deletingClass) {
+            deleteMutation.mutate(deletingClass.id, {
+              onSuccess: () => setDeletingClass(null),
+              onError: () => setDeletingClass(null), // toast handled in mutation hook
+            });
+          }
+        }}
+        title="Delete Class"
+        description={`Are you sure you want to delete the class "${deletingClass?.name}"? This action cannot be undone.`}
+        confirmText="Delete"
+        variant="destructive"
+        isLoading={deleteMutation.isPending}
       />
     </div>
   );

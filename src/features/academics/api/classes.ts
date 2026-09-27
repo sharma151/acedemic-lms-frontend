@@ -77,6 +77,12 @@ export const updateClassSection = async ({
   return response.data;
 };
 
+//delete class section
+export const deleteClassSection = async (id: string) => {
+  const response = await apiClient.delete(`/academics/classes/${id}`);
+  return response.data;
+};
+
 
 //hooks
 
@@ -111,5 +117,13 @@ export const useUpdateClassSection = () => {
     queryKey: [[QUERY_KEYS.ACADEMIC_CLASSES]],
     service: updateClassSection,
     successMessage: "Class updated successfully",
+  });
+};
+
+export const useDeleteClassSection = () => {
+  return useCustomMutation<string, Error>({
+    queryKey: [[QUERY_KEYS.ACADEMIC_CLASSES]],
+    service: deleteClassSection,
+    successMessage: "Class deleted successfully",
   });
 };
