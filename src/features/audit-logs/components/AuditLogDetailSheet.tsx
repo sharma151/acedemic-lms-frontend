@@ -101,12 +101,12 @@ export const AuditLogDetailSheet: React.FC<Props> = ({
               </div>
               <div className="col-span-2">
                 <p className="font-semibold text-slate-700 dark:text-slate-300">Method & Path</p>
-                <p>
+                <div className="mt-1 flex items-center">
                   <Badge variant="outline" className="mr-2">
                     {log.details.method}
                   </Badge>
-                  {log.details.path}
-                </p>
+                  <span className="break-all">{log.details.path}</span>
+                </div>
               </div>
               {log.details.error && (
                 <div className="col-span-2 p-3 bg-red-50 text-red-700 rounded-md">
