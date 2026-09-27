@@ -1,6 +1,6 @@
 "use client";
 
-import { TenantsPageTemplate } from "@/features/tenants/components/TenantsPageTemplate";
+import { TenantsPageTemplate } from "@/features/tenants";
 
 export default function SuperAdminTenantsPage() {
   return (

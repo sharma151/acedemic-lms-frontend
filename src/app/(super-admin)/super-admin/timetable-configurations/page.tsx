@@ -1,4 +1,4 @@
-import { TimetableConfigurationsTemplate } from "@/features/timetable/components/TimetableConfigurationsTemplate";
+import { TimetableConfigurationsTemplate } from "@/features/timetable";
 
 export const metadata = {
   title: "Timetable Configurations",

@@ -1,5 +1,5 @@
 import React from "react";
-import { SettingsForm } from "@/features/settings/components/SettingsForm";
+import { SettingsForm } from "@/features/settings";
 
 export const metadata = {
   title: "Settings | Super Admin",

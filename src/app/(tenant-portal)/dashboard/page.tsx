@@ -1,5 +1,5 @@
 import { Metadata } from "next";
-import { DashboardTemplate } from "@/features/dashboard/components/DashboardTemplate";
+import { DashboardTemplate } from "@/features/dashboard";
 
 export const metadata: Metadata = {
   title: "Dashboard | Academic LMS",
