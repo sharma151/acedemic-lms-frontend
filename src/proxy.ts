@@ -43,7 +43,12 @@ export function proxy(request: NextRequest) {
 
   if (isAuthPage) {
     if (token) {
-      return NextResponse.redirect(new URL("/", request.url));
+      const payload = parseJwt(token);
+      let targetPath = "/dashboard";
+      if (payload && isRootOrAdmin && payload.role === Role.SUPER_ADMIN) {
+        targetPath = "/super-admin/dashboard";
+      }
+      return NextResponse.redirect(new URL(targetPath, request.url));
     }
     // We still want to add tenant headers to auth pages if accessed via a tenant subdomain
     const response = NextResponse.next();
@@ -67,25 +72,30 @@ export function proxy(request: NextRequest) {
     return response;
   }
 
-  // Rewrite logic
+  // Redirect root path to correct dashboard
+  if (url.pathname === "/") {
+    let targetPath = "/dashboard";
+    if (isRootOrAdmin && payload.role === Role.SUPER_ADMIN) {
+      targetPath = "/super-admin/dashboard";
+    }
+    return NextResponse.redirect(new URL(targetPath, request.url));
+  }
+
+  // Rewrite logic for role-based access control
   const rewriteUrl = new URL(url.pathname, request.url);
 
   if (isRootOrAdmin) {
     if (payload.role !== Role.SUPER_ADMIN) {
       // Prevent non-super admins from accessing super-admin specific routes
-      if (url.pathname.startsWith("/tenants")) {
+      if (url.pathname.startsWith("/tenants") || url.pathname.startsWith("/super-admin")) {
         return NextResponse.redirect(new URL("/unauthorized", request.url));
       }
-
-      // For root access or other paths, assume they want the tenant portal
-      rewriteUrl.pathname = url.pathname === "/" ? "/dashboard" : url.pathname;
     } else {
-      // Route to super-admin pages
-      rewriteUrl.pathname = url.pathname === "/" ? "/tenants" : url.pathname;
+      // Prevent super-admins from accessing tenant portal routes on the root domain
+      if (!url.pathname.startsWith("/super-admin") && !url.pathname.startsWith("/tenants")) {
+        return NextResponse.redirect(new URL("/super-admin/dashboard", request.url));
+      }
     }
-  } else {
-    // Route to tenant-portal pages
-    rewriteUrl.pathname = url.pathname === "/" ? "/dashboard" : url.pathname;
   }
 
   // Inject tenant context into headers for downstream use
