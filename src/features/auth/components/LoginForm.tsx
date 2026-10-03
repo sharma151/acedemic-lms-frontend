@@ -145,7 +145,6 @@ export function LoginForm() {
                             autoComplete="username"
                             autoCorrect="off"
                             disabled={isLoading}
-                            className="focus-visible:ring-blue-600"
                             {...field}
                           />
                         </FormControl>
@@ -164,7 +163,7 @@ export function LoginForm() {
                           </FormLabel>
                           <Link
                             href="/forgot-password"
-                            className="text-sm font-medium text-blue-600 hover:text-blue-500 dark:text-blue-400"
+                            className="text-sm font-medium text-primary hover:underline"
                           >
                             Forgot Password?
                           </Link>
@@ -175,7 +174,7 @@ export function LoginForm() {
                               type={showPassword ? "text" : "password"}
                               autoComplete="current-password"
                               disabled={isLoading}
-                              className="focus-visible:ring-blue-600 pr-10"
+                              className="pr-10"
                               {...field}
                             />
                             <Button
@@ -187,9 +186,9 @@ export function LoginForm() {
                               disabled={isLoading}
                             >
                               {showPassword ? (
-                                <EyeOff className="h-4 w-4 text-slate-500" />
+                                <EyeOff className="h-4 w-4 text-muted-foreground" />
                               ) : (
-                                <Eye className="h-4 w-4 text-slate-500" />
+                                <Eye className="h-4 w-4 text-muted-foreground" />
                               )}
                               <span className="sr-only">
                                 {showPassword
@@ -204,31 +203,8 @@ export function LoginForm() {
                     )}
                   />
 
-                  {/* 
-                  <FormField
-                    control={form.control}
-                    name="rememberMe"
-                    render={({ field }) => (
-                      <FormItem className="flex items-center space-x-2 pb-1 space-y-0">
-                        <FormControl>
-                          <input
-                            type="checkbox"
-                            className="h-4 w-4 rounded border-slate-300 text-blue-600 focus:ring-blue-600"
-                            checked={field.value}
-                            onChange={field.onChange}
-                            disabled={isLoading}
-                          />
-                        </FormControl>
-                        <FormLabel className="font-normal text-sm text-slate-700 dark:text-slate-300">
-                          Keep me signed in
-                        </FormLabel>
-                      </FormItem>
-                    )}
-                  /> 
-                  */}
-
                   {form.formState.errors.root && (
-                    <div className="p-3 text-sm font-medium text-red-500 bg-red-50 dark:bg-red-900/20 dark:text-red-400 rounded-md">
+                    <div className="p-3 text-sm font-medium text-destructive bg-destructive/10 rounded-md">
                       {form.formState.errors.root.message}
                     </div>
                   )}
@@ -236,7 +212,7 @@ export function LoginForm() {
                   <Button
                     type="submit"
                     disabled={isLoading}
-                    className="mt-2 w-full bg-blue-600 hover:bg-blue-700 text-white"
+                    className="mt-2 w-full"
                   >
                     {isLoading && (
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />

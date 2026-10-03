@@ -51,12 +51,12 @@ export function RegisterForm() {
             <Label htmlFor="fullName">Full Name</Label>
             <Input
               id="fullName"
-              placeholder="John Doe"
+              placeholder="Alex Morgan"
               disabled={isLoading}
               {...register('fullName')}
             />
             {errors.fullName && (
-              <p className="text-sm text-red-500 font-medium">{errors.fullName.message}</p>
+              <p className="text-sm text-destructive font-medium">{errors.fullName.message}</p>
             )}
           </div>
           <div className="grid gap-2">
@@ -64,12 +64,12 @@ export function RegisterForm() {
             <Input
               id="email"
               type="email"
-              placeholder="m@example.com"
+              placeholder="alex.morgan@university.edu"
               disabled={isLoading}
               {...register('email')}
             />
             {errors.email && (
-              <p className="text-sm text-red-500 font-medium">{errors.email.message}</p>
+              <p className="text-sm text-destructive font-medium">{errors.email.message}</p>
             )}
           </div>
           <div className="grid gap-2">
@@ -81,7 +81,7 @@ export function RegisterForm() {
               {...register('password')}
             />
             {errors.password && (
-              <p className="text-sm text-red-500 font-medium">{errors.password.message}</p>
+              <p className="text-sm text-destructive font-medium">{errors.password.message}</p>
             )}
           </div>
           <div className="grid gap-2">
@@ -93,7 +93,7 @@ export function RegisterForm() {
               {...register('confirmPassword')}
             />
             {errors.confirmPassword && (
-              <p className="text-sm text-red-500 font-medium">{errors.confirmPassword.message}</p>
+              <p className="text-sm text-destructive font-medium">{errors.confirmPassword.message}</p>
             )}
           </div>
           
