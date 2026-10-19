@@ -15,4 +15,13 @@ export const QUERY_KEYS = {
   TIMETABLE_CONFIGURATION_DAYS: "timetable-configuration-days",
   TIMETABLE_CONFIGURATION_PERIODS: "timetable-configuration-periods",
   TIMETABLES: "timetables",
+  ATTENDANCE_FILTERS: "attendance-filters",
+  ATTENDANCE_REGISTER: "attendance-register",
+  ATTENDANCE_SUMMARY: "attendance-summary",
+  ATTENDANCE_SUBJECT_WISE: "attendance-subject-wise",
+  ATTENDANCE_CALENDAR: "attendance-calendar",
+  ATTENDANCE_LEAVE_REQUESTS: "attendance-leave-requests",
+  ATTENDANCE_OVERVIEW_STATS: "attendance-overview-stats",
+  ATTENDANCE_DAILY_MATRIX: "attendance-daily-matrix",
+  ATTENDANCE_CHRONIC: "attendance-chronic-absenteeism",
 } as const;

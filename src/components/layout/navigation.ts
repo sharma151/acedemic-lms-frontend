@@ -7,6 +7,7 @@ import {
   CreditCard,
   GraduationCap,
   Calendar,
+  CalendarCheck,
   ClipboardList,
 } from "lucide-react";
 import { SidebarNavItem } from "./Sidebar";
@@ -28,6 +29,12 @@ export const tenantNavigation: SidebarNavItem[] = [
     title: "Academics",
     href: "/academics",
     icon: GraduationCap,
+    section: "Management",
+  },
+  {
+    title: "Attendance",
+    href: "/attendance",
+    icon: CalendarCheck,
     section: "Management",
   },
   {
@@ -74,6 +81,12 @@ export const adminNavigation: SidebarNavItem[] = [
     title: "Academics",
     href: "/super-admin/academics",
     icon: GraduationCap,
+    section: "Platform Management",
+  },
+  {
+    title: "Attendance",
+    href: "/super-admin/attendance",
+    icon: CalendarCheck,
     section: "Platform Management",
   },
   {
