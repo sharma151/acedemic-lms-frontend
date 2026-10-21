@@ -8,6 +8,7 @@ import {
   SubjectWiseAttendance,
   CalendarDayAttendance,
   LeaveRequest,
+  ReviewLeaveRequestPayload,
   CreateLeaveRequestPayload,
   AttendanceOverviewStats,
   DailyMatrixRow,
@@ -260,35 +261,119 @@ export const attendanceService = {
   getLeaveRequests: async (params?: {
     student_id?: string;
     studentId?: string;
+    status?: string;
     page?: number;
     limit?: number;
+    search?: string;
   }): Promise<LeaveRequest[]> => {
     const studentId = params?.studentId || params?.student_id;
     const queryParams: Record<string, any> = {};
     if (studentId && isUuid(studentId)) {
       queryParams.studentId = studentId;
     }
+    if (params?.status && params.status !== "ALL") {
+      queryParams.status = params.status;
+    }
     if (params?.page) queryParams.page = params.page;
     if (params?.limit) queryParams.limit = params.limit;
+    if (params?.search) queryParams.search = params.search;
 
-    const res = await apiClient.get<any>("/attendance/leave-requests", {
-      params: queryParams,
-    });
+    try {
+      const res = await apiClient.get<any>("/attendance/leave-requests", {
+        params: queryParams,
+      });
+      const raw = unwrapData<any>(res);
+      let list: any[] = [];
+      if (Array.isArray(raw)) {
+        list = raw;
+      } else if (Array.isArray(raw?.data)) {
+        list = raw.data;
+      } else if (Array.isArray(raw?.leaveRequests)) {
+        list = raw.leaveRequests;
+      } else if (Array.isArray(raw?.items)) {
+        list = raw.items;
+      } else if (Array.isArray(raw?.records)) {
+        list = raw.records;
+      } else if (Array.isArray(raw?.requests)) {
+        list = raw.requests;
+      }
+
+      return list.map((l: any) => {
+        const studentObj = (l && typeof l.student === "object") ? l.student : {};
+        const studentName =
+          l?.studentName ||
+          (studentObj?.firstName
+            ? `${studentObj.firstName} ${studentObj.lastName || ""}`.trim()
+            : studentObj?.name) ||
+          l?.name ||
+          "Student";
+
+        const reviewerObj = (l && typeof l.reviewer === "object") ? l.reviewer : (l?.reviewedByUser || {});
+        const reviewerName =
+          l?.reviewedBy ||
+          (reviewerObj?.firstName
+            ? `${reviewerObj.firstName} ${reviewerObj.lastName || ""}`.trim()
+            : reviewerObj?.name);
+
+        return {
+          id: String(l?.id || l?.leaveId || ""),
+          studentId: String(l?.studentId || studentObj?.id || ""),
+          studentName: String(studentName),
+          studentAvatar: l?.studentAvatar || studentObj?.avatarUrl,
+          rollNumber: l?.rollNumber !== undefined ? String(l.rollNumber) : (studentObj?.rollNumber !== undefined ? String(studentObj.rollNumber) : undefined),
+          className:
+            l?.className ||
+            studentObj?.className ||
+            studentObj?.class?.name ||
+            (typeof l?.class === "string" ? l.class : l?.class?.name),
+          sectionName:
+            l?.sectionName ||
+            studentObj?.sectionName ||
+            studentObj?.section?.name ||
+            (typeof l?.section === "string" ? l.section : l?.section?.name),
+          fromDate: String(l?.fromDate || l?.startDate || ""),
+          toDate: String(l?.toDate || l?.endDate || ""),
+          leaveType: String(l?.leaveType || l?.type || "General"),
+          reason: String(l?.reason || ""),
+          appliedOn: String(l?.appliedOn || l?.createdAt || ""),
+          status: (String(l?.status || "PENDING").toUpperCase()) as any,
+          reviewNote: l?.reviewNote ? String(l.reviewNote) : (l?.note ? String(l.note) : (l?.remarks ? String(l.remarks) : null)),
+          reviewedBy: reviewerName ? String(reviewerName) : null,
+          reviewedAt: l?.reviewedAt ? String(l.reviewedAt) : (l?.updatedAt ? String(l.updatedAt) : null),
+          documentUrl: l?.documentUrl ? String(l.documentUrl) : null,
+        };
+      });
+    } catch (err) {
+      console.error("Failed to fetch leave requests:", err);
+      return [];
+    }
+  },
+
+  // 7b. Review (Approve / Reject) Leave Request
+  reviewLeaveRequest: async (payload: ReviewLeaveRequestPayload): Promise<LeaveRequest> => {
+    const { id, status, reviewNote } = payload;
+    const body: { status: "APPROVED" | "REJECTED"; reviewNote?: string } = {
+      status,
+      ...(reviewNote !== undefined ? { reviewNote } : {}),
+    };
+
+    const res = await apiClient.post<any>(`/attendance/leave-requests/${id}/review`, body);
     const raw = unwrapData<any>(res);
-    const list = Array.isArray(raw) ? raw : (raw?.data || []);
-
-    return list.map((l: any) => ({
-      id: l.id || l.leaveId,
-      studentId: l.studentId || "",
-      studentName: l.studentName,
-      fromDate: l.fromDate || l.startDate,
-      toDate: l.toDate || l.endDate,
-      leaveType: l.leaveType || l.type || "General",
-      reason: l.reason || "",
-      appliedOn: l.appliedOn || l.createdAt || "",
-      status: l.status || "PENDING",
-      documentUrl: l.documentUrl,
-    }));
+    return {
+      id: raw?.id || id,
+      studentId: raw?.studentId || "",
+      studentName: raw?.studentName,
+      fromDate: raw?.fromDate || raw?.startDate || "",
+      toDate: raw?.toDate || raw?.endDate || "",
+      leaveType: raw?.leaveType || raw?.type || "General",
+      reason: raw?.reason || "",
+      appliedOn: raw?.appliedOn || raw?.createdAt || "",
+      status: (raw?.status?.toUpperCase() || status) as any,
+      reviewNote: raw?.reviewNote ?? reviewNote ?? null,
+      reviewedBy: raw?.reviewedBy,
+      reviewedAt: raw?.reviewedAt,
+      documentUrl: raw?.documentUrl,
+    };
   },
 
   // 8. Create Leave Request

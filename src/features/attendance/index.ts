@@ -4,6 +4,8 @@ export { ClassRegisterView } from "./components/ClassRegisterView";
 export { StudentAttendancePortal } from "./components/StudentAttendancePortal";
 export { AdminAttendanceDashboard } from "./components/AdminAttendanceDashboard";
 export { LeaveRequestModal } from "./components/LeaveRequestModal";
+export { ReviewLeaveRequestModal } from "./components/ReviewLeaveRequestModal";
+export { LeaveRequestsReviewSection } from "./components/LeaveRequestsReviewSection";
 export { AttendanceCalendar } from "./components/AttendanceCalendar";
 export { AttendanceRingChart } from "./components/AttendanceRingChart";
 export * from "./types";

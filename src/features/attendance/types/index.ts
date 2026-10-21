@@ -114,13 +114,26 @@ export interface LeaveRequest {
   id: string;
   studentId: string;
   studentName?: string;
+  studentAvatar?: string;
+  rollNumber?: string;
+  className?: string;
+  sectionName?: string;
   fromDate: string;
   toDate: string;
   leaveType: string; // e.g. "Sick", "Casual", "Emergency"
   reason: string;
   appliedOn: string;
   status: LeaveStatus;
+  reviewNote?: string | null;
+  reviewedBy?: string | null;
+  reviewedAt?: string | null;
   documentUrl?: string | null;
+}
+
+export interface ReviewLeaveRequestPayload {
+  id: string;
+  status: "APPROVED" | "REJECTED";
+  reviewNote?: string;
 }
 
 export interface CreateLeaveRequestPayload {

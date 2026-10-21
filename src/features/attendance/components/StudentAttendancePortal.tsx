@@ -335,11 +335,16 @@ export const StudentAttendancePortal: React.FC<StudentAttendancePortalProps> = (
                           {lv.leaveType}
                         </span>
                       </td>
-                      <td className="py-3 px-3 text-foreground max-w-xs truncate">
-                        {lv.reason}
+                      <td className="py-3 px-3 text-foreground max-w-xs">
+                        <div className="font-medium text-xs">{lv.reason}</div>
+                        {lv.reviewNote && (
+                          <div className="text-[11px] text-muted-foreground mt-0.5 italic">
+                            Reviewer note: "{lv.reviewNote}"
+                          </div>
+                        )}
                       </td>
                       <td className="py-3 px-3 font-mono text-muted-foreground">
-                        {lv.appliedOn}
+                        {lv.appliedOn ? lv.appliedOn.split("T")[0] : "—"}
                       </td>
                       <td className="py-3 px-3 text-right">{badge}</td>
                     </tr>

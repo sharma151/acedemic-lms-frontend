@@ -12,6 +12,7 @@ import {
   SubjectWiseAttendance,
   CalendarDayAttendance,
   LeaveRequest,
+  ReviewLeaveRequestPayload,
   CreateLeaveRequestPayload,
   AttendanceOverviewStats,
   DailyMatrixRow,
@@ -103,8 +104,10 @@ export const useAttendanceCalendar = (params: {
 export const useLeaveRequests = (params?: {
   student_id?: string;
   studentId?: string;
+  status?: string;
   page?: number;
   limit?: number;
+  search?: string;
 }) => {
   return useQuery<LeaveRequest[]>({
     queryKey: [QUERY_KEYS.ATTENDANCE_LEAVE_REQUESTS, params],
@@ -174,6 +177,25 @@ export const useCreateLeaveRequest = (options?: {
     service: attendanceService.createLeaveRequest,
     successTitle: "Leave Request Submitted",
     successMessage: "Your leave request was submitted for approval",
+    onSuccess: options?.onSuccess,
+    onError: options?.onError,
+  });
+};
+
+export const useReviewLeaveRequest = (options?: {
+  onSuccess?: (data: LeaveRequest) => void;
+  onError?: (err: any) => void;
+}) => {
+  return useCustomMutation<ReviewLeaveRequestPayload, LeaveRequest>({
+    queryKey: [
+      [QUERY_KEYS.ATTENDANCE_LEAVE_REQUESTS],
+      [QUERY_KEYS.ATTENDANCE_REGISTER],
+      [QUERY_KEYS.ATTENDANCE_OVERVIEW_STATS],
+      [QUERY_KEYS.ATTENDANCE_DAILY_MATRIX],
+    ],
+    service: attendanceService.reviewLeaveRequest,
+    successTitle: "Leave Request Reviewed",
+    successMessage: "Leave request status updated successfully",
     onSuccess: options?.onSuccess,
     onError: options?.onError,
   });

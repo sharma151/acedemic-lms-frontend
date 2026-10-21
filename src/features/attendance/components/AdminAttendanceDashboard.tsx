@@ -11,9 +11,11 @@ import {
   AlertTriangle,
   AlertCircle,
   FolderOpen,
+  FileText,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Select,
   SelectContent,
@@ -25,9 +27,11 @@ import {
   useAttendanceOverviewStats,
   useAttendanceDailyMatrix,
   useChronicAbsenteeism,
+  useLeaveRequests,
   useRemindTeacher,
   attendanceService,
 } from "../api";
+import { LeaveRequestsReviewSection } from "./LeaveRequestsReviewSection";
 import { useSession } from "@/lib/session";
 import { Role } from "@/configs/constants";
 
@@ -49,6 +53,12 @@ export const AdminAttendanceDashboard: React.FC = () => {
   const { data: statsData, isLoading: isLoadingStats } = useAttendanceOverviewStats(todayStr);
   const { data: matrixData, isLoading: isLoadingMatrix } = useAttendanceDailyMatrix(todayStr);
   const { data: chronicData, isLoading: isLoadingChronic } = useChronicAbsenteeism();
+  const { data: leavesData } = useLeaveRequests();
+
+  const pendingLeavesCount = useMemo(() => {
+    if (!Array.isArray(leavesData)) return 0;
+    return leavesData.filter((l) => String(l?.status || "").toUpperCase() === "PENDING").length;
+  }, [leavesData]);
 
   const stats = statsData || {
     submittedClassesCount: 0,
@@ -250,16 +260,55 @@ export const AdminAttendanceDashboard: React.FC = () => {
         </div>
       </div>
 
-      {/* Middle: Daily Submission Matrix */}
-      <div className="bg-card rounded-xl border border-border/80 shadow-xs p-6">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-5">
-          <div className="flex items-center gap-3">
-            <div className="flex items-center gap-2">
-              <Users className="w-4 h-4 text-muted-foreground" />
-              <h3 className="text-sm font-semibold text-foreground">
-                Daily Submission Matrix
-              </h3>
-            </div>
+      {/* Tabs Navigation for Administration Workspace */}
+      <Tabs defaultValue="matrix" className="w-full space-y-6">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <TabsList className="bg-muted/70 p-1 rounded-xl border border-border/80 h-auto">
+            <TabsTrigger
+              value="matrix"
+              className="text-xs font-semibold rounded-lg px-3.5 py-1.5 data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-xs flex items-center gap-1.5 cursor-pointer"
+            >
+              <Users className="w-3.5 h-3.5" />
+              Daily Submission Matrix
+            </TabsTrigger>
+            <TabsTrigger
+              value="leaves"
+              className="text-xs font-semibold rounded-lg px-3.5 py-1.5 data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-xs flex items-center gap-1.5 cursor-pointer"
+            >
+              <FileText className="w-3.5 h-3.5" />
+              <span>Leave Applications</span>
+              {pendingLeavesCount > 0 && (
+                <span className="px-1.5 py-0.2 rounded-full text-[10px] bg-amber-500 text-white font-bold ml-1">
+                  {pendingLeavesCount}
+                </span>
+              )}
+            </TabsTrigger>
+            <TabsTrigger
+              value="chronic"
+              className="text-xs font-semibold rounded-lg px-3.5 py-1.5 data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-xs flex items-center gap-1.5 cursor-pointer"
+            >
+              <AlertTriangle className="w-3.5 h-3.5 text-rose-500" />
+              <span>Chronic Absenteeism</span>
+              {chronicList.length > 0 && (
+                <span className="px-1.5 py-0.2 rounded-full text-[10px] bg-rose-500/20 text-rose-700 dark:text-rose-400 font-semibold ml-1">
+                  {chronicList.length}
+                </span>
+              )}
+            </TabsTrigger>
+          </TabsList>
+        </div>
+
+        {/* Tab 1: Daily Submission Matrix */}
+        <TabsContent value="matrix" className="space-y-6 mt-0">
+          <div className="bg-card rounded-xl border border-border/80 shadow-xs p-6">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-5">
+              <div className="flex items-center gap-3">
+                <div className="flex items-center gap-2">
+                  <Users className="w-4 h-4 text-muted-foreground" />
+                  <h3 className="text-sm font-semibold text-foreground">
+                    Daily Submission Matrix
+                  </h3>
+                </div>
             <span className="inline-block px-2.5 py-0.5 rounded-full text-[10px] font-semibold text-amber-800 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800/60">
               {stats.pendingClassesCount} Pending
             </span>
@@ -399,11 +448,18 @@ export const AdminAttendanceDashboard: React.FC = () => {
               )}
             </tbody>
           </table>
-        </div>
-      </div>
+            </div>
+          </div>
+        </TabsContent>
 
-      {/* Bottom: Chronic Absenteeism List */}
-      <div className="bg-card rounded-xl border border-border/80 shadow-xs p-6">
+        {/* Tab 2: Leave Applications */}
+        <TabsContent value="leaves" className="space-y-6 mt-0">
+          <LeaveRequestsReviewSection userRole="Admin" />
+        </TabsContent>
+
+        {/* Tab 3: Chronic Absenteeism */}
+        <TabsContent value="chronic" className="space-y-6 mt-0">
+          <div className="bg-card rounded-xl border border-border/80 shadow-xs p-6">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-5">
           <div className="flex items-center gap-3">
             <div className="flex items-center gap-2">
@@ -563,6 +619,8 @@ export const AdminAttendanceDashboard: React.FC = () => {
           </table>
         </div>
       </div>
-    </div>
+      </TabsContent>
+    </Tabs>
+  </div>
   );
 };

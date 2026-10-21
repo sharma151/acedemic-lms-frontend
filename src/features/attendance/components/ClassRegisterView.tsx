@@ -28,11 +28,14 @@ import {
   AttendanceStudentRow,
   AttendanceFilterOptions,
 } from "../types";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   useAttendanceFilters,
   useAttendanceRegister,
   useSubmitAttendance,
+  useLeaveRequests,
 } from "../api";
+import { LeaveRequestsReviewSection } from "./LeaveRequestsReviewSection";
 
 // Avatar colors matching modern UI design tokens
 const AVATAR_COLORS = [
@@ -106,6 +109,13 @@ export const ClassRegisterView: React.FC = () => {
     },
     { enabled: Boolean(selectedClassId && selectedSectionId) }
   );
+
+  // Leave Requests Query for pending counter
+  const { data: leavesData } = useLeaveRequests();
+  const pendingLeavesCount = useMemo(() => {
+    if (!Array.isArray(leavesData)) return 0;
+    return leavesData.filter((l) => String(l?.status || "").toUpperCase() === "PENDING").length;
+  }, [leavesData]);
 
   // Roster local state for live edits & marking
   const [roster, setRoster] = useState<AttendanceStudentRow[]>([]);
@@ -223,13 +233,40 @@ export const ClassRegisterView: React.FC = () => {
 
   return (
     <div className="space-y-6 pb-28">
-      {/* Subheader Banner matching design theme */}
-      <div className="bg-card text-card-foreground border border-border/80 px-6 py-5 rounded-xl shadow-xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-        <div>
-          <div className="flex items-center gap-2 text-xs font-semibold tracking-wider text-primary uppercase">
-            <CalendarIcon className="w-3.5 h-3.5" />
-            <span>Attendance Register</span>
-          </div>
+      {/* Tabs Navigation for Teacher Register and Leave Review */}
+      <Tabs defaultValue="register" className="w-full space-y-6">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <TabsList className="bg-muted/70 p-1 rounded-xl border border-border/80 h-auto">
+            <TabsTrigger
+              value="register"
+              className="text-xs font-semibold rounded-lg px-3.5 py-1.5 data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-xs flex items-center gap-1.5 cursor-pointer"
+            >
+              <CalendarIcon className="w-3.5 h-3.5" />
+              <span>Daily Register</span>
+            </TabsTrigger>
+            <TabsTrigger
+              value="leaves"
+              className="text-xs font-semibold rounded-lg px-3.5 py-1.5 data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-xs flex items-center gap-1.5 cursor-pointer"
+            >
+              <FileText className="w-3.5 h-3.5" />
+              <span>Leave Requests</span>
+              {pendingLeavesCount > 0 && (
+                <span className="px-1.5 py-0.2 rounded-full text-[10px] bg-amber-500 text-white font-bold ml-1">
+                  {pendingLeavesCount}
+                </span>
+              )}
+            </TabsTrigger>
+          </TabsList>
+        </div>
+
+        <TabsContent value="register" className="space-y-6 mt-0">
+          {/* Subheader Banner matching design theme */}
+          <div className="bg-card text-card-foreground border border-border/80 px-6 py-5 rounded-xl shadow-xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <div>
+              <div className="flex items-center gap-2 text-xs font-semibold tracking-wider text-primary uppercase">
+                <CalendarIcon className="w-3.5 h-3.5" />
+                <span>Attendance Register</span>
+              </div>
           <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-foreground mt-1">
             {activeClass} {activeSection ? `– ${activeSection}` : ""}
           </h2>
@@ -683,8 +720,14 @@ export const ClassRegisterView: React.FC = () => {
               {submitMutation.isPending ? "Submitting..." : "Submit Attendance"}
             </Button>
           )}
+          </div>
         </div>
-      </div>
+      </TabsContent>
+
+        <TabsContent value="leaves" className="space-y-6 mt-0">
+          <LeaveRequestsReviewSection userRole="Teacher" />
+        </TabsContent>
+      </Tabs>
     </div>
   );
 };
