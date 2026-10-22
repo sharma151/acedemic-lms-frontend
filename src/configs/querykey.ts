@@ -24,4 +24,7 @@ export const QUERY_KEYS = {
   ATTENDANCE_OVERVIEW_STATS: "attendance-overview-stats",
   ATTENDANCE_DAILY_MATRIX: "attendance-daily-matrix",
   ATTENDANCE_CHRONIC: "attendance-chronic-absenteeism",
+  DASHBOARD_SUMMARY: "dashboard-summary",
+  DASHBOARD_ENROLLMENT_TRENDS: "dashboard-enrollment-trends",
+  DASHBOARD_PENDING_INSTITUTIONS: "dashboard-pending-institutions",
 } as const;
