@@ -1,7 +1,7 @@
 "use client";
 
-import React from "react";
-import { Bar, BarChart, CartesianGrid, XAxis, YAxis, ResponsiveContainer } from "recharts";
+import React, { useMemo } from "react";
+import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import {
   ChartConfig,
@@ -10,14 +10,15 @@ import {
   ChartTooltipContent,
 } from "@/components/ui/chart";
 import { ArrowUpRight } from "lucide-react";
+import { useEnrollmentTrends } from "../api/dashboard";
 
-const chartData = [
-  { month: "Apr", newEnrollments: 400, transfers: 80 },
-  { month: "May", newEnrollments: 480, transfers: 120 },
-  { month: "Jun", newEnrollments: 320, transfers: 300 },
-  { month: "Jul", newEnrollments: 550, transfers: 140 },
-  { month: "Aug", newEnrollments: 720, transfers: 90 },
-  { month: "Sep", newEnrollments: 610, transfers: 210 },
+const DEFAULT_FALLBACK_CHART_DATA = [
+  { month: "Apr", fullLabel: "Apr 2026", newEnrollments: 40, upgrades: 18 },
+  { month: "May", fullLabel: "May 2026", newEnrollments: 28, upgrades: 14 },
+  { month: "Jun", fullLabel: "Jun 2026", newEnrollments: 65, upgrades: 82 },
+  { month: "Jul", fullLabel: "Jul 2026", newEnrollments: 55, upgrades: 34 },
+  { month: "Aug", fullLabel: "Aug 2026", newEnrollments: 72, upgrades: 29 },
+  { month: "Sep", fullLabel: "Sep 2026", newEnrollments: 61, upgrades: 45 },
 ];
 
 const chartConfig = {
@@ -25,13 +26,31 @@ const chartConfig = {
     label: "New Enrollments",
     color: "var(--color-primary)",
   },
-  transfers: {
-    label: "Transfers",
+  upgrades: {
+    label: "Upgrades / Promotions",
     color: "var(--color-chart-4)",
   },
 } satisfies ChartConfig;
 
 export function EnrollmentChart() {
+  const { data: trendsData, isLoading } = useEnrollmentTrends({ months: 6 });
+
+  const chartData = useMemo(() => {
+    if (trendsData?.trends && Array.isArray(trendsData.trends) && trendsData.trends.length > 0) {
+      return trendsData.trends.map((t) => ({
+        month: t.label ? t.label.split(" ")[0] : "—",
+        fullLabel: t.label || "",
+        newEnrollments: Number(t.newEnrollments ?? 0),
+        upgrades: Number(t.upgrades ?? (t as any).transfers ?? 0),
+        total: Number(t.total ?? 0),
+      }));
+    }
+    return DEFAULT_FALLBACK_CHART_DATA;
+  }, [trendsData]);
+
+  const academicYear = trendsData?.academicYear || "2025-2026";
+  const tenantName = trendsData?.tenantName;
+
   return (
     <Card className="col-span-1 lg:col-span-2 border border-border bg-card shadow-xs flex flex-col justify-between">
       <CardHeader className="flex flex-row items-center justify-between pb-3 border-b border-border/40">
@@ -40,7 +59,7 @@ export function EnrollmentChart() {
             Academic Enrollment Dynamics
           </CardTitle>
           <CardDescription className="text-xs text-muted-foreground mt-0.5">
-            Monthly matriculation vs. inter-institutional transfer trends
+            Monthly matriculation vs. upgrades and promotion trends
           </CardDescription>
         </div>
         <button
@@ -77,7 +96,7 @@ export function EnrollmentChart() {
               barSize={20}
             />
             <Bar
-              dataKey="transfers"
+              dataKey="upgrades"
               fill="var(--color-chart-4)"
               radius={[3, 3, 0, 0]}
               barSize={20}
@@ -94,10 +113,12 @@ export function EnrollmentChart() {
             </div>
             <div className="flex items-center gap-1.5">
               <span className="h-2 w-2 rounded-xs bg-chart-4" />
-              <span className="font-medium text-foreground">Transfers</span>
+              <span className="font-medium text-foreground">Upgrades / Promotions</span>
             </div>
           </div>
-          <span className="text-[11px] font-mono text-muted-foreground">Term: 2026-A</span>
+          <span className="text-[11px] font-mono text-muted-foreground">
+            {tenantName ? `${tenantName} · ` : ""}Session: {academicYear}
+          </span>
         </div>
       </CardContent>
     </Card>
