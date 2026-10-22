@@ -26,8 +26,8 @@ export default function GlobalError({
           <h2 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-100">
             Something went wrong!
           </h2>
-          <p className="text-sm text-slate-500 dark:text-slate-400">
-            An unexpected error has occurred. We have been notified and are looking into it.
+          <p className="text-sm text-rose-600 dark:text-rose-400 font-mono text-left max-h-40 overflow-auto bg-rose-50 dark:bg-rose-950/40 p-3 rounded-lg border border-rose-200 dark:border-rose-900/60 break-words">
+            {error?.message || "An unexpected error has occurred."}
           </p>
         </div>
         <div className="flex gap-4">
