@@ -13,6 +13,7 @@ import {
 import { AttendanceRingChart } from "./AttendanceRingChart";
 import { AttendanceCalendar } from "./AttendanceCalendar";
 import { LeaveRequestModal } from "./LeaveRequestModal";
+import { AttendanceHeader } from "./AttendanceHeader";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import {
@@ -73,29 +74,26 @@ export const StudentAttendancePortal: React.FC<StudentAttendancePortalProps> = (
 
   return (
     <div className="space-y-6">
-      {/* Subheader Banner matching design theme */}
-      <div className="bg-card text-card-foreground border border-border/80 px-6 py-5 rounded-xl shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <div className="text-xs font-semibold tracking-wider text-primary uppercase">
-            Student Attendance Portal
-          </div>
-          <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-foreground mt-1">
-            {displayName}
-          </h2>
-          <p className="text-xs text-muted-foreground mt-0.5">
-            {summary.className || "Class Enrolled"} · {summary.sectionName || "Section A"} {summary.rollNumber ? `· Roll No. ${summary.rollNumber}` : ""}
-          </p>
-        </div>
-
-        <Button
-          size="sm"
-          onClick={() => setIsLeaveModalOpen(true)}
-          className="bg-primary hover:bg-primary/90 text-primary-foreground text-xs font-semibold rounded-xl px-4 py-2 self-start sm:self-auto cursor-pointer shadow-xs"
-        >
-          <Plus className="w-3.5 h-3.5 mr-1.5" />
-          Apply for Leave
-        </Button>
-      </div>
+      {/* Student Attendance Page Header */}
+      <AttendanceHeader
+        activeRole="Student"
+        studentData={{
+          name: displayName,
+          className: summary.className || "Class Enrolled",
+          sectionName: summary.sectionName || "Section A",
+          rollNumber: summary.rollNumber,
+        }}
+        actions={
+          <Button
+            size="sm"
+            onClick={() => setIsLeaveModalOpen(true)}
+            className="bg-primary hover:bg-primary/90 text-primary-foreground text-xs font-semibold rounded-xl px-4 py-2 cursor-pointer shadow-xs"
+          >
+            <Plus className="w-3.5 h-3.5 mr-1.5" />
+            Apply for Leave
+          </Button>
+        }
+      />
 
       {/* Top 4 KPI Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -332,7 +330,9 @@ export const StudentAttendancePortal: React.FC<StudentAttendancePortalProps> = (
                       </td>
                       <td className="py-3 px-3">
                         <span className="inline-block px-2 py-0.5 rounded bg-secondary text-[10px] font-medium text-secondary-foreground border border-border">
-                          {lv.leaveType}
+                          {typeof lv.leaveType === "object"
+                            ? (lv.leaveType as any)?.type || (lv.leaveType as any)?.name || "Leave"
+                            : String(lv.leaveType || "Leave")}
                         </span>
                       </td>
                       <td className="py-3 px-3 text-foreground max-w-xs">

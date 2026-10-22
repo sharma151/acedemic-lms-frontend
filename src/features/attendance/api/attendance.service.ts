@@ -121,15 +121,67 @@ export const attendanceService = {
 
     const students = (raw?.students || []).map((s: any) => {
       const parts = (s.name || "").split(" ");
+
+      let approvedLeave: any = null;
+      if (s.approvedLeave) {
+        if (typeof s.approvedLeave === "object") {
+          const rawType = s.approvedLeave.type;
+          const leaveTypeStr =
+            typeof rawType === "object"
+              ? rawType?.type || rawType?.name || rawType?.title || "Leave"
+              : typeof rawType === "string"
+              ? rawType
+              : "Leave";
+          const leaveStatus =
+            typeof s.approvedLeave.status === "string"
+              ? s.approvedLeave.status
+              : typeof s.approvedLeave.status === "object"
+              ? s.approvedLeave.status?.status || "APPROVED"
+              : "APPROVED";
+          approvedLeave = {
+            leaveId: String(s.approvedLeave.id || s.approvedLeave.leaveId || "leave"),
+            type: leaveTypeStr,
+            status: leaveStatus,
+          };
+        }
+      } else if (s.leaveNotice) {
+        const rawNotice = s.leaveNotice;
+        const leaveTypeStr =
+          typeof rawNotice === "object"
+            ? rawNotice?.type || rawNotice?.name || rawNotice?.title || "Leave"
+            : typeof rawNotice === "string"
+            ? rawNotice
+            : "Leave";
+        const leaveStatus =
+          typeof rawNotice === "object" && rawNotice?.status
+            ? typeof rawNotice.status === "string"
+              ? rawNotice.status
+              : "APPROVED"
+            : "APPROVED";
+        approvedLeave = {
+          leaveId: "leave",
+          type: leaveTypeStr,
+          status: leaveStatus,
+        };
+      }
+
+      const rawStatus = s.status;
+      const statusStr =
+        typeof rawStatus === "string"
+          ? rawStatus
+          : typeof rawStatus === "object"
+          ? rawStatus?.status || rawStatus?.type || "PRESENT"
+          : "PRESENT";
+
       return {
         studentId: s.studentId,
         rollNumber: s.rollNumber || s.rollNo || "01",
         firstName: s.firstName || parts[0] || "",
         lastName: s.lastName || parts.slice(1).join(" ") || "",
         avatarUrl: s.avatarUrl,
-        status: s.status || "PRESENT",
+        status: statusStr,
         remarks: s.remarks || s.note || "",
-        approvedLeave: s.approvedLeave || (s.leaveNotice ? { leaveId: "leave", type: s.leaveNotice, status: "APPROVED" as const } : null),
+        approvedLeave,
       };
     });
 
@@ -333,7 +385,12 @@ export const attendanceService = {
             (typeof l?.section === "string" ? l.section : l?.section?.name),
           fromDate: String(l?.fromDate || l?.startDate || ""),
           toDate: String(l?.toDate || l?.endDate || ""),
-          leaveType: String(l?.leaveType || l?.type || "General"),
+          leaveType:
+            typeof l?.leaveType === "object"
+              ? l?.leaveType?.type || l?.leaveType?.name || "General"
+              : typeof l?.type === "object"
+              ? l?.type?.type || l?.type?.name || "General"
+              : String(l?.leaveType || l?.type || "General"),
           reason: String(l?.reason || ""),
           appliedOn: String(l?.appliedOn || l?.createdAt || ""),
           status: (String(l?.status || "PENDING").toUpperCase()) as any,
@@ -365,7 +422,12 @@ export const attendanceService = {
       studentName: raw?.studentName,
       fromDate: raw?.fromDate || raw?.startDate || "",
       toDate: raw?.toDate || raw?.endDate || "",
-      leaveType: raw?.leaveType || raw?.type || "General",
+      leaveType:
+        typeof raw?.leaveType === "object"
+          ? raw?.leaveType?.type || raw?.leaveType?.name || "General"
+          : typeof raw?.type === "object"
+          ? raw?.type?.type || raw?.type?.name || "General"
+          : String(raw?.leaveType || raw?.type || "General"),
       reason: raw?.reason || "",
       appliedOn: raw?.appliedOn || raw?.createdAt || "",
       status: (raw?.status?.toUpperCase() || status) as any,

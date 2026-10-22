@@ -32,6 +32,7 @@ import {
   attendanceService,
 } from "../api";
 import { LeaveRequestsReviewSection } from "./LeaveRequestsReviewSection";
+import { AttendanceHeader } from "./AttendanceHeader";
 import { useSession } from "@/lib/session";
 import { Role } from "@/configs/constants";
 
@@ -147,20 +148,23 @@ export const AdminAttendanceDashboard: React.FC = () => {
     });
   }, [chronicList, searchStudentQuery]);
 
+  const formattedDate = useMemo(() => {
+    return new Date().toLocaleDateString("en-US", {
+      weekday: "long",
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    });
+  }, []);
+
   return (
     <div className="space-y-6">
-      {/* Subheader Banner matching application design theme */}
-      <div className="bg-card text-card-foreground border border-border/80 px-6 py-5 rounded-xl shadow-xs">
-        <div className="text-xs font-semibold tracking-wider text-primary uppercase">
-          Administrative Oversight
-        </div>
-        <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-foreground mt-1">
-          Attendance Dashboard &amp; Analytics
-        </h2>
-        <p className="text-xs text-muted-foreground mt-0.5">
-          {new Date().toLocaleDateString("en-US", { weekday: "long", year: "numeric", month: "long", day: "numeric" })} · Real-time institution submission oversight
-        </p>
-      </div>
+      {/* Page Header aligned with application color theme */}
+      <AttendanceHeader
+        activeRole="Admin"
+        dateString={formattedDate}
+        subtitle="Real-time institution submission oversight"
+      />
 
       {/* Super Admin Notice if no tenant is attached to session */}
       {isSuperAdmin && (

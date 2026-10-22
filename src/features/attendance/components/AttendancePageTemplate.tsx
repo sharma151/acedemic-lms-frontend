@@ -2,7 +2,6 @@
 
 import React, { useMemo } from "react";
 import { AttendanceRole } from "../types";
-import { AttendanceHeader } from "./AttendanceHeader";
 import { ClassRegisterView } from "./ClassRegisterView";
 import { StudentAttendancePortal } from "./StudentAttendancePortal";
 import { AdminAttendanceDashboard } from "./AdminAttendanceDashboard";
@@ -32,9 +31,6 @@ export const AttendancePageTemplate: React.FC = () => {
 
   return (
     <div className="space-y-6">
-      {/* Page Header aligned with application color theme */}
-      <AttendanceHeader activeRole={activeRole} />
-
       {/* Main View Area strictly driven by me API user role */}
       <main className="w-full">
         {activeRole === "Teacher" && <ClassRegisterView />}

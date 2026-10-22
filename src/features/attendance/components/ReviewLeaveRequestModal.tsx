@@ -158,7 +158,9 @@ export const ReviewLeaveRequestModal: React.FC<ReviewLeaveRequestModalProps> = (
               </div>
 
               <span className="inline-block px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-secondary text-secondary-foreground border border-border">
-                {leaveRequest.leaveType || "General Leave"}
+                {typeof leaveRequest.leaveType === "object"
+                  ? (leaveRequest.leaveType as any)?.type || (leaveRequest.leaveType as any)?.name || "General Leave"
+                  : String(leaveRequest.leaveType || "General Leave")}
               </span>
             </div>
 

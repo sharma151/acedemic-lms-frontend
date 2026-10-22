@@ -36,6 +36,7 @@ import {
   useLeaveRequests,
 } from "../api";
 import { LeaveRequestsReviewSection } from "./LeaveRequestsReviewSection";
+import { AttendanceHeader } from "./AttendanceHeader";
 
 // Avatar colors matching modern UI design tokens
 const AVATAR_COLORS = [
@@ -231,8 +232,24 @@ export const ClassRegisterView: React.FC = () => {
     filterOptions.periods.find((p) => p.id === selectedPeriodId)?.name ||
     "Daily General Attendance";
 
+  const formattedDate = useMemo(() => {
+    return new Date().toLocaleDateString("en-US", {
+      weekday: "long",
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    });
+  }, []);
+
   return (
     <div className="space-y-6 pb-28">
+      {/* Teacher Attendance Page Header */}
+      <AttendanceHeader
+        activeRole="Teacher"
+        dateString={formattedDate}
+        subtitle="Mark daily student attendance, record session statuses, and view approved leaves"
+      />
+
       {/* Tabs Navigation for Teacher Register and Leave Review */}
       <Tabs defaultValue="register" className="w-full space-y-6">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
@@ -257,47 +274,33 @@ export const ClassRegisterView: React.FC = () => {
               )}
             </TabsTrigger>
           </TabsList>
+
+          {/* Session Lock Action Button cleanly placed next to tabs */}
+          <button
+            type="button"
+            onClick={() => setIsSessionLocked(!isSessionLocked)}
+            className={cn(
+              "flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer border self-start sm:self-auto",
+              isSessionLocked
+                ? "bg-rose-50 dark:bg-rose-950/40 text-rose-700 dark:text-rose-300 border-rose-200 dark:border-rose-900/60 hover:bg-rose-100"
+                : "bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border-emerald-200 dark:border-emerald-900/60 hover:bg-emerald-100"
+            )}
+          >
+            {isSessionLocked ? (
+              <>
+                <Lock className="w-3.5 h-3.5" />
+                <span>Session Locked (Click to Edit)</span>
+              </>
+            ) : (
+              <>
+                <Unlock className="w-3.5 h-3.5" />
+                <span>Open for Marking (Unlocked)</span>
+              </>
+            )}
+          </button>
         </div>
 
         <TabsContent value="register" className="space-y-6 mt-0">
-          {/* Subheader Banner matching design theme */}
-          <div className="bg-card text-card-foreground border border-border/80 px-6 py-5 rounded-xl shadow-xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-            <div>
-              <div className="flex items-center gap-2 text-xs font-semibold tracking-wider text-primary uppercase">
-                <CalendarIcon className="w-3.5 h-3.5" />
-                <span>Attendance Register</span>
-              </div>
-          <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-foreground mt-1">
-            {activeClass} {activeSection ? `– ${activeSection}` : ""}
-          </h2>
-          <p className="text-xs text-muted-foreground mt-0.5">
-            {selectedDate ? new Date(selectedDate).toLocaleDateString("en-US", { weekday: "long", year: "numeric", month: "long", day: "numeric" }) : "Today"} · {activePeriod}
-          </p>
-        </div>
-
-        {/* Lock Toggle Action */}
-        <button
-          onClick={() => setIsSessionLocked(!isSessionLocked)}
-          className={cn(
-            "flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer border",
-            isSessionLocked
-              ? "bg-rose-50 dark:bg-rose-950/40 text-rose-700 dark:text-rose-300 border-rose-200 dark:border-rose-900/60 hover:bg-rose-100"
-              : "bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border-emerald-200 dark:border-emerald-900/60 hover:bg-emerald-100"
-          )}
-        >
-          {isSessionLocked ? (
-            <>
-              <Lock className="w-3.5 h-3.5" />
-              <span>Session Locked (Click to Edit)</span>
-            </>
-          ) : (
-            <>
-              <Unlock className="w-3.5 h-3.5" />
-              <span>Open for Marking (Unlocked)</span>
-            </>
-          )}
-        </button>
-      </div>
 
       {/* Cascading Filter Box */}
       <div className="bg-card rounded-xl p-5 border border-border/80 shadow-xs">
@@ -563,7 +566,10 @@ export const ClassRegisterView: React.FC = () => {
                             </div>
                             {hasApprovedLeave && (
                               <span className="inline-block mt-0.5 text-[10px] font-bold text-purple-700 bg-purple-50 dark:bg-purple-950/40 border border-purple-200 dark:border-purple-800/60 px-2 py-0.5 rounded-full">
-                                {student.approvedLeave?.type} - APPROVED
+                                {typeof student.approvedLeave?.type === "object"
+                                  ? (student.approvedLeave?.type as any)?.type || (student.approvedLeave?.type as any)?.name || "Leave"
+                                  : String(student.approvedLeave?.type || "Leave")}{" "}
+                                - APPROVED
                               </span>
                             )}
                           </div>

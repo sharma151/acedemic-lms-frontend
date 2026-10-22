@@ -344,7 +344,9 @@ export const LeaveRequestsReviewSection: React.FC<LeaveRequestsReviewSectionProp
                     <td className="py-3.5 px-4 max-w-xs">
                       <div className="space-y-1">
                         <span className="inline-block px-2 py-0.5 rounded bg-secondary text-[10px] font-semibold text-secondary-foreground border border-border">
-                          {req.leaveType}
+                          {typeof req.leaveType === "object"
+                            ? (req.leaveType as any)?.type || (req.leaveType as any)?.name || "Leave"
+                            : String(req.leaveType || "Leave")}
                         </span>
                         <p className="text-foreground text-xs line-clamp-2">
                           {req.reason}
