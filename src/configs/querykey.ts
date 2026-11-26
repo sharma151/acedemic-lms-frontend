@@ -27,4 +27,8 @@ export const QUERY_KEYS = {
   DASHBOARD_SUMMARY: "dashboard-summary",
   DASHBOARD_ENROLLMENT_TRENDS: "dashboard-enrollment-trends",
   DASHBOARD_PENDING_INSTITUTIONS: "dashboard-pending-institutions",
+  ROLES: "roles",
+  ROLE_DETAILS: "role-details",
+  ROLE_PERMISSIONS: "role-permissions",
+  SYSTEM_PERMISSIONS: "system-permissions",
 } as const;

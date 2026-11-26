@@ -36,6 +36,7 @@ import { AddUserSchema, AddUserFormData } from "../schemas/userSchemas";
 import { addUserApi } from "../api/users";
 import { QUERY_KEYS } from "@/configs/querykey";
 import { Role } from "@/configs/constants";
+import { useGetRoles } from "@/features/roles/api/roles";
 import { Loader2, Eye, EyeOff } from "lucide-react";
 
 export function AddUserDialog({
@@ -49,6 +50,9 @@ export function AddUserDialog({
   const [showPassword, setShowPassword] = useState(false);
   const { addNotification } = useNotifications();
   const queryClient = useQueryClient();
+
+  const { data: rolesResponse, isLoading: isLoadingRoles } = useGetRoles();
+  const roles = rolesResponse?.data || [];
 
   const form = useForm<AddUserFormData>({
     resolver: zodResolver(AddUserSchema),
@@ -164,19 +168,31 @@ export function AddUserDialog({
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      <SelectItem value={Role.INSTITUTION_ADMIN}>
-                        {Role.INSTITUTION_ADMIN}
-                      </SelectItem>
-                      <SelectItem value={Role.TEACHER}>
-                        {Role.TEACHER}
-                      </SelectItem>
-                      <SelectItem value={Role.STUDENT}>
-                        {Role.STUDENT}
-                      </SelectItem>
-                      <SelectItem value={Role.PARENT}>{Role.PARENT}</SelectItem>
-                      <SelectItem value={Role.ACCOUNTANT}>
-                        {Role.ACCOUNTANT}
-                      </SelectItem>
+                      {roles.length > 0 ? (
+                        roles.map((r) => (
+                          <SelectItem key={r.id} value={r.name}>
+                            {r.name}
+                          </SelectItem>
+                        ))
+                      ) : (
+                        <>
+                          <SelectItem value={Role.INSTITUTION_ADMIN}>
+                            {Role.INSTITUTION_ADMIN}
+                          </SelectItem>
+                          <SelectItem value={Role.TEACHER}>
+                            {Role.TEACHER}
+                          </SelectItem>
+                          <SelectItem value={Role.STUDENT}>
+                            {Role.STUDENT}
+                          </SelectItem>
+                          <SelectItem value={Role.PARENT}>
+                            {Role.PARENT}
+                          </SelectItem>
+                          <SelectItem value={Role.ACCOUNTANT}>
+                            {Role.ACCOUNTANT}
+                          </SelectItem>
+                        </>
+                      )}
                     </SelectContent>
                   </Select>
                   <FormMessage />

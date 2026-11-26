@@ -1,24 +1,36 @@
-'use client';
+"use client";
 
-import { useSession } from '@/lib/session';
-import { ReactNode } from 'react';
-import { Role } from '@/configs/constants';
+import { ReactNode } from "react";
+import { usePermissions } from "@/hooks/use-permissions";
 
 interface PermissionGateProps {
-  permission: string;
+  permission?: string;
+  permissions?: string[];
+  requireAll?: boolean;
   children: ReactNode;
   fallback?: ReactNode;
 }
 
-export function PermissionGate({ permission, children, fallback = null }: PermissionGateProps) {
-  const user = useSession((state) => state.user);
+export function PermissionGate({
+  permission,
+  permissions,
+  requireAll = false,
+  children,
+  fallback = null,
+}: PermissionGateProps) {
+  const { can, canAny, canAll } = usePermissions();
 
-  // Check if the user has the required role/permission
-  const hasRole = Array.isArray(user?.role) 
-    ? user.role.includes(permission) || user.role.includes(Role.SUPER_ADMIN) || user.role.includes('super-admin')
-    : user?.role === permission || user?.role === Role.SUPER_ADMIN || user?.role === 'super-admin';
+  let hasAccess = false;
 
-  if (!hasRole) {
+  if (permissions && permissions.length > 0) {
+    hasAccess = requireAll ? canAll(permissions) : canAny(permissions);
+  } else if (permission) {
+    hasAccess = can(permission);
+  } else {
+    hasAccess = true;
+  }
+
+  if (!hasAccess) {
     return <>{fallback}</>;
   }
 
